@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detektor Tajwid — Deteksi Diperbaiki</title>
+    <title>Detektor Tajwid — Nilai Diperbaiki</title>
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
         body {background:#e8f5e9; padding:20px;}
@@ -49,12 +49,13 @@
         .kata-salah {background:#ffcdd2; color:#b71c1c; padding:3px 8px; border-radius:4px; text-decoration:line-through;}
         .kata-tambah {background:#d1c4e9; color:#4527a0; padding:3px 8px; border-radius:4px;}
         .kata-kurang {background:#ffe0b2; color:#e65100; padding:3px 8px; border-radius:4px;}
+        .kotak-debug {background:#f5f5f5; border:1px solid #ddd; padding:10px; border-radius:6px; margin-top:8px; font-size:13px; font-family:monospace;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📿 Detektor Tajwid — Deteksi Dioptimalkan</h1>
+    <h1>📿 Detektor Tajwid — Nilai Diperbaiki</h1>
 
     <!-- HALAMAN 1: DATA SISWA -->
     <div id="hal1" class="page active">
@@ -87,16 +88,15 @@
         
         <div id="kotakSurat" style="display:none;">
             <div class="ayat-box" id="teksAyat"></div>
-            <h4>📚 Teks Bacaan (Latin) — Bacalah Sesuai Teks di Bawah:</h4>
+            <h4>📚 Teks Bacaan — Bacalah Sesuai Teks di Bawah:</h4>
             <div style="background:#fff; padding:12px; border-radius:6px; border:2px solid #e0e0e0; margin:8px 0; font-size:16px; line-height:1.8;" id="teksLatinTampil"></div>
             
             <div class="info-tips">
-                💡 <strong>CARA AGAR TERDETEKSI AKURAT:</strong><br>
-                🔹 Baca SANGAT PELAN — berhenti sejenak antar kata<br>
-                🔹 Baca JELAS — setiap huruf bunyikan dengan tegas<br>
-                🔹 Dekatkan mulut ke mikrofon (jarak ±10 cm)<br>
-                🔹 Di ruangan TENANG — tanpa suara bising<br>
-                🔹 Gunakan Google Chrome versi terbaru
+                💡 <strong>CARA AGAR NILAI BENAR:</strong><br>
+                🔹 Baca SANGAT PELAN — berhenti sebentar antar kata<br>
+                🔹 Lihat teks yang muncul di bawah setelah selesai<br>
+                🔹 Jika teks sudah sama persis → klik "Lihat Hasil"<br>
+                🔹 Jika teks berbeda → klik "Baca Ulang"
             </div>
 
             <button class="btn-biru" id="btnRekam" onclick="mulaiRekam()">🎙️ Mulai Baca</button>
@@ -126,7 +126,7 @@
 
 <script>
 // ==============================================
-// ⚙️ PENGATURAN — DIOPTIMALKAN UNTUK AKURASI
+// ⚙️ PENGATURAN — DIPERBAIKI: Ambang lebih masuk akal
 // ==============================================
 let namaSiswa = "";
 let kelasSiswa = "";
@@ -136,20 +136,20 @@ let teksDariSuara = "";
 let waktuMulai = 0, waktuSelesai = 0;
 let sedangMembaca = false;
 
-// Ambang batas yang lebih masuk akal
-const AMBANG_NOL = 50;           // Di bawah 50% → NILAI 0
-const AMBANG_KATA = 0.70;        // ≥70% bunyi sama → dianggap benar
-const AMBANG_CUKUP = 65;
-const AMBANG_BAIK = 85;
+// ✅ DIUBAH: Batas nilai 0 diturunkan & kesesuaian diperlonggar
+const AMBANG_NOL = 30;            // Di bawah 30% → NILAI 0 (sebelumnya 50%)
+const AMBANG_KATA = 0.55;         // ≥55% mirip → dianggap kata BENAR (sebelumnya 70%)
+const AMBANG_CUKUP = 60;
+const AMBANG_BAIK = 80;
 
 // ==============================================
-// 📖 DATA SURAT — DIPERBAIKI EJAAN & BUNYINYA
+// 📖 DATA SURAT
 // ==============================================
 const dataSurat = {
     "Al-Ikhlas": {
         teksArab: "قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
         teksLatin: ["Qul huwallahu ahad", "Allahushshamad", "Lam yalid wa lam yuulad", "Wa lam yakul-lahu kufuwan ahad"],
-        durasiMin: 12, durasiMaks: 35, durasiNormal: 18,
+        durasiMin: 10, durasiMaks: 45, durasiNormal: 18,
         hukum: [
             {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
             {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
@@ -159,19 +159,19 @@ const dataSurat = {
     "Al-Falaq": {
         teksArab: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ",
         teksLatin: ["Qul a'uudzu birabbil falaq", "Min syarri maa khalaq", "Wa min syarri ghaasiqin idzaa waqab", "Wa min syarrin-naffaatsaati fil 'uqad", "Wa min syarri haasidin idzaa hasad"],
-        durasiMin: 15, durasiMaks: 40, durasiNormal: 22,
+        durasiMin: 15, durasiMaks: 50, durasiNormal: 22,
         hukum: [{nama:"Qalqalah", penjelasan:"Huruf dibaca memantul"}]
     },
     "An-Nas": {
         teksArab: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
         teksLatin: ["Qul a'uudzu birabbin-naas", "Malikin-naas", "Ilaahin-naas", "Min syarril waswaasil khannaas", "Alladzii yuwaswisu fii shuduurin-naas", "Minal jinnatin wan-naas"],
-        durasiMin: 18, durasiMaks: 45, durasiNormal: 25,
+        durasiMin: 18, durasiMaks: 55, durasiNormal: 25,
         hukum: [{nama:"Ghunnah", penjelasan:"Dengung pada Nun/Mim bertasydid"}]
     },
     "Al-Fatihah": {
         teksArab: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
         teksLatin: ["Bismillahirrahmaanirrahiim", "Alhamdulillaahi rabbil'aalamiin", "Arrahmaanirrahiim", "Maaliki yaumiddiin", "Iyyaaka na'budu wa iyyaaka nasta'iin", "Ihdinashshiraathal mustaqiim", "Shiraathalladziina an'amta 'alaihim ghairil maghdhuubi 'alaihim waladh-dhaalliin"],
-        durasiMin: 25, durasiMaks: 60, durasiNormal: 35,
+        durasiMin: 25, durasiMaks: 70, durasiNormal: 35,
         hukum: [
             {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
             {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
@@ -208,22 +208,20 @@ function tampilkanSurat() {
 }
 
 // ==============================================
-// 🎙️ PENDETEKSIAN SUARA — DIOPTIMALKAN
+// 🎙️ PENDETEKSIAN SUARA
 // ==============================================
 function mulaiRekam() {
     if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("❌ Gunakan Google Chrome versi terbaru!\n\nPembaca suara hanya berfungsi di Google Chrome.");
+        alert("❌ Gunakan Google Chrome versi terbaru!");
         return;
     }
 
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     pengenalUcapan = new SR();
-    
-    // ✅ DIOPTIMALKAN: Bahasa Arab Standar, hasil lebih akurat
     pengenalUcapan.lang = "ar-SA";
     pengenalUcapan.continuous = true;
-    pengenalUcapan.interimResults = true;  // Tampilkan hasil sementara
-    pengenalUcapan.maxAlternatives = 3;    // Ambil 3 kemungkinan terbaik
+    pengenalUcapan.interimResults = true;
+    pengenalUcapan.maxAlternatives = 3;
 
     teksDariSuara = "";
     sedangMembaca = true;
@@ -232,7 +230,7 @@ function mulaiRekam() {
     pengenalUcapan.onstart = function() {
         document.getElementById('status').style.display = "block";
         document.getElementById('status').className = "status sedang";
-        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca PELAN dan JELAS. Berhenti sejenak antar kata.";
+        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca PELAN dan JELAS.";
     };
 
     pengenalUcapan.onresult = function(e) {
@@ -240,12 +238,9 @@ function mulaiRekam() {
         let hasilSementara = "";
         
         for(let i = e.resultIndex; i < e.results.length; i++) {
-            // Ambil hasil dengan tingkat kepercayaan tertinggi
-            let alternatifTerbaik = e.results[i][0].transcript;
-            hasilSementara += alternatifTerbaik + " ";
-            
+            hasilSementara += e.results[i][0].transcript + " ";
             if(e.results[i].isFinal) {
-                hasilAkhir += alternatifTerbaik + " ";
+                hasilAkhir += e.results[i][0].transcript + " ";
             }
         }
         
@@ -257,11 +252,9 @@ function mulaiRekam() {
     pengenalUcapan.onerror = function(err) {
         let pesan = "";
         if(err.error === 'not-allowed') {
-            pesan = "❌ Izin mikrofon DITOLAK!<br>Klik ikon 🔒 di sebelah kiri alamat web → Izinkan Mikrofon → Muat Ulang Halaman.";
+            pesan = "❌ Izin mikrofon DITOLAK! Klik ikon 🔒 di alamat web → Izinkan Mikrofon.";
         } else if(err.error === 'no-speech') {
-            pesan = "⚠️ Tidak ada suara yang terdeteksi.<br>Dekatkan mulut ke mikrofon dan baca lebih keras.";
-        } else if(err.error === 'audio-capture') {
-            pesan = "⚠️ Tidak menemukan mikrofon.<br>Pastikan mikrofon terhubung dan berfungsi.";
+            pesan = "⚠️ Tidak ada suara. Baca lebih keras dan dekatkan ke mikrofon.";
         } else {
             pesan = "⚠️ Kesalahan: " + err.error;
         }
@@ -271,10 +264,7 @@ function mulaiRekam() {
     };
 
     pengenalUcapan.onend = function() {
-        // Otomatis mulai ulang jika belum dihentikan
-        if(sedangMembaca) {
-            pengenalUcapan.start();
-        }
+        if(sedangMembaca) pengenalUcapan.start();
     };
 
     pengenalUcapan.start();
@@ -307,7 +297,7 @@ function ulangBaca() {
 }
 
 // ==============================================
-// 📊 ANALISIS HASIL — DIPERBAIKI PERBANDINGANNYA
+// 📊 ANALISIS HASIL — DIPERBAIKI: Teks Sama = Nilai Sesuai
 // ==============================================
 function tampilkanHasil() {
     document.getElementById('hal2').classList.remove('active');
@@ -316,31 +306,32 @@ function tampilkanHasil() {
     let surat = dataSurat[pilihSurat];
     let durasiDetik = Math.round((waktuSelesai - waktuMulai)/1000);
     
-    // ✅ NORMALISASI: Sesuaikan ejaan Arab-Latin agar perbandingan lebih akurat
+    // ✅ NORMALISASI: DIPERBAIKI agar perbandingan lebih akurat
     let teksBenar = normalisasiTeksLengkap(surat.teksLatin.join(" "));
     let teksPengguna = normalisasiTeksLengkap(teksDariSuara || "");
 
-    // ✅ BANDINGKAN KATA PER KATA
+    // ✅ BANDINGKAN
     let hasilBanding = bandingkanPerKata(teksBenar, teksPengguna);
     let skorKesamaan = hasilBanding.skor;
 
-    // ✅ ATURAN PENILAIAN
+    // ✅ ATURAN PENILAIAN — DIPERBAIKI: JANGAN LANGSUNG NOL KARENA DURASI
     let skorAkhir = 0;
     let keteranganNilai = "";
 
     if(skorKesamaan < AMBANG_NOL) {
         skorAkhir = 0;
-        keteranganNilai = "🚫 <strong>NILAI = 0</strong><br>Kesesuaian bacaan di bawah " + AMBANG_NOL + "% — bacaan belum sesuai teks.";
+        keteranganNilai = "🚫 <strong>NILAI = 0</strong><br>Kesesuaian bacaan di bawah " + AMBANG_NOL + "%.";
     } else {
-        // Durasi hanya pengaruh kecil
+        // Durasi hanya pengaruh SANGAT KECIL — yang utama adalah TEKS
         let skorDurasi = 100;
         if(durasiDetik < surat.durasiMin || durasiDetik > surat.durasiMaks) {
-            skorDurasi = 80;
+            skorDurasi = 95; // ✅ DIRINGANKAN: hanya dikurangi sedikit, bukan 80
         }
-        skorAkhir = Math.round(skorKesamaan * 0.90 + skorDurasi * 0.10);
+        // ✅ TEKS = 95% nilai, DURASI = 5% nilai
+        skorAkhir = Math.round(skorKesamaan * 0.95 + skorDurasi * 0.05);
 
         if(skorKesamaan < AMBANG_CUKUP) {
-            keteranganNilai = "⚠️ Kesesuaian rendah. Banyak kata belum tepat.";
+            keteranganNilai = "⚠️ Kesesuaian cukup. Perbaiki beberapa kata.";
         } else if(skorKesamaan < AMBANG_BAIK) {
             keteranganNilai = "✅ Cukup Baik. Sebagian besar sudah sesuai.";
         } else {
@@ -359,12 +350,15 @@ function tampilkanHasil() {
     document.getElementById('infoPerbandingan').innerHTML = `
         <div style='background:${skorAkhir===0?"#ffebee":"#fff8e1"}; padding:15px; border-radius:8px; margin-bottom:10px;'>
             <h4>📝 Perbandingan Bacaan:</h4>
-            <p><strong>Teks Benar:</strong><br>${teksBenar}</p>
-            <p><strong>Teks Terbaca:</strong><br>${teksPengguna || "(tidak terdeteksi)"}</p>
+            <p><strong>Teks Benar (dinormalisasi):</strong><br><code>${teksBenar}</code></p>
+            <p><strong>Teks Terbaca (dinormalisasi):</strong><br><code>${teksPengguna || "(tidak terdeteksi)"}</code></p>
             <p><strong>Tingkat Kesesuaian Lafal:</strong> <span style='font-size:22px; font-weight:bold; color:${skorKesamaan>=AMBANG_BAIK?"#2e7d32":skorKesamaan>=AMBANG_CUKUP?"#ef6c00":"#c62828"};'>${skorKesamaan}%</span></p>
-            <p style='margin-top:8px;'>${keteranganNilai}</p>
+            <p style='margin-top:8px; font-weight:bold;'>${keteranganNilai}</p>
             <p><strong>Analisis per Kata:</strong></p>
             <div class='perbandingan-kata'>${hasilBanding.visual}</div>
+            <div class="kotak-debug">
+                📊 Debug: Cocok=${hasilBanding.cocok} dari ${hasilBanding.totalKata} kata | Ambang: ${AMBANG_KATA*100}%
+            </div>
         </div>`;
 
     document.getElementById('kotakHasil').innerHTML = `
@@ -372,19 +366,19 @@ function tampilkanHasil() {
         <hr>
         <h4>📚 Analisis Tajwid:</h4>
         ${skorAkhir===0
-            ? "<div class='info-hukum' style='background:#ffebee;'><span style='color:#c62828; font-weight:bold;'>❌ Belum dapat dinilai</span> — Perbaiki bacaan agar sesuai teks terlebih dahulu.</div>"
+            ? "<div class='info-hukum' style='background:#ffebee;'><span style='color:#c62828; font-weight:bold;'>❌ Belum dapat dinilai</span> — Tingkat kesesuaian teks terlalu rendah.</div>"
             : surat.hukum.map(h => `<div class='info-hukum'><strong>✅ ${h.nama}:</strong> ${h.penjelasan}</div>`).join("")
         }`;
 
     document.getElementById('kotakRekom').innerHTML = `
         <strong>📖 Rekomendasi Latihan:</strong><br><br>
         ${skorAkhir===0
-            ? "🔴 <strong>Bacaan belum terdeteksi dengan baik.</strong><br>• Baca lebih PELAN — berhenti sejenak antar kata<br>• Baca lebih JELAS dan TEGAS<br>• Dekatkan mulut ke mikrofon<br>• Pastikan TIDAK ada suara bising<br>• Hafalkan bunyi setiap kata dengan benar"
+            ? "🔴 <strong>Kesesuaian teks masih rendah.</strong><br>• Pastikan teks yang muncul SAMA dengan teks asli<br>• Baca pelan dan jelas per kata<br>• Jika teks berbeda → klik Baca Ulang"
             : skorAkhir < 60
-            ? "⚠️ <strong>Perlu Perbaikan Serius.</strong><br>• Perhatikan bunyi huruf dengan teliti<br>• Baca sesuai teks yang diberikan<br>• Latih satu per satu kata yang belum tepat"
+            ? "⚠️ <strong>Perlu Perbaikan.</strong><br>• Perhatikan kata yang ditandai MERAH<br>• Ulangi baca kata tersebut<br>• Baca lebih pelan agar bunyi akurat"
             : skorAkhir < 85
-            ? "⚠️ <strong>Cukup Baik.</strong><br>• Perhatikan bunyi huruf dan panjang Mad<br>• Baca lebih pelan agar bunyi lebih jelas"
-            : "✅ <strong>Sangat Baik!</strong><br>• Pertahankan bacaan yang baik<br>• Lanjutkan ke surat berikutnya"
+            ? "⚠️ <strong>Cukup Baik.</strong><br>• Perhatikan bunyi huruf yang belum tepat<br>• Baca lebih pelan agar bunyi lebih jelas"
+            : "✅ <strong>Sangat Baik!</strong><br>• Teks sudah sesuai dengan benar<br>• Lanjutkan ke surat berikutnya"
         }`;
 }
 
@@ -392,42 +386,44 @@ function tampilkanHasil() {
 // 🔧 FUNGSI PEMBANDINGAN — DIPERBAIKI
 // ==============================================
 
-// Normalisasi teks yang lebih lengkap
+// ✅ Normalisasi yang lebih lengkap & seragamkan variasi bunyi Arab
 function normalisasiTeksLengkap(teks) {
     if(!teks) return "";
     return teks.toLowerCase()
-        // Hilangkan tanda baca dan harakat Arab
-        .replace(/[ًٌٍَُِّـْ]/g, '')
-        // Seragamkan ejaan bunyi yang mirip
-        .replace(/[']/g, '')
-        .replace(/uu/g, 'u').replace(/ii/g, 'i').replace(/aa/g, 'a')
+        // Hilangkan harakat & tanda baca
+        .replace(/[ًٌٍَُِّـْ']/g, '')
+        // Seragamkan variasi panjang bunyi
+        .replace(/aa/g, 'a').replace(/ii/g, 'i').replace(/uu/g, 'u')
+        .replace(/aai/g, 'ai').replace(/uwa/g, 'wa')
+        // Seragamkan ejaan bunyi
         .replace(/th/g, 't').replace(/dh/g, 'd')
-        .replace(/sh/g, 'sy').replace(/kh/g, 'kha')
-        // Hilangkan karakter khusus
+        .replace(/sh/g, 'sy').replace(/kh/g, 'kha').replace(/gh/g, 'gha')
+        .replace(/q/g, 'k') // Sering terbaca sebagai K
+        .replace(/'/g, '') // Hilangkan tanda hamzah
+        // Bersihkan
         .replace(/[^a-z\s]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 }
 
-// Bandingkan kata per kata
+// ✅ Bandingkan kata per kata — DIPERBAIKI
 function bandingkanPerKata(teksAsli, teksPengguna) {
-    if(!teksPengguna || teksPengguna.length < 5) {
-        return { skor: 0, visual: "<span class='kata-salah'>TIDAK TERDETEKSI</span>" };
+    if(!teksPengguna || teksPengguna.length < 3) {
+        return { skor: 0, cocok:0, totalKata: teksAsli.split(/\s+/).length, visual: "<span class='kata-salah'>TIDAK TERDETEKSI</span>" };
     }
 
     let kataAsli = teksAsli.split(/\s+/);
     let kataPengguna = teksPengguna.split(/\s+/);
-    let cocok = 0, kurang = 0, tambah = 0;
+    let cocok = 0;
     let visual = "";
     let indeksTerpakai = [];
 
-    // Bandingkan setiap kata asli
-    kataAsli.forEach((kataA, idx) => {
+    // Bandingkan setiap kata
+    kataAsli.forEach((kataA) => {
         let ditemukan = false;
-        let kataTerbaik = null;
         let skorTerbaik = 0;
+        let posisiTerbaik = -1;
 
-        // Cari kata yang paling mirip
         for(let j = 0; j < kataPengguna.length; j++) {
             if(indeksTerpakai.includes(j)) continue;
             
@@ -436,39 +432,25 @@ function bandingkanPerKata(teksAsli, teksPengguna) {
 
             if(kesamaan > skorTerbaik) {
                 skorTerbaik = kesamaan;
-                kataTerbaik = j;
+                posisiTerbaik = j;
             }
         }
 
         // Dianggap cocok jika ≥ ambang
-        if(skorTerbaik >= AMBANG_KATA && kataTerbaik !== null) {
+        if(skorTerbaik >= AMBANG_KATA && posisiTerbaik !== -1) {
             cocok++;
-            indeksTerpakai.push(kataTerbaik);
+            indeksTerpakai.push(posisiTerbaik);
             visual += `<span class='kata-benar'>${kataA}</span> `;
         } else {
-            kurang++;
             visual += `<span class='kata-salah'>${kataA}</span> `;
         }
     });
 
-    // Kata tambahan
-    tambah = kataPengguna.length - indeksTerpakai.length;
-    if(tambah > 0) {
-        visual += `<span class='kata-tambah'>(+${tambah})</span>`;
-    }
-
-    // Hitung skor akhir
+    // Hitung skor
     let skor = Math.round((cocok / kataAsli.length) * 100);
     skor = Math.max(0, Math.min(100, skor));
 
-    // Penalti jika terlalu banyak beda
-    let totalKata = Math.max(kataAsli.length, kataPengguna.length);
-    let persenBeda = (kurang + tambah) / totalKata;
-    if(persenBeda > 0.4) {
-        skor = Math.round(skor * 0.7);
-    }
-
-    return { skor, cocok, kurang, tambah, visual };
+    return { skor, cocok, totalKata: kataAsli.length, visual };
 }
 
 // Hitung jarak perbedaan teks
