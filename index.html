@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detektor Tajwid — Dengan Koreksi Siswa</title>
+    <title>Detektor Tajwid — Teks Tidak Hilang & Nilai Benar</title>
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
         body {background:#e8f5e9; padding:20px;}
@@ -50,14 +50,13 @@
         .perbandingan-kata {display:flex; flex-wrap:wrap; gap:4px; margin:8px 0;}
         .kata-benar {background:#c8e6c9; color:#256029; padding:3px 8px; border-radius:4px; font-weight:bold;}
         .kata-salah {background:#ffcdd2; color:#b71c1c; padding:3px 8px; border-radius:4px; text-decoration:line-through;}
-        .kata-tambah {background:#d1c4e9; color:#4527a0; padding:3px 8px; border-radius:4px;}
-        .kata-kurang {background:#ffe0b2; color:#e65100; padding:3px 8px; border-radius:4px;}
         .kotak-debug {background:#f5f5f5; border:1px solid #ddd; padding:10px; border-radius:6px; margin-top:8px; font-size:13px; font-family:monospace;}
+        .label-perhatian {color:#d32f2f; font-size:13px; margin-top:4px;}
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📿 Detektor Tajwid — Dengan Koreksi Siswa</h1>
+    <h1>📿 Detektor Tajwid — Teks TIDAK Hilang</h1>
     <!-- HALAMAN 1: DATA SISWA -->
     <div id="hal1" class="page active">
         <h2>Data Diri Siswa</h2>
@@ -93,10 +92,9 @@
             
             <div class="info-tips">
                 💡 <strong>CARA PENGGUNAAN:</strong><br>
-                🔹 Baca SANGAT PELAN — berhenti sebentar antar kata<br>
-                🔹 Setelah selesai → periksa teks yang muncul di bawah<br>
-                🔹 Jika AI salah tulis → perbaiki sendiri di kotak koreksi<br>
-                🔹 Jika teks sudah benar → klik "Lihat Hasil"
+                🔹 Baca PELAN dan JELAS — teks muncul LANGSUNG saat Anda baca<br>
+                🔹 Teks yang terlihat = yang AKAN DIPAKAI untuk nilai<br>
+                🔹 Setelah selesai → teks TIDAK AKAN HILANG → periksa & klik Lihat Hasil
             </div>
 
             <button class="btn-biru" id="btnRekam" onclick="mulaiRekam()">🎙️ Mulai Baca</button>
@@ -105,14 +103,15 @@
             
             <div id="status" class="status" style="display:none;"></div>
             <div id="kotakTeksTerbaca" class="teks-terbaca" style="display:none;">
-                <strong>📝 Teks yang Terdeteksi AI:</strong><br>
+                <strong>📝 Teks yang Terdeteksi AI (TIDAK AKAN HILANG):</strong><br>
                 <span id="teksTerbaca"></span>
+                <div class="label-perhatian">✅ Teks di atas sudah tersimpan dan akan dipakai untuk menilai</div>
             </div>
 
             <!-- ✏️ KOTAK KOREKSI SISWA -->
             <div id="kotakKoreksi" class="koreksi-box" style="display:none;">
-                <strong>✏️ KOREKSI BACAAN OLEH SISWA:</strong><br>
-                AI mungkin salah mendeteksi! Periksa dan perbaiki teks agar sesuai bacaan Anda:<br>
+                <strong>✏️ KOREKSI BACAAN OLEH SISWA (JIKA PERLU):</strong><br>
+                Jika teks di atas kurang tepat, silakan perbaiki di bawah:<br>
                 <textarea id="teksKoreksi" placeholder="Salin dan perbaiki teks di sini..."></textarea>
                 <button class="btn-oranye" onclick="terapkanKoreksi()">✅ Gunakan Teks yang Sudah Diperbaiki</button>
             </div>
@@ -139,8 +138,7 @@ let namaSiswa = "";
 let kelasSiswa = "";
 let pilihSurat = "";
 let pengenalUcapan = null;
-let teksDariSuara = "";
-let teksAsliDariAI = ""; // Simpan teks mentah dari AI
+let teksDariSuara = "";      // ✅ Teks yang TERLIHAT saat membaca = yang dipakai!
 let waktuMulai = 0, waktuSelesai = 0;
 let sedangMembaca = false;
 
@@ -214,7 +212,7 @@ function tampilkanSurat() {
 }
 
 // ==============================================
-// 🎙️ PENDETEKSIAN SUARA
+// 🎙️ PENDETEKSIAN SUARA — DIPERBAIKI: Teks TIDAK hilang!
 // ==============================================
 function mulaiRekam() {
     if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -225,36 +223,33 @@ function mulaiRekam() {
     pengenalUcapan = new SR();
     pengenalUcapan.lang = "ar-SA";
     pengenalUcapan.continuous = true;
-    pengenalUcapan.interimResults = true;
-    pengenalUcapan.maxAlternatives = 3;
+    pengenalUcapan.interimResults = true; // Tampilkan teks sementara
 
     teksDariSuara = "";
-    teksAsliDariAI = "";
     sedangMembaca = true;
     waktuMulai = Date.now();
 
     pengenalUcapan.onstart = function() {
         document.getElementById('status').style.display = "block";
         document.getElementById('status').className = "status sedang";
-        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca PELAN dan JELAS.";
+        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca PELAN dan JELAS. Teks akan muncul dan TIDAK akan hilang!";
     };
 
+    // ✅ INI YANG DIPERBAIKI: SELALU SIMPAN teks yang terlihat, bukan hanya teks final!
     pengenalUcapan.onresult = function(e) {
-        let hasilAkhir = "";
-        let hasilSementara = "";
+        let teksSementara = "";
+        let teksFinalSaja = "";
         
         for(let i = e.resultIndex; i < e.results.length; i++) {
-            hasilSementara += e.results[i][0].transcript + " ";
-            if(e.results[i].isFinal) {
-                hasilAkhir += e.results[i][0].transcript + " ";
-            }
+            let potongan = e.results[i][0].transcript;
+            teksSementara += potongan + " ";
+            
+            // ✅ SELALU PERBARUI teks utama dari yang terlihat — INI KUNCINYA!
+            teksDariSuara = teksSementara.trim(); // Selalu simpan apa yang terlihat!
         }
         
-        if(hasilAkhir) {
-            teksDariSuara = hasilAkhir;
-            teksAsliDariAI = hasilAkhir;
-        }
-        document.getElementById('teksTerbaca').textContent = hasilSementara || teksDariSuara;
+        // Tampilkan apa yang tersimpan
+        document.getElementById('teksTerbaca').textContent = teksDariSuara;
         document.getElementById('kotakTeksTerbaca').style.display = "block";
     };
 
@@ -289,7 +284,7 @@ function hentikanRekam() {
     waktuSelesai = Date.now();
     if(pengenalUcapan) pengenalUcapan.stop();
     
-    // Tampilkan kotak koreksi dan isi teks dari AI
+    // ✅ Teks yang tersimpan TETAP ADA — tidak hilang!
     document.getElementById('teksKoreksi').value = teksDariSuara || "";
     document.getElementById('kotakKoreksi').style.display = "block";
     
@@ -299,12 +294,11 @@ function hentikanRekam() {
     
     let dtk = Math.round((waktuSelesai - waktuMulai)/1000);
     document.getElementById('status').className = "status";
-    document.getElementById('status').innerHTML = "✅ <strong>Selesai!</strong> Durasi: " + dtk + " detik<br>Periksa teks AI → perbaiki jika salah → lalu klik Lihat Hasil.";
+    document.getElementById('status').innerHTML = "✅ <strong>Selesai!</strong> Teks TETAP TERSIMPAN di atas.<br>Periksa teks → perbaiki jika perlu → lalu klik Lihat Hasil.";
 }
 
 function ulangBaca() {
     teksDariSuara = "";
-    teksAsliDariAI = "";
     document.getElementById('teksTerbaca').textContent = "";
     document.getElementById('kotakKoreksi').style.display = "none";
     document.getElementById('btnUlangBaca').style.display = "none";
@@ -334,9 +328,17 @@ function tampilkanHasil() {
     let surat = dataSurat[pilihSurat];
     let durasiDetik = Math.round((waktuSelesai - waktuMulai)/1000);
     
+    // Pastikan teks tidak kosong
+    if(!teksDariSuara || teksDariSuara.length < 3) {
+        alert("⚠️ Teks bacaan belum tersimpan! Silakan baca ulang dengan lebih jelas.");
+        document.getElementById('hal3').classList.remove('active');
+        document.getElementById('hal2').classList.add('active');
+        return;
+    }
+    
     // Normalisasi teks
     let teksBenar = normalisasiTeksLengkap(surat.teksLatin.join(" "));
-    let teksPengguna = normalisasiTeksLengkap(teksDariSuara || "");
+    let teksPengguna = normalisasiTeksLengkap(teksDariSuara);
 
     // Bandingkan
     let hasilBanding = bandingkanPerKata(teksBenar, teksPengguna);
@@ -345,7 +347,6 @@ function tampilkanHasil() {
     // Aturan penilaian
     let skorAkhir = 0;
     let keteranganNilai = "";
-    let sumberTeks = teksAsliDariAI === teksDariSuara ? "Dari AI" : "✅ Sudah dikoreksi siswa";
 
     if(skorKesamaan < AMBANG_NOL) {
         skorAkhir = 0;
@@ -372,14 +373,13 @@ function tampilkanHasil() {
             <h3 style='margin:0;'>Hasil Membaca Surat ${pilihSurat}</h3>
             <p>Nama: <strong>${namaSiswa}</strong> | Kelas: <strong>${kelasSiswa}</strong> | Tanggal: ${new Date().toLocaleDateString('id-ID')}</p>
             <p>⏱️ Durasi: ${durasiDetik} detik | Standar: ${surat.durasiMin}–${surat.durasiMaks} dtk</p>
-            <p>📄 Sumber Teks: <strong>${sumberTeks}</strong></p>
         </div>`;
 
     document.getElementById('infoPerbandingan').innerHTML = `
         <div style='background:${skorAkhir===0?"#ffebee":"#fff8e1"}; padding:15px; border-radius:8px; margin-bottom:10px;'>
             <h4>📝 Perbandingan Bacaan:</h4>
             <p><strong>Teks Benar:</strong><br><code>${teksBenar}</code></p>
-            <p><strong>Teks Anda:</strong><br><code>${teksPengguna || "(tidak terdeteksi)"}</code></p>
+            <p><strong>Teks Anda (yang dipakai untuk nilai):</strong><br><code>${teksPengguna}</code></p>
             <p><strong>Tingkat Kesesuaian Lafal:</strong> <span style='font-size:22px; font-weight:bold; color:${skorKesamaan>=AMBANG_BAIK?"#2e7d32":skorKesamaan>=AMBANG_CUKUP?"#ef6c00":"#c62828"};'>${skorKesamaan}%</span></p>
             <p style='margin-top:8px; font-weight:bold;'>${keteranganNilai}</p>
             <p><strong>Analisis per Kata:</strong></p>
@@ -401,9 +401,9 @@ function tampilkanHasil() {
     document.getElementById('kotakRekom').innerHTML = `
         <strong>📖 Rekomendasi Latihan:</strong><br><br>
         ${skorAkhir===0
-            ? "🔴 <strong>Kesesuaian teks masih rendah.</strong><br>• Periksa dan perbaiki teks di kotak koreksi<br>• Baca pelan dan jelas per kata<br>• Baca ulang jika AI tidak menangkap dengan benar"
+            ? "🔴 <strong>Kesesuaian teks masih rendah.</strong><br>• Periksa teks di kotak hasil — apakah sesuai bacaan Anda?<br>• Jika tidak sesuai → perbaiki di kotak koreksi<br>• Baca lebih pelan dan jelas per kata"
             : skorAkhir < 60
-            ? "⚠️ <strong>Perlu Perbaikan.</strong><br>• Perhatikan kata yang ditandai MERAH<br>• Koreksi teks agar sesuai dengan asli<br>• Baca lebih pelan agar bunyi akurat"
+            ? "⚠️ <strong>Perlu Perbaikan.</strong><br>• Perhatikan kata yang ditandai MERAH<br>• Koreksi teks agar sesuai dengan asli"
             : skorAkhir < 85
             ? "⚠️ <strong>Cukup Baik.</strong><br>• Perhatikan bunyi huruf yang belum tepat<br>• Baca lebih pelan agar bunyi lebih jelas"
             : "✅ <strong>Sangat Baik!</strong><br>• Teks sudah sesuai dengan benar<br>• Lanjutkan ke surat berikutnya"
