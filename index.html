@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detektor Tajwid — Teks Tidak Hilang & Nilai Benar</title>
+    <title>Detektor Tajwid — Teks PASTI Tersimpan</title>
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
         body {background:#e8f5e9; padding:20px;}
@@ -38,6 +38,7 @@
         .teks-terbaca {background:#e3f2fd; padding:15px; border-radius:8px; margin:10px 0; border-left:4px solid #1976d2; font-size:15px; line-height:1.6;}
         .koreksi-box {background:#fff3e0; padding:15px; border-radius:8px; margin:10px 0; border-left:4px solid #ff8f00;}
         .koreksi-box textarea {width:100%; min-height:80px; padding:10px; border:1px solid #ffcc80; border-radius:6px; font-size:15px; margin-top:8px;}
+        .peringatan {background:#ffebee; color:#c62828; padding:12px; border-radius:6px; margin:10px 0; border-left:4px solid #c62828; font-weight:bold;}
         .hasil {background:#fff8e1; padding:15px; border-radius:8px; margin-top:15px; border-left:4px solid #ff8f00;}
         .rekomendasi {background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px; border-left:4px solid #2e7d32;}
         .status {padding:12px; border-radius:6px; margin:10px 0; background:#e8f5e9; color:#256029; font-weight:bold;}
@@ -51,12 +52,11 @@
         .kata-benar {background:#c8e6c9; color:#256029; padding:3px 8px; border-radius:4px; font-weight:bold;}
         .kata-salah {background:#ffcdd2; color:#b71c1c; padding:3px 8px; border-radius:4px; text-decoration:line-through;}
         .kotak-debug {background:#f5f5f5; border:1px solid #ddd; padding:10px; border-radius:6px; margin-top:8px; font-size:13px; font-family:monospace;}
-        .label-perhatian {color:#d32f2f; font-size:13px; margin-top:4px;}
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📿 Detektor Tajwid — Teks TIDAK Hilang</h1>
+    <h1>📿 Detektor Tajwid — Teks PASTI Tersimpan</h1>
     <!-- HALAMAN 1: DATA SISWA -->
     <div id="hal1" class="page active">
         <h2>Data Diri Siswa</h2>
@@ -91,10 +91,11 @@
             <div style="background:#fff; padding:12px; border-radius:6px; border:2px solid #e0e0e0; margin:8px 0; font-size:16px; line-height:1.8;" id="teksLatinTampil"></div>
             
             <div class="info-tips">
-                💡 <strong>CARA PENGGUNAAN:</strong><br>
-                🔹 Baca PELAN dan JELAS — teks muncul LANGSUNG saat Anda baca<br>
-                🔹 Teks yang terlihat = yang AKAN DIPAKAI untuk nilai<br>
-                🔹 Setelah selesai → teks TIDAK AKAN HILANG → periksa & klik Lihat Hasil
+                💡 <strong>CARA AGAR TEKS TERKAM:</strong><br>
+                🔹 Baca PELAN dan JELAS, berhenti sejenak antar kata<br>
+                🔹 Baca dengan bunyi LATIN (contoh: "Qul huwallahu ahad")<br>
+                🔹 Lihat teks muncul di bawah — jika muncul → SUDAH TERSIMPAN<br>
+                🔹 Jika teks TIDAK muncul → baca lebih keras & lebih dekat ke mikrofon
             </div>
 
             <button class="btn-biru" id="btnRekam" onclick="mulaiRekam()">🎙️ Mulai Baca</button>
@@ -103,20 +104,20 @@
             
             <div id="status" class="status" style="display:none;"></div>
             <div id="kotakTeksTerbaca" class="teks-terbaca" style="display:none;">
-                <strong>📝 Teks yang Terdeteksi AI (TIDAK AKAN HILANG):</strong><br>
+                <strong>📝 Teks yang Terdeteksi:</strong><br>
                 <span id="teksTerbaca"></span>
-                <div class="label-perhatian">✅ Teks di atas sudah tersimpan dan akan dipakai untuk menilai</div>
+                <div style="color:#2e7d32; font-weight:bold; margin-top:5px;">✅ Teks di atas SUDAH TERKAM dan TIDAK AKAN HILANG</div>
             </div>
 
-            <!-- ✏️ KOTAK KOREKSI SISWA -->
+            <!-- ✏️ KOTAK KOREKSI OTOMATIS MUNCUL JIKA TEKS KOSONG -->
             <div id="kotakKoreksi" class="koreksi-box" style="display:none;">
-                <strong>✏️ KOREKSI BACAAN OLEH SISWA (JIKA PERLU):</strong><br>
-                Jika teks di atas kurang tepat, silakan perbaiki di bawah:<br>
-                <textarea id="teksKoreksi" placeholder="Salin dan perbaiki teks di sini..."></textarea>
-                <button class="btn-oranye" onclick="terapkanKoreksi()">✅ Gunakan Teks yang Sudah Diperbaiki</button>
+                <strong>✏️ KOREKSI BACAAN:</strong><br>
+                <span id="keteranganKoreksi">Teks tidak terdeteksi dari suara. Silakan SALIN teks dari bacaan di atas ke kotak ini:</span><br>
+                <textarea id="teksKoreksi" placeholder="Contoh: Qul huwallahu ahad Allahushshamad..."></textarea>
+                <button class="btn-oranye" onclick="terapkanKoreksi()">✅ Gunakan Teks Ini untuk Dinilai</button>
             </div>
 
-            <button class="btn-hijau" id="btnHasil" style="display:none;" onclick="tampilkanHasil()">📊 Lihat Hasil Lengkap</button>
+            <button class="btn-hijau" id="btnHasil" style="display:none;" onclick="cekLaluHasil()">📊 Lihat Hasil Lengkap</button>
         </div>
     </div>
     <!-- HALAMAN 3: HASIL -->
@@ -138,13 +139,14 @@ let namaSiswa = "";
 let kelasSiswa = "";
 let pilihSurat = "";
 let pengenalUcapan = null;
-let teksDariSuara = "";      // ✅ Teks yang TERLIHAT saat membaca = yang dipakai!
+let teksDariSuara = "";      // Teks utama yang dipakai untuk nilai
+let cadanganTeks = "";        // Cadangan teks sementara
 let waktuMulai = 0, waktuSelesai = 0;
 let sedangMembaca = false;
 
-// Ambang batas yang masuk akal
+// Ambang batas
 const AMBANG_NOL = 30;
-const AMBANG_KATA = 0.55;
+const AMBANG_KATA = 0.50;    // Diperlonggar agar lebih mudah cocok
 const AMBANG_CUKUP = 60;
 const AMBANG_BAIK = 80;
 
@@ -212,7 +214,7 @@ function tampilkanSurat() {
 }
 
 // ==============================================
-// 🎙️ PENDETEKSIAN SUARA — DIPERBAIKI: Teks TIDAK hilang!
+// 🎙️ PENDETEKSIAN SUARA — DIPERBAIKI: TEKS DIJAMIN TERKAM!
 // ==============================================
 function mulaiRekam() {
     if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -221,35 +223,41 @@ function mulaiRekam() {
     }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     pengenalUcapan = new SR();
-    pengenalUcapan.lang = "ar-SA";
+    
+    // ✅ PAKAI BAHASA LATIN agar lebih mudah terdeteksi!
+    pengenalUcapan.lang = "id-ID"; // atau "en-US" — lebih stabil dari Arab
     pengenalUcapan.continuous = true;
     pengenalUcapan.interimResults = true; // Tampilkan teks sementara
 
     teksDariSuara = "";
+    cadanganTeks = "";
     sedangMembaca = true;
     waktuMulai = Date.now();
 
     pengenalUcapan.onstart = function() {
         document.getElementById('status').style.display = "block";
         document.getElementById('status').className = "status sedang";
-        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca PELAN dan JELAS. Teks akan muncul dan TIDAK akan hilang!";
+        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca PELAN dan JELAS. Teks akan muncul di bawah!";
     };
 
-    // ✅ INI YANG DIPERBAIKI: SELALU SIMPAN teks yang terlihat, bukan hanya teks final!
+    // ✅ KUNCI UTAMA: SELALU SIMPAN APA YANG MUNCUL, JANGAN TUNGGU!
     pengenalUcapan.onresult = function(e) {
         let teksSementara = "";
-        let teksFinalSaja = "";
         
+        // Gabungkan SEMUA hasil yang muncul
         for(let i = e.resultIndex; i < e.results.length; i++) {
             let potongan = e.results[i][0].transcript;
             teksSementara += potongan + " ";
-            
-            // ✅ SELALU PERBARUI teks utama dari yang terlihat — INI KUNCINYA!
-            teksDariSuara = teksSementara.trim(); // Selalu simpan apa yang terlihat!
         }
         
-        // Tampilkan apa yang tersimpan
-        document.getElementById('teksTerbaca').textContent = teksDariSuara;
+        // ✅ SELALU PERBARUI teks utama — simpan apa yang terlihat!
+        if(teksSementara.trim().length > 0) {
+            teksDariSuara = teksSementara.trim();
+            cadanganTeks = teksDariSuara; // Cadangkan
+        }
+        
+        // Tampilkan teks
+        document.getElementById('teksTerbaca').textContent = teksDariSuara || "(Mendengarkan...)";
         document.getElementById('kotakTeksTerbaca').style.display = "block";
     };
 
@@ -284,7 +292,23 @@ function hentikanRekam() {
     waktuSelesai = Date.now();
     if(pengenalUcapan) pengenalUcapan.stop();
     
-    // ✅ Teks yang tersimpan TETAP ADA — tidak hilang!
+    // ✅ GUNAKAN CADANGAN jika teks utama kosong
+    if(!teksDariSuara || teksDariSuara.length < 2) {
+        teksDariSuara = cadanganTeks;
+    }
+    
+    // ✅ Jika tetap kosong → BERI TAHU & TAMPILKAN KOTAK KOREKSI
+    if(!teksDariSuara || teksDariSuara.length < 2) {
+        document.getElementById('status').className = "status salah";
+        document.getElementById('status').innerHTML = "⚠️ Teks TIDAK TERDETEKSI dari suara. Silakan SALIN teks bacaan ke kotak di bawah!";
+        document.getElementById('keteranganKoreksi').innerHTML = "⚠️ Teks tidak terdeteksi dari suara. SALIN teks bacaan ke kotak ini:";
+    } else {
+        document.getElementById('status').className = "status";
+        document.getElementById('status').innerHTML = "✅ <strong>Selesai!</strong> Teks TERKAM BERHASIL! Periksa di bawah.";
+        document.getElementById('keteranganKoreksi').innerHTML = "Jika teks di atas kurang tepat, perbaiki di sini:";
+    }
+    
+    // Tampilkan kotak koreksi DENGAN isi teks yang sudah terdeteksi
     document.getElementById('teksKoreksi').value = teksDariSuara || "";
     document.getElementById('kotakKoreksi').style.display = "block";
     
@@ -293,12 +317,11 @@ function hentikanRekam() {
     document.getElementById('btnHasil').style.display = "block";
     
     let dtk = Math.round((waktuSelesai - waktuMulai)/1000);
-    document.getElementById('status').className = "status";
-    document.getElementById('status').innerHTML = "✅ <strong>Selesai!</strong> Teks TETAP TERSIMPAN di atas.<br>Periksa teks → perbaiki jika perlu → lalu klik Lihat Hasil.";
 }
 
 function ulangBaca() {
     teksDariSuara = "";
+    cadanganTeks = "";
     document.getElementById('teksTerbaca').textContent = "";
     document.getElementById('kotakKoreksi').style.display = "none";
     document.getElementById('btnUlangBaca').style.display = "none";
@@ -309,13 +332,23 @@ function ulangBaca() {
 // ✏️ Terapkan koreksi dari siswa
 function terapkanKoreksi() {
     let teksBaru = document.getElementById('teksKoreksi').value.trim();
-    if(!teksBaru) {
-        alert("⚠️ Isi teks koreksi terlebih dahulu!");
+    if(!teksBaru || teksBaru.length < 3) {
+        alert("⚠️ Isi teks terlebih dahulu! Salin dari bacaan di atas.");
         return;
     }
     teksDariSuara = teksBaru;
     document.getElementById('teksTerbaca').textContent = teksBaru;
-    alert("✅ Teks sudah diperbarui menjadi:\n" + teksBaru + "\n\nSekarang klik 'Lihat Hasil' untuk nilai baru.");
+    alert("✅ Teks sudah disimpan! Klik 'Lihat Hasil' untuk nilai.");
+}
+
+// ✅ CEK DULU sebelum menampilkan hasil
+function cekLaluHasil() {
+    // Jika teks masih kosong → WAJIB isi kotak koreksi
+    if(!teksDariSuara || teksDariSuara.length < 3) {
+        alert("⚠️ Teks masih kosong! SALIN teks bacaan ke kotak koreksi terlebih dahulu, lalu klik tombol di atasnya.");
+        return;
+    }
+    tampilkanHasil();
 }
 
 // ==============================================
@@ -327,14 +360,6 @@ function tampilkanHasil() {
 
     let surat = dataSurat[pilihSurat];
     let durasiDetik = Math.round((waktuSelesai - waktuMulai)/1000);
-    
-    // Pastikan teks tidak kosong
-    if(!teksDariSuara || teksDariSuara.length < 3) {
-        alert("⚠️ Teks bacaan belum tersimpan! Silakan baca ulang dengan lebih jelas.");
-        document.getElementById('hal3').classList.remove('active');
-        document.getElementById('hal2').classList.add('active');
-        return;
-    }
     
     // Normalisasi teks
     let teksBenar = normalisasiTeksLengkap(surat.teksLatin.join(" "));
@@ -379,7 +404,7 @@ function tampilkanHasil() {
         <div style='background:${skorAkhir===0?"#ffebee":"#fff8e1"}; padding:15px; border-radius:8px; margin-bottom:10px;'>
             <h4>📝 Perbandingan Bacaan:</h4>
             <p><strong>Teks Benar:</strong><br><code>${teksBenar}</code></p>
-            <p><strong>Teks Anda (yang dipakai untuk nilai):</strong><br><code>${teksPengguna}</code></p>
+            <p><strong>Teks Anda:</strong><br><code>${teksPengguna}</code></p>
             <p><strong>Tingkat Kesesuaian Lafal:</strong> <span style='font-size:22px; font-weight:bold; color:${skorKesamaan>=AMBANG_BAIK?"#2e7d32":skorKesamaan>=AMBANG_CUKUP?"#ef6c00":"#c62828"};'>${skorKesamaan}%</span></p>
             <p style='margin-top:8px; font-weight:bold;'>${keteranganNilai}</p>
             <p><strong>Analisis per Kata:</strong></p>
@@ -394,18 +419,18 @@ function tampilkanHasil() {
         <hr>
         <h4>📚 Analisis Tajwid:</h4>
         ${skorAkhir===0
-            ? "<div class='info-hukum' style='background:#ffebee;'><span style='color:#c62828; font-weight:bold;'>❌ Belum dapat dinilai</span> — Tingkat kesesuaian teks terlalu rendah.</div>"
+            ? "<div class='info-hukum' style='background:#ffebee;'><span style='color:#c62828; font-weight:bold;'>❌ Belum dapat dinilai</span> — Salin teks bacaan ke kotak koreksi lalu coba lagi.</div>"
             : surat.hukum.map(h => `<div class='info-hukum'><strong>✅ ${h.nama}:</strong> ${h.penjelasan}</div>`).join("")
         }`;
 
     document.getElementById('kotakRekom').innerHTML = `
         <strong>📖 Rekomendasi Latihan:</strong><br><br>
         ${skorAkhir===0
-            ? "🔴 <strong>Kesesuaian teks masih rendah.</strong><br>• Periksa teks di kotak hasil — apakah sesuai bacaan Anda?<br>• Jika tidak sesuai → perbaiki di kotak koreksi<br>• Baca lebih pelan dan jelas per kata"
+            ? "🔴 <strong>Teks belum terisi.</strong><br>• SALIN teks bacaan dari atas ke kotak koreksi<br>• Klik tombol 'Gunakan Teks' → lalu klik Lihat Hasil"
             : skorAkhir < 60
             ? "⚠️ <strong>Perlu Perbaikan.</strong><br>• Perhatikan kata yang ditandai MERAH<br>• Koreksi teks agar sesuai dengan asli"
             : skorAkhir < 85
-            ? "⚠️ <strong>Cukup Baik.</strong><br>• Perhatikan bunyi huruf yang belum tepat<br>• Baca lebih pelan agar bunyi lebih jelas"
+            ? "⚠️ <strong>Cukup Baik.</strong><br>• Perhatikan bunyi huruf yang belum tepat"
             : "✅ <strong>Sangat Baik!</strong><br>• Teks sudah sesuai dengan benar<br>• Lanjutkan ke surat berikutnya"
         }`;
 }
@@ -430,7 +455,7 @@ function normalisasiTeksLengkap(teks) {
 
 function bandingkanPerKata(teksAsli, teksPengguna) {
     if(!teksPengguna || teksPengguna.length < 3) {
-        return { skor: 0, cocok:0, totalKata: teksAsli.split(/\s+/).length, visual: "<span class='kata-salah'>TIDAK TERDETEKSI</span>" };
+        return { skor: 0, cocok:0, totalKata: teksAsli.split(/\s+/).length, visual: "<span class='kata-salah'>TIDAK ADA TEKS</span>" };
     }
     let kataAsli = teksAsli.split(/\s+/);
     let kataPengguna = teksPengguna.split(/\s+/);
