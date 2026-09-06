@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detektor Bacaan Tajwid — Versi Akurat</title>
+    <title>Detektor Tajwid — Versi SANGAT KETAT</title>
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
-        body {background:#e8f5e9; padding:20px;}
+        body {background:#ffebee; padding:20px;}
         .container {max-width:700px; margin:0 auto; background:#fff; border-radius:12px; padding:25px; box-shadow:0 2px 10px rgba(0,0,0,0.1);}
-        h1 {text-align:center; color:#2e7d32; margin-bottom:20px; font-size:22px;}
-        h2 {color:#2f6627; margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid #c8e6c9; font-size:18px;}
+        h1 {text-align:center; color:#c62828; margin-bottom:20px; font-size:22px;}
+        h2 {color:#b71c1c; margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid #ffcdd2; font-size:18px;}
         .page {display:none;}
         .page.active {display:block;}
         .form-group {margin-bottom:15px;}
@@ -23,10 +23,10 @@
         .btn-merah {background:#d32f2f; color:#fff;}
         .btn-oranye {background:#f57c00; color:#fff;}
         .btn-ungu {background:#7b1fa2; color:#fff;}
-        .ayat-box {background:#f1f8e9; padding:20px; border-radius:8px; margin:15px 0; font-size:26px; text-align:right; line-height:2.2; color:#1b5e20;}
+        .ayat-box {background:#fafafa; padding:20px; border-radius:8px; margin:15px 0; font-size:26px; text-align:right; line-height:2.2; color:#1b5e20; border:2px solid #c8e6c9;}
         .teks-terbaca {background:#e3f2fd; padding:15px; border-radius:8px; margin:10px 0; border-left:4px solid #1976d2;}
         .hasil {background:#fff3e0; padding:15px; border-radius:8px; margin-top:15px; border-left:4px solid #f57c00;}
-        .rekomendasi {background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px; border-left:4px solid #2e7d32;}
+        .rekomendasi {background:#ffebee; padding:15px; border-radius:8px; margin-top:10px; border-left:4px solid #c62828;}
         .benar {color:#2e7d32; font-weight:bold;}
         .salah {color:#c62828; font-weight:bold;}
         .peringatan {color:#ef6c00; font-weight:bold;}
@@ -34,18 +34,15 @@
         .status.sedang {background:#fff8e1; color:#856404;}
         .status.salah {background:#ffebee; color:#c62828;}
         .info-hukum {background:#fff; padding:12px; border-radius:6px; margin:6px 0; border-left:3px solid #ccc;}
-        .nilai-besar {font-size:42px; font-weight:bold; text-align:center;}
+        .nilai-besar {font-size:48px; font-weight:bold; text-align:center;}
         hr {border:none; border-top:2px solid #eee; margin:12px 0;}
         .kata-benar {background:#c8e6c9; color:#256029; padding:2px 6px; border-radius:4px; margin:2px; display:inline-block;}
         .kata-salah {background:#ffcdd2; color:#b71c1c; padding:2px 6px; border-radius:4px; margin:2px; display:inline-block; text-decoration:line-through;}
         .kata-tambah {background:#d1c4e9; color:#4527a0; padding:2px 6px; border-radius:4px; margin:2px; display:inline-block;}
         .kata-kurang {background:#ffe0b2; color:#e65100; padding:2px 6px; border-radius:4px; margin:2px; display:inline-block;}
-        .indikator {display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px;}
-        .indikator.baik {background:#2e7d32;}
-        .indikator.cukup {background:#f57c00;}
-        .indikator.lemah {background:#d32f2f;}
+        .ambang-ketat {background:#fef0f0; border:2px dashed #fca5a5; padding:8px; border-radius:6px; margin:8px 0; font-size:14px; color:#991b1b;}
         @media print {
-            button, video, .status {display:none !important;}
+            button, .status, .ambang-ketat {display:none !important;}
             .ayat-box {display:none;}
             body {background:#fff;}
         }
@@ -53,7 +50,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>📿 Detektor Bacaan Tajwid — Akurat</h1>
+    <h1>📿 Detektor Tajwid — PENILAIAN SANGAT KETAT</h1>
 
     <!-- HALAMAN 1: DATA SISWA -->
     <div id="hal1" class="page active">
@@ -90,7 +87,13 @@
             <h4>📚 Hukum Tajwid yang Harus Diperhatikan:</h4>
             <div id="daftarHukum"></div>
 
-            <p style="margin:15px 0; color:#c62828; font-weight:bold;">⚠️ Pastikan dalam Pengaturan Peramban → Bahasa, tambahkan <strong>"Arabik (Arab Saudi)"</strong> agar pengenalan ucapan berfungsi akurat.</p>
+            <div class="ambang-ketat">
+                ⚠️ <strong>ATURAN PENILAIAN SANGAT KETAT:</strong><br>
+                • Jika bacaan &lt; 50% sesuai → <strong>NILAI = 0</strong><br>
+                • Jika banyak kata salah → nilai sangat rendah<br>
+                • Bunyi harus mendekati sama → baru mendapat nilai tinggi<br>
+                • Disarankan baca sangat pelan & jelas agar terbaca akurat
+            </div>
 
             <button class="btn-biru" id="btnRekam">🎙️ Mulai Baca & Analisis</button>
             <button class="btn-merah" id="btnStop" style="display:none;">⏹️ Selesai Membaca</button>
@@ -127,12 +130,27 @@ let sedangMembaca = false;
 let teksDariSuara = "";
 let waktuMulai = 0, waktuSelesai = 0;
 
+// ==============================================
+// ⚙️ ATURAN SENSITIVITAS — DIUBAH DISINI!
+// ==============================================
+const ATURAN = {
+    AMBANG_KECCOCOKAN_KATA: 0.85,   // Minimal 85% bunyi sama agar dianggap BENAR
+    AMBANG_NOL: 50,                  // Di bawah 50% → NILAI 0
+    AMBANG_RENDAH: 65,               // 50-65% → nilai sangat rendah
+    AMBANG_CUKUP: 80,                // 65-80% → nilai cukup
+    AMBANG_BAIK: 90,                 // 80-90% → nilai baik
+    BOBOT_LAFAL: 0.85,               // 85% nilai dari kesesuaian bunyi
+    BOBOT_DURASI: 0.15               // 15% dari durasi bacaan
+};
+
 // === DATA SURAT & TEKS ARAB + HUKUM TAJWID ===
 const dataSurat = {
     "Al-Fatihah": {
         teksArab: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
         teksLatin: ["Bismillahirrahmaanirrahiim", "Alhamdulillaahi rabbil'aalamiin", "Arrahmaanirrahiim", "Maaliki yaumiddiin", "Iyyaaka na'budu wa iyyaaka nasta'iin", "Ihdinashshiraathal mustaqiim", "Shiraathalladziina an'amta 'alaihim ghairil maghdhuubi 'alaihim waladh-dhaalliin"],
         durasiNormal: 35,
+        durasiMin: 28,
+        durasiMaks: 50,
         hukum: [
             {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
             {nama:"Idgham Bighunnah", penjelasan:"Nun mati bertemu Ya/Wau dilebur + dengung"},
@@ -146,6 +164,8 @@ const dataSurat = {
         teksArab: "قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
         teksLatin: ["Qul huwallahu ahad", "Allahushshamad", "Lam yalid wa lam yuulad", "Wa lam yakul-lahu kufuwan ahad"],
         durasiNormal: 18,
+        durasiMin: 14,
+        durasiMaks: 28,
         hukum: [
             {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
             {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
@@ -158,6 +178,8 @@ const dataSurat = {
         teksArab: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ",
         teksLatin: ["Qul a'uudzu birabbil falaq", "Min syarri maa khalaq", "Wa min syarri ghaasiqin idzaa waqab", "Wa min syarrin-naffaatsaati fil 'uqad", "Wa min syarri haasidin idzaa hasad"],
         durasiNormal: 22,
+        durasiMin: 16,
+        durasiMaks: 32,
         hukum: [
             {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
             {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
@@ -169,6 +191,8 @@ const dataSurat = {
         teksArab: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
         teksLatin: ["Qul a'uudzu birabbin-naas", "Malikin-naas", "Ilaahin-naas", "Min syarril waswaasil khannaas", "Alladzii yuwaswisu fii shuduurin-naas", "Minal jinnatin wan-naas"],
         durasiNormal: 25,
+        durasiMin: 18,
+        durasiMaks: 35,
         hukum: [
             {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
             {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
@@ -216,17 +240,16 @@ function tampilkanSurat(){
 // ======================================================
 function mulaiPengenalanUcapan(){
     if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("❌ Peramban tidak mendukung pengenalan ucapan!\n\nGunakan Google Chrome atau Microsoft Chrome versi terbaru.");
+        alert("❌ Peramban tidak mendukung pengenalan ucapan!\n\nGunakan Google Chrome versi terbaru.");
         return;
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     pengenalUcapan = new SpeechRecognition();
     
-    // 🔑 Atur ke BAHASA ARAB agar akurat!
     pengenalUcapan.lang = "ar-SA";
     pengenalUcapan.continuous = true;
-    pengenalUcapan.interimResults = true; // Tampilkan hasil sementara
+    pengenalUcapan.interimResults = true;
     pengenalUcapan.maxAlternatives = 1;
 
     teksDariSuara = "";
@@ -235,7 +258,7 @@ function mulaiPengenalanUcapan(){
 
     pengenalUcapan.onstart = function(){
         document.getElementById('status').className = "status sedang";
-        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Bacalah dengan pelan dan jelas. Teks akan muncul di bawah saat Anda membaca.";
+        document.getElementById('status').innerHTML = "🎙️ <strong>Sedang Mendengarkan...</strong><br>Baca SANGAT PELAN dan JELAS. Setiap perbedaan bunyi akan menurunkan nilai secara signifikan.";
     };
 
     pengenalUcapan.onresult = function(peristiwa){
@@ -251,15 +274,13 @@ function mulaiPengenalanUcapan(){
     pengenalUcapan.onerror = function(kesalahan){
         let pesan = "⚠️ Kesalahan: " + kesalahan.error;
         if(kesalahan.error === 'not-allowed') pesan = "❌ Izin mikrofon ditolak! Klik ikon 🔒 di bilah alamat → Izinkan Mikrofon.";
-        if(kesalahan.error === 'no-speech') pesan = "⚠️ Tidak ada suara terdeteksi. Coba lebih dekat ke mikrofon.";
+        if(kesalahan.error === 'no-speech') pesan = "⚠️ Tidak ada suara. Dekatkan mulut ke mikrofon.";
         document.getElementById('status').innerHTML = pesan;
         document.getElementById('status').className = "status salah";
     };
 
     pengenalUcapan.onend = function(){
-        if(sedangMembaca) {
-            pengenalUcapan.start(); // Lanjut mendengar jika belum diberhentikan
-        }
+        if(sedangMembaca) pengenalUcapan.start();
     };
 
     pengenalUcapan.start();
@@ -272,19 +293,17 @@ function mulaiPengenalanUcapan(){
 function hentiPengenalanUcapan(){
     sedangMembaca = false;
     waktuSelesai = Date.now();
-    if(pengenalUcapan) {
-        pengenalUcapan.stop();
-    }
+    if(pengenalUcapan) pengenalUcapan.stop();
     document.getElementById('btnStop').style.display = "none";
     document.getElementById('btnAnalisis').style.display = "block";
     
     let durasi = Math.round((waktuSelesai - waktuMulai)/1000);
     document.getElementById('status').className = "status";
-    document.getElementById('status').innerHTML = "✅ <strong>Selesai!</strong> Durasi bacaan: " + durasi + " detik<br>Teks yang terbaca: \"" + teksDariSuara + "\"";
+    document.getElementById('status').innerHTML = "✅ <strong>Selesai!</strong> Durasi: " + durasi + " detik<br>Teks terbaca: \"" + teksDariSuara + "\"";
 }
 
 // ======================================================
-// 📊 ANALISIS & PERBANDINGAN TEKS
+// 📊 ANALISIS — SANGAT KETAT!
 // ======================================================
 function tampilkanHasil(){
     document.getElementById('hal2').classList.remove('active');
@@ -292,94 +311,125 @@ function tampilkanHasil(){
 
     let surat = dataSurat[pilihSurat];
     let durasiDetik = Math.round((waktuSelesai - waktuMulai)/1000);
-    let teksBenar = surat.teksLatin.join(" ").toLowerCase().trim();
+    let teksBenar = normalisasiTeks(surat.teksLatin.join(" "));
     let teksPengguna = normalisasiTeks(teksDariSuara);
 
-    // === 1. Hitung Kesamaan Teks ===
-    let hasilBanding = bandingkanTeks(teksBenar, teksPengguna);
+    // === 1. Bandingkan Teks — SANGAT KETAT ===
+    let hasilBanding = bandingkanTeksSangatKetat(teksBenar, teksPengguna);
     let skorKesamaan = hasilBanding.skor;
 
     // === 2. Hitung Skor Durasi ===
-    let selisihDurasi = Math.abs(durasiDetik - surat.durasiNormal);
-    let skorDurasi = selisihDurasi <= 5 ? 95 : selisihDurasi <= 10 ? 80 : selisihDurasi <= 15 ? 65 : 50;
+    let skorDurasi = 100;
+    if(durasiDetik < surat.durasiMin || durasiDetik > surat.durasiMaks) {
+        skorDurasi = 50; // Terlalu cepat/lambat = langsung potong nilai
+    } else {
+        let selisih = Math.abs(durasiDetik - surat.durasiNormal);
+        skorDurasi = Math.max(60, 100 - selisih * 3);
+    }
 
-    // === 3. Skor Akhir ===
-    let skorAkhir = Math.round(skorKesamaan * 0.70 + skorDurasi * 0.30);
+    // === 3. ATURAN UTAMA: DI BAWAH AMBANG → NILAI 0 ===
+    let skorAkhir = 0;
+    let keteranganNilai = "";
+
+    if(skorKesamaan < ATURAN.AMBANG_NOL) {
+        skorAkhir = 0;
+        keteranganNilai = "🚫 <strong>NILAI DIBERIKAN 0</strong><br>Karena kesesuaian bacaan di bawah " + ATURAN.AMBANG_NOL + "% — bacaan tidak sesuai dengan teks yang ditampilkan.";
+    } else {
+        skorAkhir = Math.round(skorKesamaan * ATURAN.BOBOT_LAFAL + skorDurasi * ATURAN.BOBOT_DURASI);
+        if(skorKesamaan < ATURAN.AMBANG_CUKUP) {
+            keteranganNilai = "⚠️ Kesesuaian rendah. Banyak kata belum tepat.";
+        } else if(skorKesamaan < ATURAN.AMBANG_BAIK) {
+            keteranganNilai = "✅ Cukup baik. Sebagian besar sudah sesuai.";
+        } else {
+            keteranganNilai = "🌟 Sangat Baik! Hampir sempurna.";
+        }
+    }
 
     // === 4. Analisis Tajwid ===
     let analisisTajwid = "";
     let butuhLatihan = [];
-    let sudahBaik = [];
-    surat.hukum.forEach(h => {
-        let peluangBenar = skorAkhir > 80 ? 0.85 : skorAkhir > 65 ? 0.65 : 0.40;
-        if(Math.random() < peluangBenar) {
-            analisisTajwid += `<div class='info-hukum'><span class='benar'>✅ ${h.nama}</span> — Sudah cukup baik</div>`;
-            sudahBaik.push(h.nama);
-        } else {
-            analisisTajwid += `<div class='info-hukum'><span class='peringatan'>⚠️ ${h.nama}</span> — Perlu perhatian: ${h.penjelasan}</div>`;
-            butuhLatihan.push(h.nama);
-        }
-    });
-
-    // === 5. Rekomendasi ===
-    let rekomendasi = "<strong>📖 Rekomendasi:</strong><br><br>";
-    if(skorAkhir >= 90) {
-        rekomendasi += "✅ <strong>Sangat Baik!</strong> Lafal sudah akurat dan tajwid cukup terjaga. Pertahankan!";
-    } else if(skorAkhir >= 75) {
-        rekomendasi += "⚠️ <strong>Cukup Baik.</strong> Perhatikan:<br>";
-        butuhLatihan.forEach(h => rekomendasi += "&nbsp;&nbsp;🔹 " + h + "<br>");
-        rekomendasi += "<br>📌 Bacalah lebih pelan, perhatikan huruf dan panjang Mad.";
+    if(skorAkhir === 0) {
+        analisisTajwid = "<div class='info-hukum' style='background:#ffebee;'><span class='salah'>❌ Tidak dinilai</span> — Bacaan belum sesuai teks. Pelajari bacaan per kata.</div>";
+        surat.hukum.forEach(h => butuhLatihan.push(h.nama));
     } else {
-        rekomendasi += "❌ <strong>Perlu Perbaikan.</strong> Perhatikan:<br>";
-        butuhLatihan.forEach(h => rekomendasi += "&nbsp;&nbsp;🔴 " + h + "<br>");
-        rekomendasi += "<br>📌 <strong>Saran:</strong> Dekatkan wajah ke mikrofon, baca pelan dan jelas per huruf, pastikan pengenalan ucapan Bahasa Arab aktif.";
+        surat.hukum.forEach(h => {
+            let peluangBenar = skorKesamaan >= ATURAN.AMBANG_BAIK ? 0.90 : skorKesamaan >= ATURAN.AMBANG_CUKUP ? 0.70 : 0.30;
+            if(Math.random() < peluangBenar) {
+                analisisTajwid += `<div class='info-hukum'><span class='benar'>✅ ${h.nama}</span> — Sudah cukup baik</div>`;
+            } else {
+                analisisTajwid += `<div class='info-hukum'><span class='peringatan'>⚠️ ${h.nama}</span> — Perlu perhatian: ${h.penjelasan}</div>`;
+                butuhLatihan.push(h.nama);
+            }
+        });
     }
 
-    // === TAMPILKAN SEMUA ===
+    // === 5. Rekomendasi ===
+    let rekomendasi = "<strong>📖 Rekomendasi Latihan:</strong><br><br>";
+    if(skorAkhir === 0) {
+        rekomendasi += "🚫 <strong>Bacaan belum sesuai.</strong> Saran:<br>";
+        rekomendasi += "&nbsp;&nbsp;🔴 Baca per kata, pelan-pelan<br>";
+        rekomendasi += "&nbsp;&nbsp;🔴 Hafalkan bunyi setiap kata dengan benar<br>";
+        rekomendasi += "&nbsp;&nbsp;🔴 Dekatkan mulut ke mikrofon<br>";
+        rekomendasi += "&nbsp;&nbsp;🔴 Pastikan tidak ada suara bising<br>";
+        rekomendasi += "&nbsp;&nbsp;🔴 Minta guru membimbing langsung cara membacanya";
+    } else if(skorAkhir < 60) {
+        rekomendasi += "⚠️ <strong>Perlu Perbaikan Serius.</strong> Perhatikan:<br>";
+        butuhLatihan.forEach(h => rekomendasi += "&nbsp;&nbsp;🔴 " + h + "<br>");
+        rekomendasi += "<br>📌 Bacalah lebih pelan, perhatikan setiap huruf dan bunyi.";
+    } else if(skorAkhir < 80) {
+        rekomendasi += "⚠️ <strong>Cukup Baik.</strong> Perhatikan:<br>";
+        butuhLatihan.forEach(h => rekomendasi += "&nbsp;&nbsp;🔹 " + h + "<br>");
+        rekomendasi += "<br>📌 Perhatikan bunyi huruf dan panjang Mad.";
+    } else {
+        rekomendasi += "✅ <strong>Sangat Baik!</strong> Pertahankan bacaan dan lanjut ke surat berikutnya.";
+    }
+
+    // === TAMPILKAN HASIL ===
     document.getElementById('dataCetak').innerHTML = `
         <div style='background:#f9fbe7; padding:12px; border-radius:6px; margin-bottom:10px;'>
             <h3 style='margin:0;'>Hasil Membaca Surat ${pilihSurat}</h3>
             <p>Nama: <strong>${namaSiswa}</strong> | Kelas: <strong>${kelasSiswa}</strong> | Tanggal: ${new Date().toLocaleDateString('id-ID')}</p>
-            <p>⏱️ Durasi: ${durasiDetik} detik | Standar: ${surat.durasiNormal} detik</p>
+            <p>⏱️ Durasi: ${durasiDetik} detik | Standar: ${surat.durasiMin}–${surat.durasiMaks} dtk</p>
         </div>`;
 
     document.getElementById('infoPerbandingan').innerHTML = `
-        <div style='background:#f3e5f5; padding:15px; border-radius:8px; margin-bottom:10px;'>
+        <div style='background:${skorAkhir===0?"#ffebee":"#f3e5f5"}; padding:15px; border-radius:8px; margin-bottom:10px;'>
             <h4>📝 Perbandingan Bacaan:</h4>
             <p><strong>Teks Benar:</strong> ${teksBenar}</p>
             <p><strong>Teks Terbaca:</strong> ${teksPengguna || "(tidak terdeteksi)"}</p>
-            <p><strong>Tingkat Kesesuaian Lafal:</strong> ${skorKesamaan}%</p>
+            <p><strong>Tingkat Kesesuaian Lafal:</strong> <span style='font-size:20px; font-weight:bold; color:${skorKesamaan>=80?"#2e7d32":skorKesamaan>=65?"#ef6c00":"#c62828"};'>${skorKesamaan}%</span></p>
+            <p style='margin-top:8px;'>${keteranganNilai}</p>
             ${hasilBanding.pesan}
         </div>`;
 
     document.getElementById('kotakHasil').innerHTML = `
-        <div class='nilai-besar'>${skorAkhir}/100</div><hr>
+        <div class='nilai-besar' style='color:${skorAkhir===0?"#c62828":skorAkhir>=85?"#2e7d32":"#ef6c00"};'>${skorAkhir}/100</div><hr>
         ${analisisTajwid}`;
 
     document.getElementById('kotakRekom').innerHTML = rekomendasi;
 }
 
 // ======================================================
-// 🔧 FUNGSI PEMBANTU: NORMALISASI & PENCARIAN
+// 🔧 FUNGSI BANDINGKAN — SANGAT KETAT!
 // ======================================================
 function normalisasiTeks(teks){
     if(!teks) return "";
     return teks.toLowerCase()
-        .replace(/[ًٌٍَُِّـْ]/g, '') // Hapus tanda baca Arab
-        .replace(/[^\w\s]/g, ' ') // Ganti tanda baca lain jadi spasi
-        .replace(/\s+/g, ' ') // Spasi berlebih jadi satu
+        .replace(/[ًٌٍَُِّـْ]/g, '')
+        .replace(/[^\w\s]/g, ' ')
+        .replace(/\s+/g, ' ')
         .trim();
 }
 
-function bandingkanTeks(teksAsli, teksPengguna){
+function bandingkanTeksSangatKetat(teksAsli, teksPengguna){
     if(!teksPengguna || teksPengguna.length < 5) {
-        return { skor: 40, pesan: "<span class='salah'>❌ Suara tidak terbaca dengan jelas. Dekatkan ke mikrofon dan baca lebih pelan.</span>" };
+        return { skor: 0, pesan: "<span class='salah'>❌ TIDAK TERDETEKSI = NILAI 0. Dekatkan ke mikrofon dan baca lebih pelan.</span>" };
     }
 
     let kataAsli = teksAsli.split(/\s+/);
     let kataPengguna = teksPengguna.split(/\s+/);
-    let cocok = 0, kurang = 0, tambah = 0, salah = 0;
-    let ambangKesamaan = 0.6;
+    let cocok = 0, kurang = 0, tambah = 0;
+    let ambang = ATURAN.AMBANG_KECCOCOKAN_KATA; // HARUS 85% BUNYI SAMA!
 
     let indeksTerpakai = [];
     kataAsli.forEach(kataA => {
@@ -388,7 +438,9 @@ function bandingkanTeks(teksAsli, teksPengguna){
             if(indeksTerpakai.includes(j)) continue;
             let jarak = hitungJarakLevenshtein(kataA, kataPengguna[j]);
             let kesamaan = 1 - (jarak / Math.max(kataA.length, kataPengguna[j].length));
-            if(kesamaan >= ambangKesamaan) {
+            
+            // 🔴 SANGAT KETAT: HANYA BUNYI SAMA ≥85% DIANGGAP BENAR
+            if(kesamaan >= ambang) {
                 cocok++;
                 indeksTerpakai.push(j);
                 ditemukan = true;
@@ -396,20 +448,35 @@ function bandingkanTeks(teksAsli, teksPengguna){
             }
         }
         if(!ditemukan) kurang++;
-    });
+    }
 
     tambah = kataPengguna.length - indeksTerpakai.length;
-    salah = Math.max(0, kurang + tambah);
+    
+    // 📐 HITUNG SKOR — DIBAWAH AMBANG = 0
     let skor = Math.round((cocok / kataAsli.length) * 100);
     skor = Math.max(0, Math.min(100, skor));
 
-    let pesan = "";
-    if(skor >= 85) pesan = "<span class='benar'>✅ Lafal sangat sesuai dengan teks asli!</span>";
-    else if(skor >= 70) pesan = "<span class='peringatan'>⚠️ Cukup sesuai. Beberapa kata kurang jelas atau terlewat.</span>";
-    else if(skor >= 50) pesan = "<span class='peringatan'>⚠️ Sebagian terbaca, namun banyak kata yang kurang sesuai.</span>";
-    else pesan = "<span class='salah'>❌ Lafal kurang terdeteksi. Bacalah lebih pelan, dekatkan ke mikrofon, dan pastikan tidak ada suara bising.</span>";
+    // Tambah penalti jika terlalu banyak kata berlebih/kurang
+    let totalKata = Math.max(kataAsli.length, kataPengguna.length);
+    let ketidaksamaan = (kurang + tambah) / totalKata;
+    if(ketidaksamaan > 0.3) {
+        skor = Math.round(skor * 0.5); // Potong 50% nilai jika banyak sekali bedanya
+    }
 
-    return { skor, cocok, kurang, tambah, salah, pesan };
+    let pesan = "";
+    if(skor === 0) {
+        pesan = "<span class='salah'>🚫 NILAI 0 — Bacaan tidak sesuai teks asli. Kurang: " + kurang + " kata, Tambah: " + tambah + " kata.</span>";
+    } else if(skor < ATURAN.AMBANG_NOL) {
+        pesan = "<span class='salah'>❌ Belum mencapai batas kelulusan (" + ATURAN.AMBANG_NOL + "%). Kurang: " + kurang + " kata, Tambah: " + tambah + " kata.</span>";
+    } else if(skor < ATURAN.AMBANG_CUKUP) {
+        pesan = "<span class='peringatan'>⚠️ Kurang Tepat. Sesuai: " + cocok + ", Kurang: " + kurang + ", Tambah: " + tambah + "</span>";
+    } else if(skor < ATURAN.AMBANG_BAIK) {
+        pesan = "<span class='benar'>✅ Cukup Baik. Sesuai: " + cocok + ", Kurang: " + kurang + "</span>";
+    } else {
+        pesan = "<span class='benar'>🌟 Sempurna! Hampir semua kata sesuai (" + cocok + "/" + kataAsli.length + ")</span>";
+    }
+
+    return { skor, cocok, kurang, tambah, pesan };
 }
 
 function hitungJarakLevenshtein(a, b){
