@@ -343,49 +343,17 @@
             border:1px solid #e4ece9;
             box-shadow:0 4px 12px rgba(23,50,77,.04);
         }
+        .info-hukum .contoh-tajwid{display:block;margin-top:6px;color:#476276;font-size:12px;line-height:1.5}
+        .info-hukum .panjang-tajwid{display:inline-flex;align-items:center;margin-left:7px;padding:3px 8px;border-radius:999px;background:#fff0c7;color:#8a5a00;font-size:11px;font-weight:900}
+        .mad-mark{position:relative;display:inline-flex;align-items:flex-start;gap:4px;padding:0 3px;border-radius:7px;background:rgba(242,182,50,.22);box-shadow:0 0 0 1px rgba(166,107,0,.18)}
+        .mad-mark small{font-family:"Segoe UI",Arial,sans-serif;font-size:9px;font-weight:900;color:#8a5a00;direction:ltr;white-space:nowrap;margin-top:-2px}
+        .mad-5{background:rgba(8,121,201,.12);box-shadow:0 0 0 1px rgba(8,121,201,.25)}
+        .mad-5 small{color:#07528f}
+        .tajwid-legend{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px;direction:ltr}
+        .tajwid-legend span{padding:5px 9px;border-radius:999px;background:#f4f8fa;border:1px solid #dce8ee;color:#496274;font:800 11px "Segoe UI",Arial,sans-serif}
+        .tajwid-legend .l5{background:#eef7ff;color:#07528f;border-color:#cfe5f8}
+        .tajwid-legend .l6{background:#fff7dc;color:#8a5a00;border-color:#f0d58b}
 
-        .tajwid-legend{
-            display:grid;
-            grid-template-columns:repeat(3,minmax(0,1fr));
-            gap:8px;
-            margin:10px 0 14px;
-        }
-        .tajwid-legend .legend-item{
-            padding:9px 10px;
-            border-radius:12px;
-            background:#f8fbfa;
-            border:1px solid #e0ebe7;
-            font-size:11px;
-            line-height:1.45;
-            text-align:center;
-        }
-        .tajwid-legend strong{display:block;color:var(--green-dark);font-size:12px}
-        .tajwid-mark{
-            display:inline;
-            border-radius:6px;
-            padding:0 2px;
-            box-decoration-break:clone;
-            -webkit-box-decoration-break:clone;
-        }
-        .tajwid-nun{background:#fff0b8;border-bottom:3px solid #d99a00}
-        .tajwid-mim{background:#e5f5ff;border-bottom:3px solid #1684c7}
-        .tajwid-mad2{background:#eaf8ef;border-bottom:3px solid #15935d}
-        .tajwid-mad45{background:#f0eaff;border-bottom:3px solid #7652c8}
-        .tajwid-mad6{background:#ffe8e8;border-bottom:3px solid #cf4545}
-        .tajwid-key{
-            margin-top:12px;
-            padding:11px 13px;
-            border-radius:13px;
-            background:linear-gradient(135deg,#f7fffb,#f8f5ff);
-            border:1px dashed #cfe2da;
-            font-size:12px;
-            line-height:1.55;
-            color:#526b7b;
-        }
-        .tajwid-key strong{color:var(--green-dark)}
-        @media(max-width:620px){
-            .tajwid-legend{grid-template-columns:1fr}
-        }
 
         .benar{color:#08794b;font-weight:900}
         .salah{color:#c93d3d;font-weight:900}
@@ -754,25 +722,7 @@
             </div>
 
             <h4>📚 Hukum Tajwid yang Harus Diperhatikan:</h4>
-            <div class="tajwid-legend">
-                <div class="legend-item"><strong>2 Harakat</strong>Mad Thabi'i / Mad Asli</div>
-                <div class="legend-item"><strong>4–5 Harakat</strong>Mad Wajib Muttasil / Mad Jaiz Munfasil</div>
-                <div class="legend-item"><strong>6 Harakat</strong>Mad Lazim</div>
-            </div>
             <div id="daftarHukum"></div>
-            <div class="tajwid-key">
-                <strong>📌 Panduan cepat Nun Sukun/Tanwin:</strong>
-                Idgham Bighunnah (ي ن م و) = lebur + dengung ·
-                Idgham Bila Ghunnah (ل ر) = lebur tanpa dengung ·
-                Izhar Halqi (ء ه ع ح غ خ) = jelas ·
-                Iqlab (ب) = berubah menjadi bunyi mim samar ·
-                Ikhfa' = samar + dengung.
-                <br>
-                <strong>👄 Panduan Mim Sukun:</strong>
-                Idgham Mimi/Idgham Mitslain (م) = lebur + dengung ·
-                Ikhfa Syafawi (ب) = samar di bibir + dengung ·
-                Izhar Syafawi = mim mati dibaca jelas.
-            </div>
         </div>
     </div>
 
@@ -805,169 +755,128 @@ let skorAkhirGlobal = null;
 
 // === DATA HUKUM TAJWID & PARAMETER PER SURAT ===
 const dataSurat = {
-    "Al-Fatihah": {
-        jumlahAyat: 7,
-        durasiNormalDetik: 35,
-        durasiMinimal: 25,
-        durasiMaksimal: 55,
-        hukum: [
-            {nama:"Izhar Halqi", penjelasan:"Nun mati/tanwin dibaca jelas, tidak mendengung"},
-            {nama:"Idgham Bighunnah", penjelasan:"Huruf Nun mati bertemu Ya/Wau dibaca dilebur + dengung"},
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat — tidak boleh kurang/lebih"},
-            {nama:"Alif Lam Qamariyah", penjelasan:"Huruf Lam dibaca JELAS"},
-            {nama:"Alif Lam Syamsiyah", penjelasan:"Huruf Lam TIDAK dibaca, langsung masuk huruf berikutnya"},
-            {nama:"Ghunnah", penjelasan:"Dengung pada Nun/Mim bertasydid — tahan 2-3 harakat"}
-        ]
-    },
-    "Al-Ikhlas": {
-        jumlahAyat: 4,
-        durasiNormalDetik: 18,
-        durasiMinimal: 12,
-        durasiMaksimal: 30,
-        hukum: [
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Mad Lazim Mutsaqqal Kalimi", penjelasan:"Mad yang wajib dipanjangkan 6 harakat"},
-            {nama:"Alif Lam Qamariyah", penjelasan:"Lam dibaca JELAS"},
-            {nama:"Ghunnah", penjelasan:"Dengung pada huruf Nun bertasydid"}
-        ]
-    },
-    "Al-Falaq": {
-        jumlahAyat: 5,
-        durasiNormalDetik: 22,
-        durasiMinimal: 15,
-        durasiMaksimal: 35,
-        hukum: [
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + mendengung"},
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan Lam dibaca atau tidak"},
-            {nama:"Qalqalah Sughra/Kubra", penjelasan:"Huruf Qalqalah dibaca memantul"}
-        ]
-    },
-    "An-Nas": {
-        jumlahAyat: 6,
-        durasiNormalDetik: 25,
-        durasiMinimal: 18,
-        durasiMaksimal: 40,
-        hukum: [
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + mendengung"},
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan Lam dibaca atau tidak"},
-            {nama:"Ghunnah", penjelasan:"Dengung pada Mim bertasydid"}
-        ]
-    },
-    "Al-Kausar": {
-        jumlahAyat: 3,
-        durasiNormalDetik: 12,
-        durasiMinimal: 8,
-        durasiMaksimal: 20,
-        hukum: [
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Alif Lam Syamsiyah", penjelasan:"Huruf Lam tidak dibaca"},
-            {nama:"Qalqalah Sughra", penjelasan:"Huruf Qalqalah dibaca memantul ringan"}
-        ]
-    },
-    "Al-'Alaq (Ayat 1–5)": {
-        jumlahAyat: 5,
-        durasiNormalDetik: 30,
-        durasiMinimal: 20,
-        durasiMaksimal: 45,
-        hukum: [
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad asli dan mad tambahan"},
-            {nama:"Alif Lam Qamariyah & Syamsiyah", penjelasan:"Perhatikan huruf Lam dibaca atau hilang"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan dan mendengung"}
-        ]
-    },
-    "Al-Hujurat (Ayat 13)": {
-        jumlahAyat: 1,
-        durasiNormalDetik: 20,
-        durasiMinimal: 12,
-        durasiMaksimal: 30,
-        hukum: [
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Idgham Bighunnah", penjelasan:"Nun mati bertemu Ya dibaca dilebur + dengung"},
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"}
-        ]
-    },
-    "At-Tin": {
-        jumlahAyat: 8,
-        durasiNormalDetik: 35,
-        durasiMinimal: 25,
-        durasiMaksimal: 50,
-        hukum: [
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Qalqalah Kubra/Sughra", penjelasan:"Huruf Qalqalah dibaca memantul"},
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Alif Lam Qamariyah", penjelasan:"Lam dibaca jelas"}
-        ]
-    },
-    "Al-Ma'un": {
-        jumlahAyat: 7,
-        durasiNormalDetik: 30,
-        durasiMinimal: 20,
-        durasiMaksimal: 45,
-        hukum: [
-            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
-            {nama:"Alif Lam Syamsiyah", penjelasan:"Lam tidak dibaca"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
-            {nama:"Izhar Syafawi", penjelasan:"Mim mati dibaca jelas di bibir"}
-        ]
-    },
-    "Ali Imran (Ayat 64)": {
-        jumlahAyat: 1,
-        durasiNormalDetik: 25,
-        durasiMinimal: 15,
-        durasiMaksimal: 40,
-        hukum: [
-            {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
-            {nama:"Mad Thabi'i & Mad Badal", penjelasan:"Perhatikan panjang mad"},
-            {nama:"Idgham Bighunnah", penjelasan:"Nun mati dilebur + dengung"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"}
-        ]
-    },
-    "Al-Baqarah (Ayat 256)": {
-        jumlahAyat: 1,
-        durasiNormalDetik: 45,
-        durasiMinimal: 30,
-        durasiMaksimal: 70,
-        hukum: [
-            {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
-            {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad asli dan mad tambahan"},
-            {nama:"Idgham Bighunnah & Bilaghunnah", penjelasan:"Lebur dengan atau tanpa dengung"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
-            {nama:"Qalqalah", penjelasan:"Huruf Qalqalah dibaca memantul"},
-            {nama:"Ghunnah", penjelasan:"Dengung pada huruf bertasydid"}
-        ]
-    },
-    "Ad-Duha": {
-        jumlahAyat: 11,
-        durasiNormalDetik: 40,
-        durasiMinimal: 28,
-        durasiMaksimal: 60,
-        hukum: [
-            {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad"},
-            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan huruf Lam"},
-            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
-            {nama:"Qalqalah", penjelasan:"Huruf Qalqalah dibaca memantul"}
-        ]
-    },
-    "Al-A'la": {
-        jumlahAyat: 19,
-        durasiNormalDetik: 50,
-        durasiMinimal: 35,
-        durasiMaksimal: 75,
-        hukum: [
-            {nama:"Mad Thabi'i & Mad Iwad", penjelasan:"Mad asli dan mad pengganti tanwin"},
-            {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
-            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
-            {nama:"Idgham Bighunnah", penjelasan:"Nun mati dilebur + dengung"},
-            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan huruf Lam"}
-        ]
-    }
+    "Al-Fatihah": {jumlahAyat:7,durasiNormalDetik:35,durasiMinimal:25,durasiMaksimal:55,hukum:[
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun bertemu huruf halqi dibaca jelas tanpa dengung.",contoh:"أَنْعَمْتَ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"عَلَيْهِمْ غَيْرِ / عَلَيْهِمْ وَلَا"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال bertemu huruf syamsiyah sehingga tidak terdengar.",contoh:"الرَّحْمَٰنِ، الرَّحِيمِ، الدِّينِ، الصِّرَاطِ، الَّذِينَ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْحَمْدُ، الْعَالَمِينَ، الْمَغْضُوبِ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"مَالِكِ، يَوْمِ، نَسْتَعِينُ"},
+        {nama:"Mad Lazim Kalimi Mutsaqqal",penjelasan:"Mad bertemu huruf bertasydid dalam satu kata, dibaca 6 harakat.",contoh:"الضَّالِّينَ",panjang:"6 harakat"},
+        {nama:"Ghunnah Musyaddadah",penjelasan:"Nun atau mim bertasydid dibaca dengung 2 harakat.",contoh:"الرَّحْمَٰنِ"}
+    ]},
+    "Al-Ikhlas": {jumlahAyat:4,durasiNormalDetik:18,durasiMinimal:12,durasiMaksimal:30,hukum:[
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"أَحَدٌ اللَّهُ"},
+        {nama:"Izhar Halqi",penjelasan:"Tanwin bertemu hamzah/ح/ع/غ/خ/ه dibaca jelas.",contoh:"كُفُوًا أَحَدٌ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"لَمْ يَلِدْ / لَمْ يُولَدْ"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال bertemu huruf syamsiyah dan tidak dibaca.",contoh:"الصَّمَدُ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْأَبْتَرُ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"اللَّهُ، يُولَدْ، كُفُوًا"},
+        {nama:"Ghunnah Musyaddadah",penjelasan:"Nun atau mim bertasydid dibaca dengung 2 harakat.",contoh:"—"}
+    ]},
+    "Al-Falaq": {jumlahAyat:5,durasiNormalDetik:22,durasiMinimal:15,durasiMaksimal:35,hukum:[
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu salah satu huruf ikhfa, dibaca samar dengan dengung.",contoh:"مِنْ شَرِّ، غَاسِقٍ إِذَا، مِنْ شَرِّ"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"مَنْ خَلَقَ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"—"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"النَّفَّاثَاتِ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْفَلَقِ، الْعُقَدِ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"أَعُوذُ، مَا، إِذَا"},
+        {nama:"Qalqalah",penjelasan:"Huruf ق ط ب ج د yang sukun dibaca memantul.",contoh:"الْفَلَقِ، يَلِدْ"}
+    ]},
+    "An-Nas": {jumlahAyat:6,durasiNormalDetik:25,durasiMinimal:18,durasiMaksimal:40,hukum:[
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"مِنْ شَرِّ"},
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"مِنَ الْجِنَّةِ وَالنَّاسِ"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"—"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"—"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"النَّاسِ، الشَّرِّ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْوَسْوَاسِ، الْخَنَّاسِ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"أَعُوذُ، إِلَٰهِ، فِي"},
+        {nama:"Ghunnah Musyaddadah",penjelasan:"Nun/mim bertasydid dibaca dengung 2 harakat.",contoh:"النَّاسِ، الْجِنَّةِ"}
+    ]},
+    "Al-Kausar": {jumlahAyat:3,durasiNormalDetik:12,durasiMinimal:8,durasiMaksimal:20,hukum:[
+        {nama:"Mad Jaiz Munfasil",penjelasan:"Mad di akhir kata bertemu hamzah pada kata berikutnya. Dalam tampilan latihan ini ditandai 5 harakat.",contoh:"إِنَّآ أَعْطَيْنَاكَ",panjang:"5 harakat"},
+        {nama:"Mad Wajib Muttasil",penjelasan:"Mad bertemu hamzah dalam satu kata, dibaca 4–5 harakat; tampilan latihan menandai 5 harakat.",contoh:"شَانِئَكَ",panjang:"5 harakat"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"أَعْطَيْنَاكَ، فَصَلِّ، لِرَبِّكَ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas karena bertemu huruf qamariyah ك.",contoh:"الْكَوْثَرَ"},
+        {nama:"Ghunnah Musyaddadah",penjelasan:"Nun bertasydid dibaca dengung 2 harakat.",contoh:"إِنَّآ، إِنَّ"},
+        {nama:"Qalqalah",penjelasan:"Saat berhenti pada kata yang berakhir huruf qalqalah, pantulan terdengar.",contoh:"الْأَبْتَرْ (jika waqaf)"}
+    ]},
+    "Al-'Alaq (Ayat 1–5)": {jumlahAyat:5,durasiNormalDetik:30,durasiMinimal:20,durasiMaksimal:45,hukum:[
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"الْإِنْسَانَ، مِنْ عَلَقٍ"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"مِنْ عَلَقٍ"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"مِنْ عَلَقٍ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"اسْمِ رَبِّكَ"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"الَّذِي، الَّذِي عَلَّمَ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْإِنْسَانَ، الْأَكْرَمُ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"اقْرَأْ، وَرَبُّكَ، مَا"}
+    ]},
+    "Al-Hujurat (Ayat 13)": {jumlahAyat:1,durasiNormalDetik:20,durasiMinimal:12,durasiMaksimal:30,hukum:[
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"ذَكَرٍ وَأُنْثَىٰ، شُعُوبًا وَقَبَائِلَ"},
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"—"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"مِنْ ذَكَرٍ"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"أُنْثَىٰ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"خَلَقْنَاكُمْ مِنْ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"يَا، أَيُّهَا، إِنَّا، فِي"},
+        {nama:"Ghunnah Musyaddadah",penjelasan:"Nun bertasydid dibaca dengung 2 harakat.",contoh:"إِنَّآ / إِنَّ"}
+    ]},
+    "At-Tin": {jumlahAyat:8,durasiNormalDetik:35,durasiMinimal:25,durasiMaksimal:50,hukum:[
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"آمَنُوا وَعَمِلُوا"},
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"أَجْرٌ غَيْرُ (bukan bilaghunnah; perhatikan huruf berikutnya)"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun bertemu ع dibaca jelas.",contoh:"مِنْ عَلَقٍ"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"أَجْرٌ غَيْرُ، غَيْرُ مَمْنُونٍ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"هُمْ عَنْ"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"التِّينِ، الزَّيْتُونِ، النَّاسِ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْبَلَدِ، الْحَاكِمِينَ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"وَالزَّيْتُونِ، سِينِينَ، آمَنُوا"}
+    ]},
+    "Al-Ma'un": {jumlahAyat:7,durasiNormalDetik:30,durasiMinimal:20,durasiMaksimal:45,hukum:[
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"فَوَيْلٌ لِلْمُصَلِّينَ (perhatikan: ini bukan bighunnah karena ل)"},
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"فَوَيْلٌ لِلْمُصَلِّينَ"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"عَنْ صَلَاتِهِمْ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"هُمْ عَنْ، صَلَاتِهِمْ سَاهُونَ"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"الَّذِي، الَّذِينَ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْمَاعُونَ، الْمُصَلِّينَ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"يُرَاءُونَ، الْمَاعُونَ، عَلَىٰ"}
+    ]},
+    "Ali Imran (Ayat 64)": {jumlahAyat:1,durasiNormalDetik:25,durasiMinimal:15,durasiMaksimal:40,hukum:[
+        {nama:"Mad Wajib Muttasil",penjelasan:"Mad bertemu hamzah dalam satu kata, dibaca 4–5 harakat; tampilan latihan menandai 5 harakat.",contoh:"سَوَاءٍ",panjang:"5 harakat"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun bertemu ذ dibaca samar dengan dengung.",contoh:"أَلَّا نَعْبُدُ"},
+        {nama:"Idgham Bighunnah",penjelasan:"Tanwin bertemu و, dilebur dengan dengung.",contoh:"شَيْئًا وَلَا"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun bertemu ت dibaca samar dengan dengung.",contoh:"فَإِنْ تَوَلَّوْا"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"فَإِنْ تَوَلَّوْا"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"بَيْنَكُمْ أَلَّا"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"يَا، إِلَىٰ، قُولُوا"}
+    ]},
+    "Al-Baqarah (Ayat 256)": {jumlahAyat:1,durasiNormalDetik:45,durasiMinimal:30,durasiMaksimal:70,hukum:[
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"مَنْ يَكْفُرْ"},
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"عَلِيمٌ"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"مِنَ الْغَيِّ (bukan nun sukun; perhatikan bentuk bacaan)"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"سَمِيعٌ عَلِيمٌ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"لَهَا وَاللَّهُ"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"الرُّشْدُ، الطَّاغُوتِ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْغَيِّ، الْعُرْوَةِ"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"لَا، فِي، سَمِيعٌ"},
+        {nama:"Ghunnah Musyaddadah",penjelasan:"Nun atau mim bertasydid dibaca dengung 2 harakat.",contoh:"—"}
+    ]},
+    "Ad-Duha": {jumlahAyat:11,durasiNormalDetik:40,durasiMinimal:28,durasiMaksimal:60,hukum:[
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"خَيْرٌ لَكَ (bukan bighunnah; pembeda)"},
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"خَيْرٌ لَكَ، يَتِيمًا فَآوَىٰ (yang pertama bilaghunnah)"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"مِنْ أُولَىٰ (bukan ikhfa; perhatikan hamzah)"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"فَأَمَّا الْيَتِيمَ (tidak ada nun sukun; fokus pada aturan yang benar-benar muncul)"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"—"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"الضُّحَىٰ، اللَّيْلِ، الْآخِرَةُ (yang pertama dan kedua syamsiyah)"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"الضُّحَىٰ، اللَّيْلِ، فَآوَىٰ"}
+    ]},
+    "Al-A'la": {jumlahAyat:19,durasiNormalDetik:50,durasiMinimal:35,durasiMaksimal:75,hukum:[
+        {nama:"Idgham Bighunnah",penjelasan:"Nun sukun/tanwin bertemu ي ن م و, dilebur dengan dengung.",contoh:"مَنْ تَزَكَّىٰ (bukan bighunnah; huruf ت = ikhfa)"},
+        {nama:"Idgham Bila Ghunnah",penjelasan:"Tanwin bertemu ل atau ر, dilebur tanpa dengung.",contoh:"—"},
+        {nama:"Ikhfa' Haqiqi",penjelasan:"Nun sukun/tanwin bertemu huruf ikhfa, dibaca samar dengan dengung.",contoh:"مَنْ يَخْشَىٰ (bighunnah), مَنْ تَزَكَّىٰ (ikhfa)"},
+        {nama:"Izhar Halqi",penjelasan:"Nun sukun/tanwin bertemu huruf halqi dibaca jelas.",contoh:"أَجْرٌ غَيْرُ مَمْنُونٍ"},
+        {nama:"Izhar Syafawi",penjelasan:"Mim sukun bertemu selain م dan ب dibaca jelas.",contoh:"—"},
+        {nama:"Alif Lam Syamsiyah",penjelasan:"Lam pada ال tidak dibaca saat bertemu huruf syamsiyah.",contoh:"الَّذِي، الصُّحُفِ، النَّارَ"},
+        {nama:"Alif Lam Qamariyah",penjelasan:"Lam pada ال dibaca jelas.",contoh:"الْمَرْعَىٰ، الْحَيَاةَ"},
+        {nama:"Mad Wajib Muttasil",penjelasan:"Mad bertemu hamzah dalam satu kata, dibaca 4–5 harakat; tampilan latihan menandai 5 harakat.",contoh:"شَاءَ",panjang:"5 harakat"},
+        {nama:"Mad Thabi'i",penjelasan:"Mad asli dibaca 2 harakat.",contoh:"الْأَعْلَىٰ، فَهَدَىٰ، يَحْيَىٰ"}
+    ]}
 };
 
 // === TEKS ARAB SETIAP SURAT ===
@@ -1052,105 +961,18 @@ function lanjutKeHalaman2(){
     document.getElementById('infoSiswa').innerHTML = "Siswa: " + namaSiswa + " | Kelas: " + kelasSiswa;
 }
 
-
-/* =========================================================
-   SISTEM PENANDA TAJWID TARTIVA
-   - Nun sukun / tanwin: Idgham Bighunnah, Bila Ghunnah,
-     Izhar Halqi, Iqlab, Ikhfa'
-   - Mim sukun: Idgham Mimi/Mitslain, Ikhfa Syafawi,
-     Izhar Syafawi
-   - Mad: 2, 4–5, dan 6 harakat
-   ========================================================= */
-
-const panduanTajwidLengkap = [
-    {nama:"Idgham Bighunnah", penjelasan:"Nun sukun/tanwin bertemu ي، ن، م، و: dibaca lebur disertai dengung 2 harakat."},
-    {nama:"Idgham Bila Ghunnah", penjelasan:"Nun sukun/tanwin bertemu ل atau ر: dibaca lebur tanpa dengung."},
-    {nama:"Izhar Halqi", penjelasan:"Nun sukun/tanwin bertemu ء، ه، ع، ح، غ، خ: dibaca jelas."},
-    {nama:"Iqlab", penjelasan:"Nun sukun/tanwin bertemu ب: bunyi nun/tanwin berubah menjadi mim samar disertai dengung."},
-    {nama:"Ikhfa' Haqiqi", penjelasan:"Nun sukun/tanwin bertemu salah satu dari 15 huruf ikhfa: dibaca samar disertai dengung."},
-    {nama:"Idgham Mimi / Idgham Mitslain", penjelasan:"Mim sukun bertemu mim: mim pertama dilebur ke mim berikutnya disertai dengung 2 harakat."},
-    {nama:"Ikhfa Syafawi", penjelasan:"Mim sukun bertemu ba: mim dibaca samar di bibir disertai dengung."},
-    {nama:"Izhar Syafawi", penjelasan:"Mim sukun bertemu selain mim dan ba: mim mati dibaca jelas."},
-    {nama:"Mad Thabi'i", penjelasan:"Mad asli dibaca 2 harakat."},
-    {nama:"Mad Wajib Muttasil", penjelasan:"Huruf mad bertemu hamzah dalam satu kata; dibaca 4–5 harakat."},
-    {nama:"Mad Jaiz Munfasil", penjelasan:"Huruf mad di akhir kata bertemu hamzah di awal kata berikutnya; dibaca 4–5 harakat."},
-    {nama:"Mad Lazim", penjelasan:"Huruf mad bertemu sukun asli atau tasydid; dibaca 6 harakat."},
-    {nama:"Mad 'Aridh Lissukun", penjelasan:"Mad bertemu sukun karena waqaf; boleh 2, 4, atau 6 harakat."},
-    {nama:"Ghunnah", penjelasan:"Dengung pada nun/mim bertasydid, umumnya 2 harakat."}
-];
-
-function ambilHukumTajwidRelevan(ayatList, hukumAwal){
-    const teks = (ayatList || []).join(" ");
-    const hasil = [...(hukumAwal || [])];
-
-    function ada(regex){ return regex.test(teks); }
-    function tambah(nama, penjelasan){
-        if(!hasil.some(h => h.nama === nama || h.nama.includes(nama))) hasil.push({nama, penjelasan});
-    }
-
-    // Nun sukun / tanwin
-    if(ada(/نْ\s*[ينمو]/u) || ada(/[ًٌٍ]\s*[ينمو]/u))
-        tambah("Idgham Bighunnah", panduanTajwidLengkap[0].penjelasan);
-    if(ada(/نْ\s*[لر]/u) || ada(/[ًٌٍ]\s*[لر]/u))
-        tambah("Idgham Bila Ghunnah", panduanTajwidLengkap[1].penjelasan);
-    if(ada(/نْ\s*[ءهعحغخ]/u) || ada(/[ًٌٍ]\s*[ءهعحغخ]/u))
-        tambah("Izhar Halqi", panduanTajwidLengkap[2].penjelasan);
-    if(ada(/نْ\s*ب/u) || ada(/[ًٌٍ]\s*ب/u))
-        tambah("Iqlab", panduanTajwidLengkap[3].penjelasan);
-    // 15 huruf ikhfa: ت ث ج د ذ ز س ش ص ض ط ظ ف ق ك
-    if(ada(/نْ\s*[تثجدذزسشصضطظفقك]/u) || ada(/[ًٌٍ]\s*[تثجدذزسشصضطظفقك]/u))
-        tambah("Ikhfa' Haqiqi", panduanTajwidLengkap[4].penjelasan);
-
-    // Mim sukun
-    if(ada(/مْ\s*م/u)) tambah("Idgham Mimi / Idgham Mitslain", panduanTajwidLengkap[5].penjelasan);
-    if(ada(/مْ\s*ب/u)) tambah("Ikhfa Syafawi", panduanTajwidLengkap[6].penjelasan);
-    if(ada(/مْ\s*[ء-ي]/u)) tambah("Izhar Syafawi", panduanTajwidLengkap[7].penjelasan);
-
-    // Mad 4–5: hamzah dalam satu kata dan hamzah setelah huruf mad pada kata berikutnya.
-    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*ء/u))
-        tambah("Mad Wajib Muttasil", panduanTajwidLengkap[9].penjelasan);
-    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*\s+ء/u))
-        tambah("Mad Jaiz Munfasil", panduanTajwidLengkap[10].penjelasan);
-
-    // Mad Lazim yang umum muncul jelas pada data latihan, termasuk tasydid setelah huruf mad.
-    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*[^\s]*ّ/u) || ada(/الضَّ/u) || ada(/الصَّمَد/u))
-        tambah("Mad Lazim", panduanTajwidLengkap[11].penjelasan);
-
-    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*/u))
-        tambah("Mad Thabi'i", panduanTajwidLengkap[8].penjelasan);
-
-    return hasil;
-}
-
-function tandaiTajwid(teks){
-    let hasil = escapeHTML(teks);
-
-    // Tandai mad terlebih dahulu; tanda <span> dibuat tidak bertumpuk secara berlebihan.
-    // Mad Lazim (6) — contoh pola alif mad sebelum huruf bertasydid.
-    hasil = hasil.replace(/(الضَّ|الصَّمَد|اَلضَّ)/gu, '<span class="tajwid-mark tajwid-mad6">$1</span>');
-
-    // Mad Wajib Muttasil: mad + hamzah dalam satu kata.
-    hasil = hasil.replace(/((?:ا|و|ي)[\u064B-\u065F\u0670]*[^ ]*ء)/gu, '<span class="tajwid-mark tajwid-mad45">$1</span>');
-
-    // Mad Jaiz Munfasil: huruf mad di akhir kata + hamzah di awal kata berikutnya.
-    hasil = hasil.replace(/((?:ا|و|ي)[\u064B-\u065F\u0670]*)\s+(ء)/gu, '<span class="tajwid-mark tajwid-mad45">$1</span> <span class="tajwid-mark tajwid-mad45">$2</span>');
-
-    // Mad Thabi'i — penanda visual ringan pada alif/waw/ya mad yang diikuti akhir kata.
-    hasil = hasil.replace(/((?:ا|و|ي)[\u064B-\u065F\u0670]*)(?=\s|$)/gu, '<span class="tajwid-mark tajwid-mad2">$1</span>');
-
-    // Nun sukun/tanwin: tentukan hukum berdasarkan huruf setelahnya.
-    hasil = hasil.replace(/(نْ\s*[ينمو]|[ًٌٍ]\s*[ينمو])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
-    hasil = hasil.replace(/(نْ\s*[لر]|[ًٌٍ]\s*[لر])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
-    hasil = hasil.replace(/(نْ\s*[ءهعحغخ]|[ًٌٍ]\s*[ءهعحغخ])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
-    hasil = hasil.replace(/(نْ\s*ب|[ًٌٍ]\s*ب)/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
-    hasil = hasil.replace(/(نْ\s*[تثجدذزسشصضطظفقك]|[ًٌٍ]\s*[تثجدذزسشصضطظفقك])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
-
-    // Mim sukun.
-    hasil = hasil.replace(/(مْ\s*م)/gu, '<span class="tajwid-mark tajwid-mim">$1</span>');
-    hasil = hasil.replace(/(مْ\s*ب)/gu, '<span class="tajwid-mark tajwid-mim">$1</span>');
-    hasil = hasil.replace(/(مْ\s*[ء-ي])/gu, '<span class="tajwid-mark tajwid-mim">$1</span>');
-
-    return hasil;
+function tandaiMadDanPanjang(ayat, surat){
+    let teks = escapeHTML(ayat);
+    // Penanda visual khusus 5 harakat sesuai mode latihan TARTIVA.
+    // Mad Jaiz Munfasil: akhir kata ber-mad bertemu hamzah pada kata berikutnya.
+    teks = teks.replace(/إِنَّا(?=\s*أَعْطَيْنَاكَ)/g, "<span class='mad-mark mad-5'>إِنَّآ<small>5 harakat</small></span>");
+    // Mad Wajib Muttasil yang jelas pada teks latihan.
+    teks = teks.replace(/شَانِئَكَ/gi, "<span class='mad-mark mad-5'>شَانِئَكَ<small>5 harakat</small></span>");
+    teks = teks.replace(/سَوَاءٍ/gi, "<span class='mad-mark mad-5'>سَوَاءٍ<small>5 harakat</small></span>");
+    teks = teks.replace(/شَاءَ/gi, "<span class='mad-mark mad-5'>شَاءَ<small>5 harakat</small></span>");
+    // Mad Lazim Kalimi Mutsaqqal: 6 harakat.
+    teks = teks.replace(/الضَّالِّينَ/gi, "<span class='mad-mark'>الضَّالِّينَ<small>6 harakat</small></span>");
+    return teks;
 }
 
 function tampilkanBacaan(){
@@ -1163,7 +985,7 @@ function tampilkanBacaan(){
     }
     let daftarAyatHTML = ayatSurat[pilihSurat].map((ayat, indeks) =>
         "<div class='ayat-item' dir='rtl'>" +
-        tandaiTajwid(ayat) +
+        tandaiMadDanPanjang(ayat, pilihSurat) +
         " <span class='ayat-number' dir='rtl' aria-label='Ayat " + (indeks + 1) + "'>" + keAngkaArab(indeks + 1) + "</span>" +
         "</div>"
     ).join("");
@@ -1171,10 +993,11 @@ function tampilkanBacaan(){
         "<strong dir='ltr'>Surat " + pilihSurat + "</strong><div class='ayat-list'>" + daftarAyatHTML + "</div>";
     
     let infoSurat = dataSurat[pilihSurat];
-    let hukumRelevan = ambilHukumTajwidRelevan(ayatSurat[pilihSurat], infoSurat.hukum);
-    let daftarHukumHTML = "";
-    hukumRelevan.forEach(h => {
-        daftarHukumHTML += `<div class='info-hukum'><strong>✅ ${h.nama}:</strong> ${h.penjelasan}</div>`;
+    let daftarHukumHTML = "<div class='tajwid-legend'><span>🟢 2 harakat = Mad Thabi'i</span><span class='l5'>🔵 5 harakat = Mad Munfasil/Muttasil yang ditandai</span><span class='l6'>🟡 6 harakat = Mad Lazim</span></div>";
+    infoSurat.hukum.forEach(h => {
+        const contoh = h.contoh && h.contoh !== "—" ? `<span class='contoh-tajwid'>📌 Contoh pada bacaan: <b dir='rtl'>${h.contoh}</b></span>` : "";
+        const panjang = h.panjang ? `<span class='panjang-tajwid'>⏱ ${h.panjang}</span>` : "";
+        daftarHukumHTML += `<div class='info-hukum'><strong>✅ ${h.nama}${panjang}:</strong> ${h.penjelasan}${contoh}</div>`;
     });
     document.getElementById('daftarHukum').innerHTML = daftarHukumHTML;
     document.getElementById('kotakSurat').style.display = "block";
