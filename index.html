@@ -344,43 +344,48 @@
             box-shadow:0 4px 12px rgba(23,50,77,.04);
         }
 
-        /* ===== PANDUAN TAJWID LENGKAP: NUN/TANWIN + MIM SUKUN + MAD ===== */
-        .tajwid-guide{
-            margin-top:14px;
-            padding:16px;
-            border-radius:18px;
-            background:linear-gradient(135deg,#f8fffb,#f3f9ff);
-            border:1px solid #d9ebe4;
+        .tajwid-legend{
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:8px;
+            margin:10px 0 14px;
         }
-        .tajwid-guide h4{margin:0 0 10px;color:var(--green-dark);font-size:15px}
-        .tajwid-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-        .tajwid-card{
-            background:#fff;border:1px solid #e3ece8;border-radius:14px;padding:12px;
-            box-shadow:0 4px 12px rgba(23,50,77,.04);
+        .tajwid-legend .legend-item{
+            padding:9px 10px;
+            border-radius:12px;
+            background:#f8fbfa;
+            border:1px solid #e0ebe7;
+            font-size:11px;
+            line-height:1.45;
+            text-align:center;
         }
-        .tajwid-card .tajwid-title{font-weight:900;color:var(--blue-dark);margin-bottom:5px}
-        .tajwid-card .tajwid-arabic{
-            font-family:"Noto Naskh Arabic","Amiri","Traditional Arabic",serif;
-            font-size:24px;line-height:1.9;direction:rtl;text-align:right;color:#123e35;
+        .tajwid-legend strong{display:block;color:var(--green-dark);font-size:12px}
+        .tajwid-mark{
+            display:inline;
+            border-radius:6px;
+            padding:0 2px;
+            box-decoration-break:clone;
+            -webkit-box-decoration-break:clone;
         }
-        .tajwid-card small{display:block;color:#607386;line-height:1.5}
-        .mad-guide{
-            margin-top:12px;padding:13px 14px;border-radius:14px;background:#fff9e8;
-            border:1px solid #f0ddb0;line-height:1.65;color:#5d4a20;
+        .tajwid-nun{background:#fff0b8;border-bottom:3px solid #d99a00}
+        .tajwid-mim{background:#e5f5ff;border-bottom:3px solid #1684c7}
+        .tajwid-mad2{background:#eaf8ef;border-bottom:3px solid #15935d}
+        .tajwid-mad45{background:#f0eaff;border-bottom:3px solid #7652c8}
+        .tajwid-mad6{background:#ffe8e8;border-bottom:3px solid #cf4545}
+        .tajwid-key{
+            margin-top:12px;
+            padding:11px 13px;
+            border-radius:13px;
+            background:linear-gradient(135deg,#f7fffb,#f8f5ff);
+            border:1px dashed #cfe2da;
+            font-size:12px;
+            line-height:1.55;
+            color:#526b7b;
         }
-        .mad-examples{
-            display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;direction:rtl;
+        .tajwid-key strong{color:var(--green-dark)}
+        @media(max-width:620px){
+            .tajwid-legend{grid-template-columns:1fr}
         }
-        .mad-chip{
-            font-family:"Noto Naskh Arabic","Amiri","Traditional Arabic",serif;
-            font-size:22px;font-weight:800;background:#fff;border:1px solid #ead59d;
-            border-radius:10px;padding:4px 10px;color:#5b4300;
-        }
-        .harakat-note{
-            margin-top:10px;padding:10px 12px;border-radius:12px;background:#eef8ff;
-            border:1px solid #d5eaf8;color:#31506b;font-size:12px;line-height:1.6;
-        }
-        @media(max-width:620px){.tajwid-grid{grid-template-columns:1fr}}
 
         .benar{color:#08794b;font-weight:900}
         .salah{color:#c93d3d;font-weight:900}
@@ -749,33 +754,24 @@
             </div>
 
             <h4>📚 Hukum Tajwid yang Harus Diperhatikan:</h4>
+            <div class="tajwid-legend">
+                <div class="legend-item"><strong>2 Harakat</strong>Mad Thabi'i / Mad Asli</div>
+                <div class="legend-item"><strong>4–5 Harakat</strong>Mad Wajib Muttasil / Mad Jaiz Munfasil</div>
+                <div class="legend-item"><strong>6 Harakat</strong>Mad Lazim</div>
+            </div>
             <div id="daftarHukum"></div>
-
-            <div class="tajwid-guide" id="panduanTajwidLengkap">
-                <h4>📘 Panduan Lengkap Hukum Bacaan</h4>
-                <p style="font-size:12px;color:#607386;margin-bottom:10px;line-height:1.55;">
-                    Gunakan panduan ini saat latihan. Hukum <strong>Nun Sukun/Tanwin</strong> terdiri dari Izhar Halqi, Idgham Bighunnah, Idgham Bila Ghunnah, Iqlab, dan Ikhfa’. Hukum <strong>Mim Sukun</strong> terdiri dari Idgham Mimi/Idgham Mitslain, Ikhfa Syafawi, dan Izhar Syafawi.
-                </p>
-                <div class="tajwid-grid">
-                    <div class="tajwid-card"><div class="tajwid-title">1. Izhar Halqi</div><div class="tajwid-arabic">مِنْ هَادٍ</div><small>Nun sukun/tanwin bertemu ء ه ع ح غ خ → dibaca jelas, tanpa dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">2. Idgham Bighunnah</div><div class="tajwid-arabic">مَنْ يَقُولُ</div><small>Nun sukun/tanwin bertemu ي ن م و → masuk/lebur disertai dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">3. Idgham Bila Ghunnah</div><div class="tajwid-arabic">مِنْ رَبِّهِمْ</div><small>Nun sukun/tanwin bertemu ل atau ر → lebur tanpa dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">4. Iqlab</div><div class="tajwid-arabic">أَنْبِئْهُمْ</div><small>Nun sukun/tanwin bertemu ب → berubah menjadi bunyi mim samar disertai dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">5. Ikhfa’ Haqiqi</div><div class="tajwid-arabic">مِنْ شَرِّ</div><small>Nun sukun/tanwin bertemu salah satu dari 15 huruf ikhfa’ → dibaca samar dengan dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">6. Idgham Mimi / Mitslain</div><div class="tajwid-arabic">لَهُمْ مَا</div><small>Mim sukun bertemu م → mim pertama dilebur ke mim kedua dengan dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">7. Ikhfa Syafawi</div><div class="tajwid-arabic">تَرْمِيهِمْ بِحِجَارَةٍ</div><small>Mim sukun bertemu ب → dibaca samar di bibir dengan dengung.</small></div>
-                    <div class="tajwid-card"><div class="tajwid-title">8. Izhar Syafawi</div><div class="tajwid-arabic">عَلَيْهِمْ غَيْرِ</div><small>Mim sukun bertemu selain م dan ب → dibaca jelas dari makhraj bibir.</small></div>
-                </div>
-                <div class="mad-guide">
-                    <strong>📏 Harakat Panjang / Mad</strong><br>
-                    Harakat panjang sekarang diberi panduan khusus agar siswa dapat membedakan bacaan <strong>2 harakat</strong> (Mad Thabi’i) dan mad lain sesuai hukum bacaannya. Jangan memendekkan atau memanjangkan bacaan tanpa alasan tajwid.
-                    <div class="mad-examples">
-                        <span class="mad-chip">قَالَ</span><span class="mad-chip">قِيلَ</span><span class="mad-chip">يَقُولُ</span><span class="mad-chip">فِي</span><span class="mad-chip">نُوحِي</span>
-                    </div>
-                    <div class="harakat-note">
-                        <strong>🔤 Pengingat harakat:</strong> Fathah َ = a, Kasrah ِ = i, Dammah ُ = u, Fathatain ً, Kasratain ٍ, Dammatain ٌ, Sukun ْ, Tasydid ّ. Untuk Mad Thabi’i, panjangnya <strong>2 harakat</strong> dan biasanya ditandai oleh ا setelah fathah, يْ setelah kasrah, atau وْ setelah dammah.
-                    </div>
-                </div>
+            <div class="tajwid-key">
+                <strong>📌 Panduan cepat Nun Sukun/Tanwin:</strong>
+                Idgham Bighunnah (ي ن م و) = lebur + dengung ·
+                Idgham Bila Ghunnah (ل ر) = lebur tanpa dengung ·
+                Izhar Halqi (ء ه ع ح غ خ) = jelas ·
+                Iqlab (ب) = berubah menjadi bunyi mim samar ·
+                Ikhfa' = samar + dengung.
+                <br>
+                <strong>👄 Panduan Mim Sukun:</strong>
+                Idgham Mimi/Idgham Mitslain (م) = lebur + dengung ·
+                Ikhfa Syafawi (ب) = samar di bibir + dengung ·
+                Izhar Syafawi = mim mati dibaca jelas.
             </div>
         </div>
     </div>
@@ -941,7 +937,7 @@ const dataSurat = {
         hukum: [
             {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
             {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad asli dan mad tambahan"},
-            {nama:"Idgham Bighunnah & Idgham Bila Ghunnah", penjelasan:"Lebur dengan atau tanpa dengung"},
+            {nama:"Idgham Bighunnah & Bilaghunnah", penjelasan:"Lebur dengan atau tanpa dengung"},
             {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
             {nama:"Qalqalah", penjelasan:"Huruf Qalqalah dibaca memantul"},
             {nama:"Ghunnah", penjelasan:"Dengung pada huruf bertasydid"}
@@ -1056,6 +1052,107 @@ function lanjutKeHalaman2(){
     document.getElementById('infoSiswa').innerHTML = "Siswa: " + namaSiswa + " | Kelas: " + kelasSiswa;
 }
 
+
+/* =========================================================
+   SISTEM PENANDA TAJWID TARTIVA
+   - Nun sukun / tanwin: Idgham Bighunnah, Bila Ghunnah,
+     Izhar Halqi, Iqlab, Ikhfa'
+   - Mim sukun: Idgham Mimi/Mitslain, Ikhfa Syafawi,
+     Izhar Syafawi
+   - Mad: 2, 4–5, dan 6 harakat
+   ========================================================= */
+
+const panduanTajwidLengkap = [
+    {nama:"Idgham Bighunnah", penjelasan:"Nun sukun/tanwin bertemu ي، ن، م، و: dibaca lebur disertai dengung 2 harakat."},
+    {nama:"Idgham Bila Ghunnah", penjelasan:"Nun sukun/tanwin bertemu ل atau ر: dibaca lebur tanpa dengung."},
+    {nama:"Izhar Halqi", penjelasan:"Nun sukun/tanwin bertemu ء، ه، ع، ح، غ، خ: dibaca jelas."},
+    {nama:"Iqlab", penjelasan:"Nun sukun/tanwin bertemu ب: bunyi nun/tanwin berubah menjadi mim samar disertai dengung."},
+    {nama:"Ikhfa' Haqiqi", penjelasan:"Nun sukun/tanwin bertemu salah satu dari 15 huruf ikhfa: dibaca samar disertai dengung."},
+    {nama:"Idgham Mimi / Idgham Mitslain", penjelasan:"Mim sukun bertemu mim: mim pertama dilebur ke mim berikutnya disertai dengung 2 harakat."},
+    {nama:"Ikhfa Syafawi", penjelasan:"Mim sukun bertemu ba: mim dibaca samar di bibir disertai dengung."},
+    {nama:"Izhar Syafawi", penjelasan:"Mim sukun bertemu selain mim dan ba: mim mati dibaca jelas."},
+    {nama:"Mad Thabi'i", penjelasan:"Mad asli dibaca 2 harakat."},
+    {nama:"Mad Wajib Muttasil", penjelasan:"Huruf mad bertemu hamzah dalam satu kata; dibaca 4–5 harakat."},
+    {nama:"Mad Jaiz Munfasil", penjelasan:"Huruf mad di akhir kata bertemu hamzah di awal kata berikutnya; dibaca 4–5 harakat."},
+    {nama:"Mad Lazim", penjelasan:"Huruf mad bertemu sukun asli atau tasydid; dibaca 6 harakat."},
+    {nama:"Mad 'Aridh Lissukun", penjelasan:"Mad bertemu sukun karena waqaf; boleh 2, 4, atau 6 harakat."},
+    {nama:"Ghunnah", penjelasan:"Dengung pada nun/mim bertasydid, umumnya 2 harakat."}
+];
+
+function ambilHukumTajwidRelevan(ayatList, hukumAwal){
+    const teks = (ayatList || []).join(" ");
+    const hasil = [...(hukumAwal || [])];
+
+    function ada(regex){ return regex.test(teks); }
+    function tambah(nama, penjelasan){
+        if(!hasil.some(h => h.nama === nama || h.nama.includes(nama))) hasil.push({nama, penjelasan});
+    }
+
+    // Nun sukun / tanwin
+    if(ada(/نْ\s*[ينمو]/u) || ada(/[ًٌٍ]\s*[ينمو]/u))
+        tambah("Idgham Bighunnah", panduanTajwidLengkap[0].penjelasan);
+    if(ada(/نْ\s*[لر]/u) || ada(/[ًٌٍ]\s*[لر]/u))
+        tambah("Idgham Bila Ghunnah", panduanTajwidLengkap[1].penjelasan);
+    if(ada(/نْ\s*[ءهعحغخ]/u) || ada(/[ًٌٍ]\s*[ءهعحغخ]/u))
+        tambah("Izhar Halqi", panduanTajwidLengkap[2].penjelasan);
+    if(ada(/نْ\s*ب/u) || ada(/[ًٌٍ]\s*ب/u))
+        tambah("Iqlab", panduanTajwidLengkap[3].penjelasan);
+    // 15 huruf ikhfa: ت ث ج د ذ ز س ش ص ض ط ظ ف ق ك
+    if(ada(/نْ\s*[تثجدذزسشصضطظفقك]/u) || ada(/[ًٌٍ]\s*[تثجدذزسشصضطظفقك]/u))
+        tambah("Ikhfa' Haqiqi", panduanTajwidLengkap[4].penjelasan);
+
+    // Mim sukun
+    if(ada(/مْ\s*م/u)) tambah("Idgham Mimi / Idgham Mitslain", panduanTajwidLengkap[5].penjelasan);
+    if(ada(/مْ\s*ب/u)) tambah("Ikhfa Syafawi", panduanTajwidLengkap[6].penjelasan);
+    if(ada(/مْ\s*[ء-ي]/u)) tambah("Izhar Syafawi", panduanTajwidLengkap[7].penjelasan);
+
+    // Mad 4–5: hamzah dalam satu kata dan hamzah setelah huruf mad pada kata berikutnya.
+    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*ء/u))
+        tambah("Mad Wajib Muttasil", panduanTajwidLengkap[9].penjelasan);
+    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*\s+ء/u))
+        tambah("Mad Jaiz Munfasil", panduanTajwidLengkap[10].penjelasan);
+
+    // Mad Lazim yang umum muncul jelas pada data latihan, termasuk tasydid setelah huruf mad.
+    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*[^\s]*ّ/u) || ada(/الضَّ/u) || ada(/الصَّمَد/u))
+        tambah("Mad Lazim", panduanTajwidLengkap[11].penjelasan);
+
+    if(ada(/(?:ا|و|ي)[\u064B-\u065F\u0670]*/u))
+        tambah("Mad Thabi'i", panduanTajwidLengkap[8].penjelasan);
+
+    return hasil;
+}
+
+function tandaiTajwid(teks){
+    let hasil = escapeHTML(teks);
+
+    // Tandai mad terlebih dahulu; tanda <span> dibuat tidak bertumpuk secara berlebihan.
+    // Mad Lazim (6) — contoh pola alif mad sebelum huruf bertasydid.
+    hasil = hasil.replace(/(الضَّ|الصَّمَد|اَلضَّ)/gu, '<span class="tajwid-mark tajwid-mad6">$1</span>');
+
+    // Mad Wajib Muttasil: mad + hamzah dalam satu kata.
+    hasil = hasil.replace(/((?:ا|و|ي)[\u064B-\u065F\u0670]*[^ ]*ء)/gu, '<span class="tajwid-mark tajwid-mad45">$1</span>');
+
+    // Mad Jaiz Munfasil: huruf mad di akhir kata + hamzah di awal kata berikutnya.
+    hasil = hasil.replace(/((?:ا|و|ي)[\u064B-\u065F\u0670]*)\s+(ء)/gu, '<span class="tajwid-mark tajwid-mad45">$1</span> <span class="tajwid-mark tajwid-mad45">$2</span>');
+
+    // Mad Thabi'i — penanda visual ringan pada alif/waw/ya mad yang diikuti akhir kata.
+    hasil = hasil.replace(/((?:ا|و|ي)[\u064B-\u065F\u0670]*)(?=\s|$)/gu, '<span class="tajwid-mark tajwid-mad2">$1</span>');
+
+    // Nun sukun/tanwin: tentukan hukum berdasarkan huruf setelahnya.
+    hasil = hasil.replace(/(نْ\s*[ينمو]|[ًٌٍ]\s*[ينمو])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
+    hasil = hasil.replace(/(نْ\s*[لر]|[ًٌٍ]\s*[لر])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
+    hasil = hasil.replace(/(نْ\s*[ءهعحغخ]|[ًٌٍ]\s*[ءهعحغخ])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
+    hasil = hasil.replace(/(نْ\s*ب|[ًٌٍ]\s*ب)/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
+    hasil = hasil.replace(/(نْ\s*[تثجدذزسشصضطظفقك]|[ًٌٍ]\s*[تثجدذزسشصضطظفقك])/gu, '<span class="tajwid-mark tajwid-nun">$1</span>');
+
+    // Mim sukun.
+    hasil = hasil.replace(/(مْ\s*م)/gu, '<span class="tajwid-mark tajwid-mim">$1</span>');
+    hasil = hasil.replace(/(مْ\s*ب)/gu, '<span class="tajwid-mark tajwid-mim">$1</span>');
+    hasil = hasil.replace(/(مْ\s*[ء-ي])/gu, '<span class="tajwid-mark tajwid-mim">$1</span>');
+
+    return hasil;
+}
+
 function tampilkanBacaan(){
     pilihSurat = document.getElementById('surat').value;
     if(!pilihSurat){alert("⚠️ Pilih surat terlebih dahulu!"); return;}
@@ -1066,18 +1163,17 @@ function tampilkanBacaan(){
     }
     let daftarAyatHTML = ayatSurat[pilihSurat].map((ayat, indeks) =>
         "<div class='ayat-item' dir='rtl'>" +
-        escapeHTML(ayat) +
+        tandaiTajwid(ayat) +
         " <span class='ayat-number' dir='rtl' aria-label='Ayat " + (indeks + 1) + "'>" + keAngkaArab(indeks + 1) + "</span>" +
         "</div>"
     ).join("");
     document.getElementById('teksAyat').innerHTML =
-        "<strong dir='ltr'>Surat " + pilihSurat + "</strong>" +
-        "<div class='harakat-note' dir='ltr'>🔤 Teks Al-Qur’an ditampilkan dengan harakat. Perhatikan fathah, kasrah, dammah, sukun, tasydid, tanwin, dan bacaan mad/panjang saat berlatih.</div>" +
-        "<div class='ayat-list'>" + daftarAyatHTML + "</div>";
+        "<strong dir='ltr'>Surat " + pilihSurat + "</strong><div class='ayat-list'>" + daftarAyatHTML + "</div>";
     
     let infoSurat = dataSurat[pilihSurat];
+    let hukumRelevan = ambilHukumTajwidRelevan(ayatSurat[pilihSurat], infoSurat.hukum);
     let daftarHukumHTML = "";
-    infoSurat.hukum.forEach(h => {
+    hukumRelevan.forEach(h => {
         daftarHukumHTML += `<div class='info-hukum'><strong>✅ ${h.nama}:</strong> ${h.penjelasan}</div>`;
     });
     document.getElementById('daftarHukum').innerHTML = daftarHukumHTML;
@@ -1268,13 +1364,6 @@ function hitungKecocokanTeks(teksAcuan, hasilTranskripsi){
         baris = barisBerikutnya;
     }
     return Math.max(0, Math.round((1 - baris[hasil.length] / Math.max(acuan.length, hasil.length)) * 100));
-}
-
-function cekHarakatTeksArab(teks){
-    const t = String(teks || "");
-    const jumlahHurufArab = (t.match(/[\u0621-\u063A\u0641-\u064A]/g) || []).length;
-    const jumlahHarakat = (t.match(/[\u064B-\u065F\u0670]/g) || []).length;
-    return { jumlahHurufArab, jumlahHarakat, rasio: jumlahHurufArab ? jumlahHarakat / jumlahHurufArab : 0 };
 }
 
 function escapeHTML(teks){
@@ -1541,12 +1630,7 @@ function tampilkanHasil(){
         let sumberSkor = "kejelasan suara";
         let catatanHukum = "Artikulasi suara terekam cukup jelas";
         let skorTranskripsi = analisisData.kecocokanTeks === null ? 0 : analisisData.kecocokanTeks;
-        const namaHukumLower = h.nama.toLowerCase();
-        if(namaHukumLower.includes("idgham bighunnah") || namaHukumLower.includes("idgham bila ghunnah") || namaHukumLower.includes("iqlab") || namaHukumLower.includes("ikhfa") || namaHukumLower.includes("izhar halqi") || namaHukumLower.includes("idgham mimi") || namaHukumLower.includes("mim") || namaHukumLower.includes("izhar syafawi")) {
-            skorHukum = Math.round(analisisData.kejelasan * 0.60 + skorTranskripsi * 0.40);
-            sumberSkor = analisisData.kecocokanTeks === null ? "kejelasan suara" : "kejelasan suara dan kecocokan transkripsi";
-            catatanHukum = "Estimasi latihan tajwid berdasarkan kejernihan suara dan kecocokan bacaan; verifikasi guru tetap dianjurkan";
-        } else if(namaHukumLower.indexOf("mad") !== -1) {
+        if(h.nama.indexOf("Mad") !== -1) {
             skorHukum = Math.round(analisisData.mad * 0.65 + analisisData.ritme * 0.35);
             sumberSkor = "panjang suara dan ritme";
             catatanHukum = "Durasi segmen suara dan pola jeda dianalisis dari rekaman";
