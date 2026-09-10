@@ -421,11 +421,173 @@
             .logo-wrap{width:108px;height:108px}
         }
 
+
+        /* ===== MODE LATIHAN BACA: TEKS + KAMERA BERSAMA ===== */
+        .practice-grid{
+            display:grid;
+            grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);
+            gap:18px;
+            align-items:start;
+            margin-top:18px;
+        }
+        .practice-card{
+            background:#fff;
+            border:1px solid #dcece5;
+            border-radius:22px;
+            padding:16px;
+            box-shadow:0 10px 25px rgba(23,50,77,.07);
+            min-width:0;
+        }
+        .practice-card-head{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            margin-bottom:11px;
+        }
+        .practice-card-head h3{
+            color:var(--green-dark);
+            font-size:16px;
+            font-weight:900;
+        }
+        .live-pill{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            padding:6px 10px;
+            border-radius:999px;
+            background:#edf7f2;
+            color:var(--green-dark);
+            font-size:11px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+        .live-pill.recording{background:#fff0f0;color:#b32626}
+        .live-dot{width:8px;height:8px;border-radius:50%;background:#21a366}
+        .live-pill.recording .live-dot{background:#e53935;animation:pulseRec 1s infinite}
+        @keyframes pulseRec{50%{opacity:.35;transform:scale(.75)}}
+
+        .practice-card .ayat-box{
+            margin:0;
+            max-height:480px;
+            overflow:auto;
+            scrollbar-width:thin;
+        }
+        .practice-card .ayat-item{
+            padding:13px 3px;
+            font-size:clamp(24px,2.7vw,31px);
+        }
+        .practice-card .ayat-number{
+            min-width:38px;height:38px;
+            margin-right:9px;
+            font-size:14px;
+        }
+        .recorder-card{
+            position:sticky;
+            top:14px;
+        }
+        .video-frame{
+            position:relative;
+            width:100%;
+            aspect-ratio:4/3;
+            border-radius:19px;
+            overflow:hidden;
+            background:linear-gradient(135deg,#0b2431,#0a5d49);
+            border:4px solid #fff;
+            box-shadow:0 12px 25px rgba(7,82,72,.16);
+        }
+        .video-frame video{
+            width:100%;height:100%;
+            object-fit:cover;
+            margin:0;
+            border:0;
+            border-radius:0;
+            box-shadow:none;
+            display:block;
+        }
+        .camera-placeholder{
+            position:absolute;inset:0;
+            display:grid;place-items:center;
+            text-align:center;
+            padding:20px;
+            color:#d9fff0;
+            background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.12),transparent 35%),linear-gradient(135deg,#0b3442,#075c3a);
+        }
+        .camera-placeholder .cam-icon{font-size:48px;margin-bottom:7px}
+        .recording-overlay{
+            position:absolute;
+            left:12px;right:12px;top:12px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            pointer-events:none;
+        }
+        .record-badge,.timer-badge{
+            display:none;
+            padding:7px 10px;
+            border-radius:999px;
+            background:rgba(30,20,20,.75);
+            color:#fff;
+            backdrop-filter:blur(5px);
+            font-size:11px;
+            font-weight:900;
+        }
+        .record-badge.active,.timer-badge.active{display:inline-flex;align-items:center;gap:6px}
+        .record-badge i{width:8px;height:8px;background:#ff4b4b;border-radius:50%;animation:pulseRec 1s infinite}
+        .recorder-tip{
+            margin:11px 0;
+            padding:10px 12px;
+            border-radius:13px;
+            background:#f7fbfa;
+            color:#50687a;
+            font-size:12px;
+            line-height:1.5;
+            border:1px dashed #cfe3da;
+        }
+        .record-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .record-controls button{margin:0}
+        .record-controls .full{grid-column:1/-1}
+        .recording-wave{
+            display:none;
+            align-items:flex-end;
+            justify-content:center;
+            gap:4px;
+            height:22px;
+            margin:8px 0 1px;
+        }
+        .recording-wave.active{display:flex}
+        .recording-wave span{width:4px;border-radius:8px;background:linear-gradient(180deg,var(--gold),var(--green));animation:wave .75s ease-in-out infinite alternate}
+        .recording-wave span:nth-child(1){height:8px}.recording-wave span:nth-child(2){height:16px;animation-delay:.1s}.recording-wave span:nth-child(3){height:22px;animation-delay:.2s}.recording-wave span:nth-child(4){height:12px;animation-delay:.3s}.recording-wave span:nth-child(5){height:19px;animation-delay:.4s}.recording-wave span:nth-child(6){height:9px;animation-delay:.5s}
+        @keyframes wave{to{transform:scaleY(.35);opacity:.65}}
+        .practice-note{margin:0 0 15px;color:#607386;font-size:13px;line-height:1.55}
+        .practice-note strong{color:var(--green-dark)}
+        .review-compact{margin-top:13px}
+        .review-compact[style*="display: block"]{animation:fadeUp .3s ease}
+        .review-compact video{aspect-ratio:4/3;object-fit:cover}
+        .mobile-reading-hint{display:none}
+
+        .aksi-hasil{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .aksi-hasil button{margin:0}
+        .btn-print{background:linear-gradient(135deg,#7250a9,#4e327f)}
+        .btn-wa{background:linear-gradient(135deg,#16a566,#087c4c)}
+        .wa-note{margin-top:10px;padding:11px 13px;border-radius:13px;background:#edf9f3;color:#386653;font-size:12px;line-height:1.5}
+
+        @media(max-width:760px){
+            .practice-grid{grid-template-columns:1fr}
+            .recorder-card{position:relative;top:auto}
+            .practice-card .ayat-box{max-height:390px}
+        }
+        @media(max-width:520px){
+            .aksi-hasil{grid-template-columns:1fr}
+            .record-controls{grid-template-columns:1fr}
+            .record-controls .full{grid-column:auto}
+        }
+
         @media print{
             body{background:#fff;padding:0}
             .container{width:100%;box-shadow:none;border:0}
             .app-header{padding:15px}
-            .steps,.footer-brand,button,video{display:none!important}
+            .steps,.footer-brand,button,video,.practice-grid{display:none!important}
             .content{padding:10px}
             .ayat-box{display:none}
             .page{display:none!important}
@@ -504,21 +666,52 @@
         </div>
         <button class="btn-hijau" id="btnTampil">Tampilkan Bacaan & Hukum Tajwid ▶️</button>
         <div id="kotakSurat" style="display:none;">
-            <div class="ayat-box" id="teksAyat"></div>
-            
+            <div class="hero-card">👀 <strong>Mode Latihan Bersama</strong> — teks bacaan dan kamera tampil bersamaan. Siswa dapat membaca ayat sambil melihat posisi wajah dan rekaman dirinya.</div>
+
+            <div class="practice-grid">
+                <section class="practice-card reading-card">
+                    <div class="practice-card-head">
+                        <h3>📖 Teks Bacaan</h3>
+                        <span class="live-pill"><span class="live-dot"></span> Panduan</span>
+                    </div>
+                    <p class="practice-note"><strong>Tips:</strong> baca dari kanan ke kiri, pelan, jelas, dan perhatikan hukum tajwid yang ditandai di bawah.</p>
+                    <div class="ayat-box" id="teksAyat"></div>
+                </section>
+
+                <section class="practice-card recorder-card">
+                    <div class="practice-card-head">
+                        <h3>🎥 Kamera & Rekaman</h3>
+                        <span class="live-pill" id="livePill"><span class="live-dot"></span><span id="liveText">Siap</span></span>
+                    </div>
+                    <div class="video-frame">
+                        <video id="video" autoplay muted playsinline></video>
+                        <div class="camera-placeholder" id="cameraPlaceholder">
+                            <div><div class="cam-icon">🎥</div><strong>Kamera belum aktif</strong><br><small>Klik “Mulai Merekam” untuk mengaktifkan kamera & mikrofon.</small></div>
+                        </div>
+                        <div class="recording-overlay">
+                            <span class="record-badge" id="recordBadge"><i></i> MEREKAM</span>
+                            <span class="timer-badge" id="timerBadge">00:00</span>
+                        </div>
+                    </div>
+                    <div class="recording-wave" id="recordingWave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="recorder-tip">🎙️ Pastikan wajah terlihat jelas, posisi kamera stabil, dan bacaan tidak terlalu cepat.</div>
+                    <div class="record-controls">
+                        <button class="btn-biru" id="btnRekam">🔴 Mulai Merekam</button>
+                        <button class="btn-oranye" id="btnStop" style="display:none;">⏹️ Selesai</button>
+                    </div>
+                    <div id="status" class="status" style="display:none;"></div>
+
+                    <div id="reviewRekaman" class="review-compact" style="display:none;">
+                        <h4>🎬 Review Hasil Rekaman</h4>
+                        <p style="margin:8px 0;color:#555;font-size:12px;">Tinjau bacaan sebelum menjalankan analisis.</p>
+                        <video id="reviewVideo" controls playsinline></video>
+                        <button class="btn-hijau" id="btnNilai" style="display:none;">🤖 Analisis Cerdas AI</button>
+                    </div>
+                </section>
+            </div>
+
             <h4>📚 Hukum Tajwid yang Harus Diperhatikan:</h4>
             <div id="daftarHukum"></div>
-            <p style="margin:12px 0; color:#555; font-weight:bold;">👇 Baca dengan TARTIL (pelan & jelas), lalu klik Rekam:</p>
-            <video id="video" autoplay muted playsinline></video>
-            <button class="btn-biru" id="btnRekam">🔴 Mulai Merekam & Baca</button>
-            <button class="btn-oranye" id="btnStop" style="display:none;">⏹️ Selesai Bacaan</button>
-            <div id="status" class="status" style="display:none;"></div>
-            <div id="reviewRekaman" style="display:none;">
-                <h4>🎬 Review Hasil Rekaman</h4>
-                <p style="margin:8px 0; color:#555;">Tinjau kembali bacaan Anda sebelum memulai analisis cerdas.</p>
-                <video id="reviewVideo" controls playsinline></video>
-                <button class="btn-hijau" id="btnNilai" style="display:none;">🤖 Analisis Cerdas AI</button>
-            </div>
         </div>
     </div>
 
@@ -543,6 +736,7 @@
 let namaSiswa="", kelasSiswa="", pilihSurat="", pilihAyat="";
 let aliranMedia=null, perekam=null, perekamAudio=null, dataRekaman=null;
 let waktuMulai=0, waktuSelesai=0;
+let timerInterval=null;
 let rekamanBlob = null, audioRekamanBlob = null, urlReviewRekaman = null;
 let pengenalSuara=null, teksTranskripsi="", transkripsiSelesai=Promise.resolve();
 let analisisData = {};
@@ -784,6 +978,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('btnPrint').addEventListener('click', cetakHasilAnalisis);
     document.getElementById('btnWhatsApp').addEventListener('click', kirimHasilWhatsApp);
     document.getElementById('btnUlang').addEventListener('click', function(){location.reload();});
+    setModeRekam(false);
 });
 
 function lanjutKeHalaman2(){
@@ -822,6 +1017,35 @@ function tampilkanBacaan(){
     document.getElementById('kotakSurat').style.display = "block";
 }
 
+function formatWaktu(detik){
+    detik=Math.max(0,Math.floor(detik||0));
+    const m=String(Math.floor(detik/60)).padStart(2,'0');
+    const s=String(detik%60).padStart(2,'0');
+    return m+":"+s;
+}
+function setModeRekam(aktif){
+    const pill=document.getElementById('livePill');
+    const text=document.getElementById('liveText');
+    const badge=document.getElementById('recordBadge');
+    const timer=document.getElementById('timerBadge');
+    const wave=document.getElementById('recordingWave');
+    const placeholder=document.getElementById('cameraPlaceholder');
+    if(aktif){
+        pill.classList.add('recording'); text.textContent='Sedang merekam';
+        badge.classList.add('active'); timer.classList.add('active'); wave.classList.add('active');
+        placeholder.style.display='none';
+        clearInterval(timerInterval);
+        timerInterval=setInterval(()=>{
+            const elapsed=(performance.now()-waktuMulai)/1000;
+            timer.textContent=formatWaktu(elapsed);
+        },250);
+    }else{
+        pill.classList.remove('recording'); text.textContent='Siap';
+        badge.classList.remove('active'); timer.classList.remove('active'); wave.classList.remove('active');
+        clearInterval(timerInterval); timerInterval=null;
+    }
+}
+
 async function mulaiRekam(){
     try {
         aliranMedia = await navigator.mediaDevices.getUserMedia({
@@ -830,6 +1054,7 @@ async function mulaiRekam(){
         });
         
         document.getElementById('video').srcObject = aliranMedia;
+        document.getElementById('cameraPlaceholder').style.display = 'none';
         perekam = new MediaRecorder(aliranMedia, { mimeType: 'video/webm' });
         let tipeAudio = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
             ? 'audio/webm;codecs=opus'
@@ -856,6 +1081,8 @@ async function mulaiRekam(){
             rekamanBlob = new Blob(bagianData, { type: 'video/webm' });
             audioRekamanBlob = await audioSelesai;
             let durasiDetik = Math.round((waktuSelesai - waktuMulai) / 1000);
+            setModeRekam(false);
+            document.getElementById('timerBadge').textContent = formatWaktu(durasiDetik);
             
             document.getElementById('status').style.display = "block";
             document.getElementById('status').innerHTML = "✅ Bacaan terekam! Durasi: <strong>" + durasiDetik + " detik</strong>. Review rekaman Anda sebelum dianalisis.";
@@ -872,6 +1099,7 @@ async function mulaiRekam(){
         document.getElementById('btnRekam').style.display = "none";
         document.getElementById('btnStop').style.display = "block";
         document.getElementById('status').style.display = "block";
+        setModeRekam(true);
         document.getElementById('status').textContent = "🔴 Sedang merekam... Baca pelan-pelan dengan tartil!";
         
     } catch(err) {
@@ -885,7 +1113,9 @@ function hentiRekam(){
     if(pengenalSuara) pengenalSuara.stop();
     if(aliranMedia) aliranMedia.getTracks().forEach(t => t.stop());
     document.getElementById('video').srcObject = null;
+    document.getElementById('cameraPlaceholder').style.display = 'grid';
     document.getElementById('btnStop').style.display = "none";
+    setModeRekam(false);
 }
 
 async function analisisDanTampilkanHasil(){
