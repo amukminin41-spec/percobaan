@@ -962,16 +962,10 @@ function lanjutKeHalaman2(){
 }
 
 function tandaiMadDanPanjang(ayat, surat){
+    // Menampilkan teks Arab secara bersih tanpa badge/penanda panjang di atas teks.
+    // Huruf mad tetap ditulis dengan bentuk Arab yang benar, misalnya إِنَّآ.
     let teks = escapeHTML(ayat);
-    // Penanda visual khusus 5 harakat sesuai mode latihan TARTIVA.
-    // Mad Jaiz Munfasil: akhir kata ber-mad bertemu hamzah pada kata berikutnya.
-    teks = teks.replace(/إِنَّا(?=\s*أَعْطَيْنَاكَ)/g, "<span class='mad-mark mad-5'>إِنَّآ<small>5 harakat</small></span>");
-    // Mad Wajib Muttasil yang jelas pada teks latihan.
-    teks = teks.replace(/شَانِئَكَ/gi, "<span class='mad-mark mad-5'>شَانِئَكَ<small>5 harakat</small></span>");
-    teks = teks.replace(/سَوَاءٍ/gi, "<span class='mad-mark mad-5'>سَوَاءٍ<small>5 harakat</small></span>");
-    teks = teks.replace(/شَاءَ/gi, "<span class='mad-mark mad-5'>شَاءَ<small>5 harakat</small></span>");
-    // Mad Lazim Kalimi Mutsaqqal: 6 harakat.
-    teks = teks.replace(/الضَّالِّينَ/gi, "<span class='mad-mark'>الضَّالِّينَ<small>6 harakat</small></span>");
+    teks = teks.replace(/إِنَّا(?=\s*أَعْطَيْنَاكَ)/g, "إِنَّآ");
     return teks;
 }
 
