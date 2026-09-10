@@ -5,828 +5,879 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TARTIVA — Teknologi Analisis Tartil Interaktif</title>
     <style>
-        * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
-        :root {
-            --hijau: #2e7d32; --hijaulterang: #e8f5e9;
-            --biru: #1565c0; --biruterang: #e3f2fd;
-            --oren: #e65100; --orenterang: #fff3e0;
-            --ungu: #7b1fa2; --putih: #ffffff; --abu: #f5f5f5; --teks: #263238;
-            --benar: #2e7d32; --salah: #c62828; --peringatan: #ef6c00;
-            --bayangan: 0 4px 12px rgba(0,0,0,0.08);
-            --bulat: 14px;
-        }
-        body {background:linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%); min-height:100vh; padding:20px 15px; color:var(--teks);}
-        .container {max-width:760px; margin:0 auto;}
-        .header {text-align:center; padding:25px 20px; background:var(--putih); border-radius:var(--bulat); box-shadow:var(--bayangan); margin-bottom:25px;}
-        .header h1 {color:var(--hijau); font-size:26px; margin-bottom:6px;}
-        .header p {color:#546e7a; font-size:15px; font-style:italic;}
-        .card {background:var(--putih); border-radius:var(--bulat); padding:24px; margin-bottom:20px; box-shadow:var(--bayangan);}
-        .card h2 {color:var(--biru); font-size:18px; margin-bottom:18px; padding-bottom:8px; border-bottom:2px solid #e3f2fd;}
-        .sembunyi {display:none !important;}
-        label {display:block; margin-bottom:6px; font-weight:600; color:#37474f; font-size:15px;}
-        select, input {width:100%; padding:12px 14px; border:2px solid #cfd8dc; border-radius:10px; font-size:15px; background:#fafafa;}
-        select:focus, input:focus {outline:none; border-color:var(--biru); background:var(--putih);}
-        .baris {display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-        .btn {padding:13px 20px; border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer; width:100%; margin:6px 0; transition:all 0.25s;}
-        .btn:hover {transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.12);}
-        .btn-hijau {background:linear-gradient(135deg, #43a047, #2e7d32); color:white;}
-        .btn-biru {background:linear-gradient(135deg, #1976d2, #1565c0); color:white;}
-        .btn-oren {background:linear-gradient(135deg, #fb8c00, #e65100); color:white;}
-        .btn-ungu {background:linear-gradient(135deg, #8e24aa, #7b1fa2); color:white;}
-        .btn-abumuda {background:#eceff1; color:#37474f;}
-        .box-ayat {background:linear-gradient(135deg, #e8f5e9, #f1f8e9); padding:22px; border-radius:12px; text-align:right; font-size:26px; line-height:2.6; color:#1b5e20; margin:16px 0; border:2px solid #c8e6c9; font-family:'Amiri', 'Traditional Arabic', serif;}
-        .box-terjemah {background:#f5f5f5; padding:14px; border-radius:10px; font-size:15px; line-height:1.7; color:#424242; margin-bottom:14px;}
-        .box-video {background:#fafafa; padding:16px; border-radius:12px; text-align:center; margin:14px 0; border:2px solid #90caf9;}
-        video {width:100%; border-radius:10px; background:#263238; margin:8px 0; min-height:240px;}
-        .status {padding:12px 16px; border-radius:10px; margin:12px 0; font-weight:500;}
-        .status.info {background:#e3f2fd; color:#1565c0; border-left:4px solid #1976d2;}
-        .status.benar {background:#e8f5e9; color:#2e7d32; border-left:4px solid #43a047;}
-        .status.salah {background:#ffebee; color:#c62828; border-left:4px solid #e53935;}
-        .status.peringatan {background:#fff3e0; color:#e65100; border-left:4px solid #fb8c00;}
-        .grid-skor {display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0;}
-        .kotak-skor {text-align:center; padding:16px 10px; border-radius:12px;}
-        .kotak-skor.biru {background:#e3f2fd; color:#1565c0;}
-        .kotak-skor.hijau {background:#e8f5e9; color:#2e7d32;}
-        .kotak-skor.oren {background:#fff3e0; color:#e65100;}
-        .angka-skor {font-size:32px; font-weight:700;}
-        .label-skor {font-size:14px; margin-top:4px;}
-        .daftar-tajwid {margin-top:14px;}
-        .item-tajwid {padding:10px 14px; border-radius:8px; margin:6px 0; background:#f5f5f5;}
-        .rekap-tabel {width:100%; border-collapse:collapse; margin-top:12px; font-size:13px;}
-        .rekap-tabel th, .rekap-tabel td {border:1px solid #eee; padding:8px 6px; text-align:center;}
-        .rekap-tabel th {background:#e3f2fd; color:#1565c0;}
-        .rekap-tabel tr:nth-child(even) {background:#f9f9f9;}
-        .nav-bawah {display:flex; gap:10px; margin-top:10px;}
-        .nav-bawah button {flex:1; font-size:14px; padding:10px;}
-        .langkah {display:inline-block; width:30px; height:30px; line-height:30px; text-align:center; background:var(--biru); color:white; border-radius:50%; font-weight:bold; margin-right:8px;}
-        .progress-bar {height:8px; background:#e0e0e0; border-radius:4px; overflow:hidden; margin:10px 0;}
-        .progress-isian {height:100%; background:linear-gradient(90deg, #43a047, #2e7d32); width:0%; transition:width 0.4s ease;}
-        small {color:#78909c;}
-        .link-contoh {color:#1565c0; text-decoration:underline; cursor:pointer;}
+        * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
+        body {background:#e8f5e9; padding:20px;}
+        .container {max-width:700px; margin:0 auto; background:#fff; border-radius:12px; padding:25px; box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+        h1 {text-align:center; color:#2e7d32; margin-bottom:5px; font-size:22px;}
+        .subjudul {text-align:center; color:#558b2f; margin-bottom:20px; font-size:14px; font-style:italic;}
+        h2 {color:#2f6627; margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid #c8e6c9; font-size:18px;}
+        .page {display:none;}
+        .page.active {display:block;}
+        .form-group {margin-bottom:15px;}
+        label {display:block; margin-bottom:6px; font-weight:bold; color:#333; font-size:15px;}
+        input, select {width:100%; padding:10px; border:2px solid #ccc; border-radius:6px; font-size:15px;}
+        button {padding:12px 20px; border:none; border-radius:6px; font-size:16px; font-weight:bold; cursor:pointer; width:100%; margin:5px 0;}
+        .btn-hijau {background:#2e7d32; color:#fff;}
+        .btn-hijau:hover {background:#256b29;}
+        .btn-biru {background:#1976d2; color:#fff;}
+        .btn-biru:hover {background:#1565c0;}
+        .btn-oranye {background:#f57c00; color:#fff;}
+        .btn-oranye:hover {background:#ef6c00;}
+        .btn-ungu {background:#7b1fa2; color:#fff;}
+        .btn-ungu:hover {background:#6a1b9a;}
+        .ayat-box {background:#f1f8e9; padding:20px; border-radius:8px; margin:15px 0; font-size:26px; text-align:right; line-height:2.2; color:#1b5e20;}
+        video {width:100%; border-radius:8px; background:#000; margin:10px 0;}
+        .hasil {background:#fff3e0; padding:15px; border-radius:8px; margin-top:15px; border-left:4px solid #f57c00;}
+        .rekomendasi {background:#e3f2fd; padding:15px; border-radius:8px; margin-top:10px;}
+        .benar {color:#2e7d32; font-weight:bold;}
+        .salah {color:#c62828; font-weight:bold;}
+        .peringatan {color:#ef6c00; font-weight:bold;}
+        .status {padding:10px; border-radius:4px; margin:8px 0; background:#c8e6c9; color:#256029;}
+        .info-hukum {background:#fff; padding:10px; border-radius:4px; margin:5px 0; border-left:3px solid #ccc;}
+        .nilai-besar {font-size:36px; font-weight:bold; text-align:center;}
+        hr {border:none; border-top:2px solid #eee; margin:10px 0;}
+        .analisis-durasi {padding:8px; border-radius:4px; margin:8px 0; background:#f3e5f5;}
+        .analisis-suara {background:#e7f3ff; padding:12px; border-radius:8px; margin:10px 0; border-left:4px solid #1976d2;}
+        .ayat-item {display:block; padding:8px 0; border-bottom:1px solid #c8e6c9;}
+        .nomor-ayat {display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; margin-left:8px; border:2px solid #2e7d32; border-radius:50%; font-size:16px; font-weight:bold; color:#2e7d32; direction:ltr; vertical-align:middle;}
+        .indikator {display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px;}
+        .indikator.baik {background:#2e7d32;}
+        .indikator.cukup {background:#f57c00;}
+        .indikator.lemah {background:#d32f2f;}
+        .kategori-surat {margin-bottom:10px; padding:10px; background:#f1f8e9; border-radius:6px;}
+        .kategori-surat h4 {margin:0 0 6px 0; color:#2e7d32; font-size:15px;}
         @media print {
-            body {background:white;}
-            .btn, .nav-bawah, select, .box-video {display:none !important;}
-            .card {box-shadow:none; border:1px solid #ddd;}
+            button, video, .analisis-durasi, .analisis-suara {display:none !important;}
+            .ayat-box {display:none;}
+            body {background:#fff;}
         }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <!-- ============== HALAMAN UTAMA ============== -->
-    <div id="halaman-utama">
-        <div class="header">
-            <h1>📹 TARTIVA</h1>
-            <p>Teknologi Analisis Tartil Interaktif<br>“Rekam • Baca • Analisis • Perbaiki”</p>
+    <h1>📿 TARTIVA</h1>
+    <p class="subjudul">Teknologi Analisis Tartil Interaktif Berbasis Video dan Audio<br>“Rekam • Baca • Analisis • Perbaiki”</p>
+
+    <!-- HALAMAN 1 -->
+    <div id="hal1" class="page active">
+        <h2>Data Diri Siswa</h2>
+        <div class="form-group">
+            <label>Nama Lengkap:</label>
+            <input type="text" id="nama" placeholder="Contoh: Ahmad Ali">
         </div>
-
-        <div class="card">
-            <h2>👤 Data Siswa & Pilih Materi</h2>
-            <div class="baris">
-                <div>
-                    <label>Nama Lengkap Siswa</label>
-                    <input type="text" id="namaSiswa" placeholder="Contoh: Ahmad Ali">
-                </div>
-                <div>
-                    <label>Pilih Kelas</label>
-                    <select id="pilihKelas">
-                        <option value="">-- Pilih Kelas --</option>
-                        <option value="SD-1">Kelas 1 SD</option>
-                        <option value="SD-2">Kelas 2 SD</option>
-                        <option value="SD-3">Kelas 3 SD</option>
-                        <option value="SD-4">Kelas 4 SD</option>
-                        <option value="SD-5">Kelas 5 SD</option>
-                        <option value="SD-6">Kelas 6 SD</option>
-                        <option value="SMP-7">Kelas 7 SMP</option>
-                        <option value="SMP-8">Kelas 8 SMP</option>
-                        <option value="SMP-9">Kelas 9 SMP</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="margin-top:14px;">
-                <label>Pilih Surah / Ayat yang Dipelajari</label>
-                <select id="pilihSurah" disabled>
-                    <option value="">-- Pilih Dulu Kelasnya --</option>
-                </select>
-            </div>
-
-            <div style="margin-top:18px;">
-                <button class="btn btn-hijau" id="btnMulai" disabled>▶ Mulai Belajar & Membaca</button>
-                <button class="btn btn-abumuda" id="btnLihatRekap">📊 Lihat Rekap Per Kelas</button>
-            </div>
+        <div class="form-group">
+            <label>Kelas:</label>
+            <input type="text" id="kelas" placeholder="Contoh: 2 / 4 / 6">
         </div>
+        <button class="btn-hijau" id="btnMulai">Mulai Belajar 📖</button>
     </div>
 
-    <!-- ============== HALAMAN BELAJAR & REKAM ============== -->
-    <div id="halaman-baca" class="sembunyi">
-        <div class="header">
-            <h1>📹 TARTIVA — Bacaan & Analisis</h1>
-            <p id="infoSiswaKelas"></p>
-        </div>
-
-        <div class="card">
-            <h2><span class="langkah">1</span> 📖 Pelajari Bacaan & Contoh Video</h2>
-            <div class="box-video">
-                <strong>🎬 Contoh Bacaan yang Benar</strong><br>
-                <small id="tautanContoh">👉 Klik tautan di bawah untuk membuka video contoh bacaan:</small>
-                <div id="tautanVideo" style="margin:10px 0;"></div>
-                <video id="videoContoh" controls preload="metadata" class="sembunyi">
-                    <source src="" type="video/mp4">
-                    Browser Anda tidak mendukung pemutaran video.
-                </video>
-                <small style="display:block; margin-top:8px;">💡 Perhatikan: panjang pendek bacaan, huruf tebal & tipis, serta cara berhenti</small>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2><span class="langkah">2</span> 📝 Teks Ayat & Terjemahan</h2>
-            <div id="kotakAyatTampil">
-                <div class="box-ayat" id="teksArabAyat">Memuat teks ayat...</div>
-                <div class="box-terjemah" id="teksTerjemahAyat">Memuat terjemahan...</div>
-                <div class="status info">🎯 Target Bacaan: <strong id="targetBacaan"></strong></div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2><span class="langkah">3</span> 🎤 Baca & Rekam Bacaan Anda</h2>
-            <div style="text-align:center; margin:16px 0;">
-                <button class="btn btn-biru" id="btnMulaiRekam">🎤 Mulai Merekam Bacaan Saya</button>
-                <button class="btn btn-oren sembunyi" id="btnStopRekam">⏹ Selesai Merekam</button>
-            </div>
-            <div class="status info sembunyi" id="statusRekam">🔴 Sedang merekam... Baca dengan tartil, tenang dan jelas</div>
-            <div id="kotakKamera" style="text-align:center; margin:12px 0;" class="sembunyi">
-                <video id="tampilanKamera" autoplay muted playsinline style="width:100%; max-width:480px; border-radius:10px; background:#000;"></video>
-            </div>
-        </div>
-
-        <!-- ============== PREVIEW SEBELUM ANALISIS ============== -->
-        <div class="card sembunyi" id="kartu-preview">
-            <h2><span class="langkah">4</span> 👁 PREVIEW — Hasil Rekaman Anda</h2>
-            <div class="status peringatan">⚠️ <strong>Silakan tonton & dengarkan dulu hasil bacaan Anda!</strong><br>Jika belum puas → klik "Rekam Ulang". Jika sudah baik → klik "Lanjut Analisis".</div>
-            
-            <h4 style="margin:12px 0 6px;">🎬 Hasil Rekaman Anda:</h4>
-            <video id="videoHasilRekaman" controls playsinline style="width:100%; max-width:480px; border-radius:10px; background:#263238;"></video>
-
-            <div class="baris" style="margin-top:16px;">
-                <button class="btn btn-oren" id="btnRekamUlang">🔄 Rekam Ulang</button>
-                <button class="btn btn-hijau" id="btnLanjutAnalisis">✅ Sudah Baik — Lanjut Analisis</button>
-            </div>
-        </div>
-
-        <!-- ============== HASIL ANALISIS ============== -->
-        <div class="card sembunyi" id="kartu-hasil">
-            <h2><span class="langkah">5</span> 📊 Hasil Analisis Bacaan TARTIVA</h2>
-            <div class="progress-bar"><div class="progress-isian" id="barProgres"></div></div>
-
-            <div class="grid-skor">
-                <div class="kotak-skor hijau">
-                    <div class="angka-skor" id="nilaiTajwid">0</div>
-                    <div class="label-skor">📖 Tajwid</div>
-                </div>
-                <div class="kotak-skor biru">
-                    <div class="angka-skor" id="nilaiMakhraj">0</div>
-                    <div class="label-skor">🗣️ Makhraj</div>
-                </div>
-                <div class="kotak-skor oren">
-                    <div class="angka-skor" id="nilaiLancar">0</div>
-                    <div class="label-skor">⏱ Kelancaran</div>
-                </div>
-            </div>
-
-            <h4 style="margin:18px 0 8px;">📋 Hukum Tajwid yang Dipelajari:</h4>
-            <div id="daftarTajwid" class="daftar-tajwid"></div>
-
-            <h4 style="margin:18px 0 8px;">⚠️ Catatan Kesalahan & Saran:</h4>
-            <div id="catatanKesalahan"></div>
-
-            <h4 style="margin:18px 0 8px;">💡 Rekomendasi TARTIVA:</h4>
-            <div class="status benar" id="kotakRekomendasi"></div>
-
-            <div class="nav-bawah" style="margin-top:20px;">
-                <button class="btn btn-abumuda" id="btnKembaliAwal">🏠 Kembali ke Halaman Awal</button>
-                <button class="btn btn-ungu" onclick="window.print()">🖨 Cetak Laporan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============== HALAMAN REKAP KELAS ============== -->
-    <div id="halaman-rekap" class="sembunyi">
-        <div class="header">
-            <h1>📊 REKAP HASIL PER KELAS</h1>
-            <p>Ringkasan capaian bacaan seluruh siswa per jenjang pembelajaran</p>
-        </div>
-        <div class="card">
-            <label>Pilih Kelas untuk Melihat Rekap</label>
-            <select id="rekapPilihKelas">
-                <option value="SD-1">Kelas 1 SD</option>
-                <option value="SD-2">Kelas 2 SD</option>
-                <option value="SD-3">Kelas 3 SD</option>
-                <option value="SD-4">Kelas 4 SD</option>
-                <option value="SD-5">Kelas 5 SD</option>
-                <option value="SD-6">Kelas 6 SD</option>
-                <option value="SMP-7">Kelas 7 SMP</option>
-                <option value="SMP-8">Kelas 8 SMP</option>
-                <option value="SMP-9">Kelas 9 SMP</option>
+    <!-- HALAMAN 2 -->
+    <div id="hal2" class="page">
+        <h2 id="infoSiswa"></h2>
+        <div class="form-group">
+            <label>Pilih Surat Berdasarkan Jenjang Kelas:</label>
+            <select id="surat">
+                <option value="">-- Pilih Surat --</option>
+                <optgroup label="FASE A — Kelas 1–2">
+                    <option value="Al-Fatihah">Al-Fatihah (7 Ayat)</option>
+                    <option value="Al-Ikhlas">Al-Ikhlas (4 Ayat)</option>
+                    <option value="An-Nas">An-Nas (6 Ayat)</option>
+                    <option value="Al-Falaq">Al-Falaq (5 Ayat)</option>
+                    <option value="Al-Kausar">Al-Kausar (3 Ayat)</option>
+                </optgroup>
+                <optgroup label="FASE B — Kelas 3–4">
+                    <option value="Al-'Alaq (Ayat 1–5)">Al-'Alaq (Ayat 1–5)</option>
+                    <option value="Al-Hujurat (Ayat 13)">Al-Hujurat (Ayat 13)</option>
+                    <option value="At-Tin">At-Tin (8 Ayat)</option>
+                </optgroup>
+                <optgroup label="FASE C — Kelas 5–6">
+                    <option value="Al-Ma'un">Al-Ma'un (7 Ayat)</option>
+                    <option value="Ali Imran (Ayat 64)">Ali Imran (Ayat 64)</option>
+                    <option value="Al-Baqarah (Ayat 256)">Al-Baqarah (Ayat 256)</option>
+                    <option value="Ad-Duha">Ad-Duha (11 Ayat)</option>
+                    <option value="Al-A'la">Al-A'la (19 Ayat)</option>
+                </optgroup>
             </select>
-            <div id="tabelRekap"></div>
-            <button class="btn btn-abumuda" id="btnKembaliDariRekap" style="margin-top:16px;">← Kembali ke Halaman Utama</button>
         </div>
+        <button class="btn-hijau" id="btnTampil">Tampilkan Bacaan & Hukum Tajwid ▶️</button>
+        <div id="kotakSurat" style="display:none;">
+            <div class="ayat-box" id="teksAyat"></div>
+            
+            <h4>📚 Hukum Tajwid yang Harus Diperhatikan:</h4>
+            <div id="daftarHukum"></div>
+            <p style="margin:12px 0; color:#555; font-weight:bold;">👇 Baca dengan TARTIL (pelan & jelas), lalu klik Rekam:</p>
+            <video id="video" autoplay muted playsinline></video>
+            <button class="btn-biru" id="btnRekam">🔴 Mulai Merekam & Baca</button>
+            <button class="btn-oranye" id="btnStop" style="display:none;">⏹️ Selesai Bacaan</button>
+            <div id="status" class="status" style="display:none;"></div>
+            <div id="reviewRekaman" style="display:none;">
+                <h4>🎬 Review Hasil Rekaman</h4>
+                <p style="margin:8px 0; color:#555;">Tinjau kembali bacaan Anda sebelum memulai analisis cerdas.</p>
+                <video id="reviewVideo" controls playsinline></video>
+                <button class="btn-hijau" id="btnNilai" style="display:none;">🤖 Analisis Cerdas AI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 3 -->
+    <div id="hal3" class="page">
+        <h2>📝 Hasil Analisis Bacaan Tajwid</h2>
+        <div id="dataCetak"></div>
+        <div class="analisis-durasi" id="infoDurasi"></div>
+        <div class="analisis-suara" id="infoSuara"></div>
+        <div class="hasil" id="kotakHasil"></div>
+        <div class="rekomendasi" id="kotakRekom"></div>
+        <br>
+        <button class="btn-ungu" onclick="window.print()">🖨️ Cetak Hasil untuk Guru</button>
+        <br><br>
+        <button class="btn-hijau" id="btnUlang">🔄 Ulangi Bacaan Baru</button>
     </div>
 </div>
-
 <script>
-// ==================================================
-// 📚 MASTER DATA LENGKAP — TEKS AYAT LENGKAP
-// ==================================================
+let namaSiswa="", kelasSiswa="", pilihSurat="", pilihAyat="";
+let aliranMedia=null, perekam=null, perekamAudio=null, dataRekaman=null;
+let waktuMulai=0, waktuSelesai=0;
+let rekamanBlob = null, audioRekamanBlob = null, urlReviewRekaman = null;
+let pengenalSuara=null, teksTranskripsi="", transkripsiSelesai=Promise.resolve();
+let analisisData = {};
 
-// 1. MASTER KELAS
-const MASTER_KELAS = {
-    "SD-1": {kelas:1, jenjang:"SD", fase:"A"},
-    "SD-2": {kelas:2, jenjang:"SD", fase:"A"},
-    "SD-3": {kelas:3, jenjang:"SD", fase:"B"},
-    "SD-4": {kelas:4, jenjang:"SD", fase:"B"},
-    "SD-5": {kelas:5, jenjang:"SD", fase:"C"},
-    "SD-6": {kelas:6, jenjang:"SD", fase:"C"},
-    "SMP-7": {kelas:7, jenjang:"SMP", fase:"D"},
-    "SMP-8": {kelas:8, jenjang:"SMP", fase:"D"},
-    "SMP-9": {kelas:9, jenjang:"SMP", fase:"D"}
-};
-
-// 2. MASTER SURAH
-const MASTER_SURAH = {
-    "A01": {id:"A01", nomor:1, nama:"Al-Fatihah", jumlahAyat:7, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Fatihah+bacaan+yang+benar+tartil"},
-    "A02": {id:"A02", nomor:112, nama:"Al-Ikhlas", jumlahAyat:4, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Ikhlas+bacaan+yang+benar+tartil"},
-    "A03": {id:"A03", nomor:114, nama:"An-Nas", jumlahAyat:6, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=An-Nas+bacaan+yang+benar+tartil"},
-    "A04": {id:"A04", nomor:113, nama:"Al-Falaq", jumlahAyat:5, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Falaq+bacaan+yang+benar+tartil"},
-    "A05": {id:"A05", nomor:103, nama:"Al-'Asr", jumlahAyat:3, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-'Asr+bacaan+yang+benar+tartil"},
-    "A06": {id:"A06", nomor:110, nama:"An-Nasr", jumlahAyat:3, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=An-Nasr+bacaan+yang+benar+tartil"},
-    "A07": {id:"A07", nomor:108, nama:"Al-Kautsar", jumlahAyat:3, kelas:"SD-1", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Kautsar+bacaan+yang+benar+tartil"},
-    "A08": {id:"A08", nomor:114, nama:"An-Nas", jumlahAyat:6, kelas:"SD-2", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=An-Nas+bacaan+yang+benar+tartil"},
-    "A09": {id:"A09", nomor:103, nama:"Al-'Asr", jumlahAyat:3, kelas:"SD-2", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-'Asr+bacaan+yang+benar+tartil"},
-    "A10": {id:"A10", nomor:96, nama:"Al-'Alaq (Ayat 1–5)", jumlahAyat:5, kelas:"SD-3", target:"Baca, tulis & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-'Alaq+ayat+1-5+bacaan+yang+benar"},
-    "A11": {id:"A11", nomor:49, nama:"Al-Hujurat (Ayat 13)", jumlahAyat:1, kelas:"SD-4", target:"Baca, tulis & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Hujurat+ayat+13+bacaan+yang+benar"},
-    "A12": {id:"A12", nomor:95, nama:"At-Tin", jumlahAyat:8, kelas:"SD-4", target:"Baca, tulis & hafal", videoUrl:"https://www.youtube.com/results?search_query=At-Tin+bacaan+yang+benar+tartil"},
-    "A13": {id:"A13", nomor:107, nama:"Al-Ma'un", jumlahAyat:7, kelas:"SD-5", target:"Baca, tulis & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Ma'un+bacaan+yang+benar+tartil"},
-    "A14": {id:"A14", nomor:3, nama:"Ali 'Imran (Ayat 64)", jumlahAyat:1, kelas:"SD-5", target:"Baca & pahami", videoUrl:"https://www.youtube.com/results?search_query=Ali+Imran+ayat+64+bacaan+yang+benar"},
-    "A15": {id:"A15", nomor:2, nama:"Al-Baqarah (Ayat 256)", jumlahAyat:1, kelas:"SD-5", target:"Baca & pahami", videoUrl:"https://www.youtube.com/results?search_query=Al-Baqarah+ayat+256+Ayat+Kursi+bacaan+yang+benar"},
-    "A16": {id:"A16", nomor:93, nama:"Ad-Duha", jumlahAyat:11, kelas:"SD-6", target:"Baca, tulis & hafal", videoUrl:"https://www.youtube.com/results?search_query=Ad-Duha+bacaan+yang+benar+tartil"},
-    "A17": {id:"A17", nomor:87, nama:"Al-A'la", jumlahAyat:19, kelas:"SD-6", target:"Baca, tulis & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-A'la+bacaan+yang+benar+tartil"},
-    "A18": {id:"A18", nomor:4, nama:"An-Nisa (Ayat 59)", jumlahAyat:1, kelas:"SMP-7", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=An-Nisa+ayat+59+bacaan+yang+benar"},
-    "A19": {id:"A19", nomor:16, nama:"An-Nahl (Ayat 64)", jumlahAyat:1, kelas:"SMP-7", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=An-Nahl+ayat+64+bacaan+yang+benar"},
-    "A20": {id:"A20", nomor:30, nama:"Ar-Rum (Ayat 41)", jumlahAyat:1, kelas:"SMP-8", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Ar-Rum+ayat+41+bacaan+yang+benar"},
-    "A21": {id:"A21", nomor:14, nama:"Ibrahim (Ayat 32)", jumlahAyat:1, kelas:"SMP-8", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Ibrahim+ayat+32+bacaan+yang+benar"},
-    "A22": {id:"A22", nomor:43, nama:"Az-Zukhruf (Ayat 13)", jumlahAyat:1, kelas:"SMP-8", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Az-Zukhruf+ayat+13+bacaan+yang+benar"},
-    "A23": {id:"A23", nomor:2, nama:"Al-Baqarah (Ayat 143)", jumlahAyat:1, kelas:"SMP-8", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Baqarah+ayat+143+bacaan+yang+benar"},
-    "A24": {id:"A24", nomor:58, nama:"Al-Mujadilah (Ayat 11)", jumlahAyat:1, kelas:"SMP-9", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Al-Mujadilah+ayat+11+bacaan+yang+benar"},
-    "A25": {id:"A25", nomor:39, nama:"Az-Zumar (Ayat 9)", jumlahAyat:1, kelas:"SMP-9", target:"Baca & hafal", videoUrl:"https://www.youtube.com/results?search_query=Az-Zumar+ayat+9+bacaan+yang+benar"},
-    "A26": {id:"A26", nomor:2, nama:"Al-Baqarah (Ayat 30)", jumlahAyat:1, kelas:"SMP-9", target:"Baca & pahami", videoUrl:"https://www.youtube.com/results?search_query=Al-Baqarah+ayat+30+bacaan+yang+benar"},
-    "A27": {id:"A27", nomor:28, nama:"Al-Qasas (Ayat 77)", jumlahAyat:1, kelas:"SMP-9", target:"Baca & pahami", videoUrl:"https://www.youtube.com/results?search_query=Al-Qasas+ayat+77+bacaan+yang+benar"}
-};
-
-// 3. MASTER AYAT — TEKS ARAB & TERJEMAHAN LENGKAP
-const MASTER_AYAT = {
-    "A01": {
-        teksArab: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
-        terjemahan: "1. Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.\n2. Segala puji bagi Allah, Tuhan seluruh alam.\n3. Yang Maha Pengasih, Maha Penyayang.\n4. Pemilik hari pembalasan.\n5. Hanya kepada-Mu kami menyembah dan hanya kepada-Mu kami memohon pertolongan.\n6. Tunjukilah kami jalan yang lurus.\n7. Yaitu jalan orang-orang yang telah Engkau beri nikmat kepadanya, bukan jalan mereka yang dimurkai, dan bukan pula jalan mereka yang sesat."
+// === DATA HUKUM TAJWID & PARAMETER PER SURAT ===
+const dataSurat = {
+    "Al-Fatihah": {
+        jumlahAyat: 7,
+        durasiNormalDetik: 35,
+        durasiMinimal: 25,
+        durasiMaksimal: 55,
+        hukum: [
+            {nama:"Izhar Halqi", penjelasan:"Nun mati/tanwin dibaca jelas, tidak mendengung"},
+            {nama:"Idgham Bighunnah", penjelasan:"Huruf Nun mati bertemu Ya/Wau dibaca dilebur + dengung"},
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat — tidak boleh kurang/lebih"},
+            {nama:"Alif Lam Qamariyah", penjelasan:"Huruf Lam dibaca JELAS"},
+            {nama:"Alif Lam Syamsiyah", penjelasan:"Huruf Lam TIDAK dibaca, langsung masuk huruf berikutnya"},
+            {nama:"Ghunnah", penjelasan:"Dengung pada Nun/Mim bertasydid — tahan 2-3 harakat"}
+        ]
     },
-    "A02": {
-        teksArab: "قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
-        terjemahan: "1. Katakanlah: Dialah Allah, Yang Maha Esa.\n2. Allah adalah tempat bergantung segala sesuatu.\n3. Dia tidak beranak dan tidak pula diperanakkan.\n4. Dan tidak ada seorangpun yang setara dengan Dia."
+    "Al-Ikhlas": {
+        jumlahAyat: 4,
+        durasiNormalDetik: 18,
+        durasiMinimal: 12,
+        durasiMaksimal: 30,
+        hukum: [
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Mad Lazim Mutsaqqal Kalimi", penjelasan:"Mad yang wajib dipanjangkan 6 harakat"},
+            {nama:"Alif Lam Qamariyah", penjelasan:"Lam dibaca JELAS"},
+            {nama:"Ghunnah", penjelasan:"Dengung pada huruf Nun bertasydid"}
+        ]
     },
-    "A03": {
-        teksArab: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
-        terjemahan: "1. Katakanlah: Aku berlindung kepada Tuhan manusia.\n2. Raja manusia.\n3. Sembahan manusia.\n4. Dari kejahatan bisikan setan yang bersembunyi.\n5. Yang membisikkan kejahatan ke dalam dada manusia.\n6. Dari golongan jin dan manusia."
+    "Al-Falaq": {
+        jumlahAyat: 5,
+        durasiNormalDetik: 22,
+        durasiMinimal: 15,
+        durasiMaksimal: 35,
+        hukum: [
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + mendengung"},
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan Lam dibaca atau tidak"},
+            {nama:"Qalqalah Sughra/Kubra", penjelasan:"Huruf Qalqalah dibaca memantul"}
+        ]
     },
-    "A04": {
-        teksArab: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-        terjemahan: "1. Katakanlah: Aku berlindung kepada Tuhan yang menguasai subuh.\n2. Dari kejahatan makhluk-Nya.\n3. Dan dari kejahatan malam apabila telah gelap gulita.\n4. Dan dari kejahatan wanita tukang sihir yang menghembus pada buhul-buhul.\n5. Dan dari kejahatan orang yang dengki apabila ia dengki."
+    "An-Nas": {
+        jumlahAyat: 6,
+        durasiNormalDetik: 25,
+        durasiMinimal: 18,
+        durasiMaksimal: 40,
+        hukum: [
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + mendengung"},
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan Lam dibaca atau tidak"},
+            {nama:"Ghunnah", penjelasan:"Dengung pada Mim bertasydid"}
+        ]
     },
-    "A05": {
-        teksArab: "وَالْعَصْرِ ۝ إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ ۝ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ",
-        terjemahan: "1. Demi masa.\n2. Sesungguhnya manusia benar-benar dalam kerugian.\n3. Kecuali orang-orang yang beriman dan beramal saleh, serta saling menasihati kepada kebenaran dan saling menasihati kepada kesabaran."
+    "Al-Kausar": {
+        jumlahAyat: 3,
+        durasiNormalDetik: 12,
+        durasiMinimal: 8,
+        durasiMaksimal: 20,
+        hukum: [
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Alif Lam Syamsiyah", penjelasan:"Huruf Lam tidak dibaca"},
+            {nama:"Qalqalah Sughra", penjelasan:"Huruf Qalqalah dibaca memantul ringan"}
+        ]
     },
-    "A06": {
-        teksArab: "إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ ۝ وَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا ۝ فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ ۝ إِنَّهُ كَانَ تَوَّابًا",
-        terjemahan: "1. Apabila telah datang pertolongan Allah dan kemenangan.\n2. Dan engkau melihat manusia berbondong-bondong masuk agama Allah.\n3. Maka bertasbihlah dengan memuji Tuhanmu dan mohonlah ampun kepada-Nya.\n4. Sesungguhnya Dia Maha Penerima Taubat."
+    "Al-'Alaq (Ayat 1–5)": {
+        jumlahAyat: 5,
+        durasiNormalDetik: 30,
+        durasiMinimal: 20,
+        durasiMaksimal: 45,
+        hukum: [
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad asli dan mad tambahan"},
+            {nama:"Alif Lam Qamariyah & Syamsiyah", penjelasan:"Perhatikan huruf Lam dibaca atau hilang"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan dan mendengung"}
+        ]
     },
-    "A07": {
-        teksArab: "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ ۝ فَصَلِّ لِرَبِّكَ وَانْحَرْ ۝ إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ",
-        terjemahan: "1. Sesungguhnya Kami telah memberikan kepadamu nikmat yang banyak.\n2. Maka dirikanlah shalat karena Tuhanmu dan berkorbanlah.\n3. Sesungguhnya orang-orang yang membencimu, dialah yang terputus."
+    "Al-Hujurat (Ayat 13)": {
+        jumlahAyat: 1,
+        durasiNormalDetik: 20,
+        durasiMinimal: 12,
+        durasiMaksimal: 30,
+        hukum: [
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Idgham Bighunnah", penjelasan:"Nun mati bertemu Ya dibaca dilebur + dengung"},
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"}
+        ]
     },
-    "A10": {
-        teksArab: "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ ۝ خَلَقَ الْإِنْسَانَ مِنْ عَلَقٍ ۝ اقْرَأْ وَرَبُّكَ الْأَكْرَمُ ۝ الَّذِي عَلَّمَ بِالْقَلَمِ ۝ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ",
-        terjemahan: "1. Bacalah dengan nama Tuhanmu yang menciptakan.\n2. Dia telah menciptakan manusia dari segumpal darah.\n3. Bacalah, dan Tuhanmulah Yang Maha Mulia.\n4. Yang mengajar manusia dengan pena.\n5. Dia mengajarkan apa yang tidak diketahui manusia."
+    "At-Tin": {
+        jumlahAyat: 8,
+        durasiNormalDetik: 35,
+        durasiMinimal: 25,
+        durasiMaksimal: 50,
+        hukum: [
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Qalqalah Kubra/Sughra", penjelasan:"Huruf Qalqalah dibaca memantul"},
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Alif Lam Qamariyah", penjelasan:"Lam dibaca jelas"}
+        ]
     },
-    "A12": {
-        teksArab: "وَالتِّينِ وَالزَّيْتُونِ ۝ وَطُورِ سِينِينَ ۝ وَهَٰذَا الْبَلَدِ الْأَمِينِ ۝ لَقَدْ خَلَقْنَا الْإِنْسَانَ فِي أَحْسَنِ تَقْوِيمٍ ۝ ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ ۝ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ ۝ فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ ۝ أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ",
-        terjemahan: "1. Demi buah tin dan buah zaitun.\n2. Demi gunung Sinai.\n3. Dan demi negeri (Mekah) yang aman ini.\n4. Sungguh Kami telah menciptakan manusia dalam bentuk yang sebaik-baiknya.\n5. Kemudian Kami kembalikan dia ke tempat yang serendah-rendahnya.\n6. Kecuali orang-orang yang beriman dan beramal saleh, maka mereka beroleh pahala yang tidak putus-putus.\n7. Maka apa yang menyebabkan mereka mendustakanmu tentang hari pembalasan.\n8. Bukankah Allah Hakim yang paling adil?"
+    "Al-Ma'un": {
+        jumlahAyat: 7,
+        durasiNormalDetik: 30,
+        durasiMinimal: 20,
+        durasiMaksimal: 45,
+        hukum: [
+            {nama:"Mad Thabi'i", penjelasan:"Panjang 2 harakat"},
+            {nama:"Alif Lam Syamsiyah", penjelasan:"Lam tidak dibaca"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
+            {nama:"Izhar Syafawi", penjelasan:"Mim mati dibaca jelas di bibir"}
+        ]
     },
-    "A13": {
-        teksArab: "أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ ۝ فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ ۝ وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ ۝ فَوَيْلٌ لِلْمُصَلِّينَ ۝ الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ ۝ الَّذِينَ هُمْ يُرَاءُونَ ۝ وَيَمْنَعُونَ الْمَاعُونَ",
-        terjemahan: "1. Tahukah kamu orang yang mendustakan agama?\n2. Maka itulah orang yang menghardik anak yatim.\n3. Dan tidak mendorong memberi makan orang miskin.\n4. Maka celakalah bagi orang-orang yang shalat,\n5. Yaitu orang-orang yang lalai terhadap shalatnya,\n6. Orang-orang yang berbuat ria,\n7. Dan enggan memberikan bantuan."
+    "Ali Imran (Ayat 64)": {
+        jumlahAyat: 1,
+        durasiNormalDetik: 25,
+        durasiMinimal: 15,
+        durasiMaksimal: 40,
+        hukum: [
+            {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
+            {nama:"Mad Thabi'i & Mad Badal", penjelasan:"Perhatikan panjang mad"},
+            {nama:"Idgham Bighunnah", penjelasan:"Nun mati dilebur + dengung"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"}
+        ]
     },
-    "A15": {
-        teksArab: "لَا إِكْرَاهَ فِي الدِّينِ ۖ قَدْ تَبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ ۚ فَمَنْ يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِنْ بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ لَا انْفِصَامَ لَهَا ۗ وَاللَّهُ سَمِيعٌ عَلِيمٌ",
-        terjemahan: "Tidak ada paksaan untuk masuk ke dalam agama. Sesungguhnya telah jelas jalan yang benar daripada jalan yang sesat. Maka barangsiapa ingkar kepada taghut dan beriman kepada Allah, sesungguhnya ia telah berpegang kepada buhul tali yang amat kuat yang tidak akan putus. Dan Allah Maha Mendengar, Maha Mengetahui."
+    "Al-Baqarah (Ayat 256)": {
+        jumlahAyat: 1,
+        durasiNormalDetik: 45,
+        durasiMinimal: 30,
+        durasiMaksimal: 70,
+        hukum: [
+            {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
+            {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad asli dan mad tambahan"},
+            {nama:"Idgham Bighunnah & Bilaghunnah", penjelasan:"Lebur dengan atau tanpa dengung"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
+            {nama:"Qalqalah", penjelasan:"Huruf Qalqalah dibaca memantul"},
+            {nama:"Ghunnah", penjelasan:"Dengung pada huruf bertasydid"}
+        ]
     },
-    "A16": {
-        teksArab: "وَالضُّحَىٰ ۝ وَاللَّيْلِ إِذَا سَجَىٰ ۝ مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ ۝ وَلَلْآخِرَةُ خَيْرٌ لَكَ مِنَ الْأُولَىٰ ۝ وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ ۝ أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ ۝ وَوَجَدَكَ ضَالًّا فَهَدَىٰ ۝ وَوَجَدَكَ عَائِلًا فَأَغْنَىٰ ۝ فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ ۝ وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ ۝ وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ",
-        terjemahan: "1. Demi waktu duha (waktu pagi).\n2. Dan demi malam apabila telah gelap.\n3. Tuhanmu tidak meninggalkanmu dan tidak pula membencimu.\n4. Dan sungguh akhirat itu lebih baik bagimu daripada kehidupan dunia.\n5. Dan sungguh Tuhanmu pasti memberikan kepadamu sehingga kamu puas.\n6. Bukankah Dia mendapatimu anak yatim lalu Dia melindungi?\n7. Dan Dia mendapatimu belum mengetahui lalu Dia memberi petunjuk.\n8. Dan Dia mendapatimu dalam keadaan kekurangan lalu Dia mencukupkan.\n9. Sebab itu, janganlah kamu menghardik anak yatim.\n10. Dan janganlah kamu menolak orang yang meminta-minta.\n11. Dan nikmat Tuhanmu yang mana saja yang patut kamu disampaikan."
+    "Ad-Duha": {
+        jumlahAyat: 11,
+        durasiNormalDetik: 40,
+        durasiMinimal: 28,
+        durasiMaksimal: 60,
+        hukum: [
+            {nama:"Mad Thabi'i & Mad Far'i", penjelasan:"Perhatikan panjang mad"},
+            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan huruf Lam"},
+            {nama:"Izhar Halqi", penjelasan:"Nun mati dibaca jelas"},
+            {nama:"Qalqalah", penjelasan:"Huruf Qalqalah dibaca memantul"}
+        ]
     },
-    "A17": {
-        teksArab: "سَبِّحِ اسْمَ رَبِّكَ الْأَعْلَى ۝ الَّذِي خَلَقَ فَسَوَّىٰ ۝ وَالَّذِي قَدَّرَ فَهَدَىٰ ۝ وَالَّذِي أَخْرَجَ الْمَرْعَىٰ ۝ فَجَعَلَهُ غُثَاءً أَحْوَىٰ ۝ سَنُقْرِئُكَ فَلَا تَنْسَىٰ ۝ إِلَّا مَا شَاءَ اللَّهُ ۚ إِنَّهُ يَعْلَمُ الْجَهْرَ وَمَا يَخْفَىٰ ۝ وَنُيَسِّرُكَ لِلْيُسْرَىٰ ۝ فَذَكِّرْ إِنْ نَفَعَتِ الذِّكْرَىٰ ۝ سَيَذَّكَّرُ مَنْ يَخْشَىٰ ۝ وَيَتَجَنَّبُهَا الْأَشْقَى ۝ الَّذِي يَصْلَى النَّارَ الْكُبْرَىٰ ۝ ثُمَّ لَا يَمُوتُ فِيهَا وَلَا يَحْيَىٰ ۝ قَدْ أَفْلَحَ مَنْ تَزَكَّىٰ ۝ وَذَكَرَ اسْمَ رَبِّهِ فَصَلَّىٰ ۝ بَلْ تُؤْثِرُونَ الْحَيَاةَ الدُّنْيَا ۝ وَالْآخِرَةُ خَيْرٌ وَأَبْقَىٰ ۝ إِنَّ هَٰذَا لَفِي الصُّحُفِ الْأُولَىٰ ۝ صُحُفِ إِبْرَاهِيمَ وَمُوسَىٰ",
-        terjemahan: "1. Sucikanlah nama Tuhanmu Yang Mahatinggi.\n2. Yang menciptakan lalu menyempurnakan ciptaan-Nya.\n3. Yang menentukan kadar lalu memberi petunjuk.\n4. Yang menumbuhkan padang rumput.\n5. Lalu dijadikan-Nya kering kehitam-hitaman.\n6. Kami akan membacakan kepadamu sehingga kamu tidak akan lupa.\n7. Kecuali jika Allah menghendaki. Sesungguhnya Dia mengetahui yang terang dan yang tersembunyi.\n8. Dan Kami akan memudahkan bagimu jalan kemudahan.\n9. Oleh sebab itu berikanlah peringatan karena peringatan itu bermanfaat.\n10. Orang yang takut kepada Allah akan mendapat pelajaran.\n11. Dan orang-orang yang celaka akan menjauhinya.\n12. Yang akan masuk ke dalam api yang besar.\n13. Di sana ia tidak mati dan tidak pula hidup.\n14. Sungguh beruntung orang yang menyucikan diri.\n15. Dan mengingat nama Tuhannya lalu ia shalat.\n16. Sebenarnya kamu lebih mengutamakan kehidupan dunia.\n17. Padahal akhirat itu lebih baik dan lebih kekal.\n18. Sesungguhnya ini terdapat dalam kitab-kitab yang dahulu.\n19. Yaitu kitab-kitab Ibrahim dan Musa."
-    },
-    "A18": {
-        teksArab: "يَا أَيُّهَا الَّذِينَ آمَنُوا أَطِيعُوا اللَّهَ وَأَطِيعُوا الرَّسُولَ وَأُولِي الْأَمْرِ مِنْكُمْ ۖ فَإِنْ تَنَازَعْتُمْ فِي شَيْءٍ فَرُدُّوهُ إِلَى اللَّهِ وَالرَّسُولِ إِنْ كُنْتُمْ تُؤْمِنُونَ بِاللَّهِ وَالْيَوْمِ الْآخِرِ ۚ ذَٰلِكَ خَيْرٌ وَأَحْسَنُ تَأْوِيلًا",
-        terjemahan: "Wahai orang-orang yang beriman! Ta'atilah Allah dan ta'atilah Rasul dan ulil amri (pemegang kekuasaan) di antara kamu. Jika kamu berselisih pendapat tentang sesuatu, maka kembalikanlah kepada Allah dan Rasul-Nya, jika kamu benar-benar beriman kepada Allah dan hari akhir. Yang demikian itu lebih baik bagimu dan lebih hasil akhirnya."
-    },
-    "A19": {
-        teksArab: "وَمَا أَنْزَلْنَا عَلَيْكَ الْكِتَابَ إِلَّا لِتُبَيِّنَ لَهُمُ الَّذِي اخْتَلَفُوا فِيهِ ۙ وَهُدًى وَرَحْمَةً لِقَوْمٍ يُؤْمِنُونَ",
-        terjemahan: "Dan Kami menurunkan Al-Qur'an kepadamu hanya agar engkau jelaskan kepada mereka apa yang diperselisihkan, serta menjadi petunjuk dan rahmat bagi kaum yang beriman."
-    },
-    "A20": {
-        teksArab: "ظَهَرَ الْفَسَادُ فِي الْبَرِّ وَالْبَحْرِ بِمَا كَسَبَتْ أَيْدِي النَّاسِ لِيُذِيقَهُمْ بَعْضَ الَّذِي عَمِلُوا لَعَلَّهُمْ يَرْجِعُونَ",
-        terjemahan: "Telah tampak kerusakan di darat dan di laut disebabkan perbuatan tangan manusia, sehingga Allah merasakan kepada mereka sebagian dari akibat perbuatan mereka agar mereka kembali ke jalan yang benar."
-    },
-    "A21": {
-        teksArab: "وَقَالَ اللَّهُ خَلَقَكُمْ مِنْ تُرَابٍ ثُمَّ مِنْ نُطْفَةٍ ثُمَّ مِنْ عَلَقَةٍ ثُمَّ يُخْرِجُكُمْ طِفْلًا ثُمَّ لِتَبْلُغُوا أَشُدَّكُمْ ثُمَّ لِتَكُونُوا شُيُوخًا ۚ وَمِنْكُمْ مَنْ يُتَوَفَّىٰ مِنْ قَبْلُ ۙ وَلِتَبْلُغُوا أَجَلًا مُسَمًّى وَلَعَلَّكُمْ تَعْقِلُونَ",
-        terjemahan: "Allah menciptakan kamu dari tanah, kemudian dari setetes mani, kemudian dari segumpal darah, kemudian dilahirkan kamu sebagai anak-anak, kemudian dibiarkan kamu sampai dewasa, kemudian menjadi lanjut usia. Ada di antara kamu yang diwafatkan sebelum itu. Dan agar kamu sampai pada usia yang ditentukan dan agar kamu memahami."
-    },
-    "A22": {
-        teksArab: "وَمَنْ يُعْشِ عَنْ ذِكْرِ الرَّحْمَٰنِ نُقَيِّضْ لَهُ شَيْطَانًا فَهُوَ لَهُ قَرِينٌ",
-        terjemahan: "Barangsiapa berpaling dari pengajaran Allah Yang Maha Pengasih, maka Kami tentukan baginya setan yang menjadi temannya."
-    },
-    "A23": {
-        teksArab: "وَكَذَٰلِكَ جَعَلْنَاكُمْ أُمَّةً وَسَطًا لِتَكُونُوا شُهَدَاءَ عَلَى النَّاسِ وَيَكُونَ الرَّسُولُ عَلَيْكُمْ شَهِيدًا ۗ وَمَا جَعَلْنَا الْقِبْلَةَ الَّتِي كُنْتَ عَلَيْهَا إِلَّا لِنَعْلَمَ مَنْ يَتَّبِعُ الرَّسُولَ مِمَّنْ يَنْقَلِبُ عَلَىٰ عَقِبَيْهِ ۚ وَإِنْ كَانَتْ لَكَبِيرَةً إِلَّا عَلَى الَّذِينَ هَدَى اللَّهُ ۗ وَمَا كَانَ اللَّهُ لِيُضِيعَ إِيمَانَكُمْ ۚ إِنَّ اللَّهَ بِالنَّاسِ لَرَءُوفٌ رَحِيمٌ",
-        terjemahan: "Dan demikianlah Kami jadikan kamu umat pertengahan agar kamu menjadi saksi atas perbuatan manusia, dan Rasul menjadi saksi atas kamu. Kami tidak menetapkan kiblat yang kamu hadapkan kecuali untuk mengetahui siapa yang mengikuti Rasul dan siapa yang berbalik. Sesungguhnya itu cukup berat, kecuali bagi yang diberi petunjuk. Allah tidak akan menyia-nyiakan imanmu. Sesungguhnya Allah Maha Penyayang dan Maha Pengasih kepada manusia."
-    },
-    "A24": {
-        teksArab: "يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نَاجَيْتُمُ الرَّسُولَ فَقَدِّمُوا بَيْنَ يَدَيْ نَجْوَاكُمْ صَدَقَةً ۚ ذَٰلِكَ خَيْرٌ لَكُمْ وَأَطْهَرُ ۚ فَإِنْ لَمْ تَجِدُوا فَإِنَّ اللَّهَ غَفُورٌ رَحِيمٌ",
-        terjemahan: "Wahai orang-orang yang beriman! Apabila kamu berbicara secara khusus dengan Rasul, maka sedekahkanlah terlebih dahulu. Itu lebih baik bagimu dan lebih suci. Jika tidak memiliki, maka Allah Maha Pengampun lagi Maha Penyayang."
-    },
-    "A25": {
-        teksArab: "قُلْ إِنَّ اللَّهَ أَمَرَنِي أَنْ أَعْبُدَ اللَّهَ مُخْلِصًا لَهُ الدِّينَ ۝ وَأُمِرْتُ لِأَنْ أَكُونَ أَوَّلَ الْمُسْلِمِينَ ۝ قُلْ إِنِّي أَخَافُ إِنْ عَصَيْتُ رَبِّي عَذَابَ يَوْمٍ عَظِيمٍ",
-        terjemahan: "Katakanlah: Sesungguhnya aku diperintahkan agar menyembah Allah dengan tulus ikhlas beragama kepada-Nya. Dan aku diperintahkan agar menjadi orang yang pertama berserah diri. Katakanlah: Sesungguhnya aku takut, jika mendurhakai Tuhanku, azab pada hari yang besar."
-    },
-    "A26": {
-        teksArab: "وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً ۖ قَالُوا أَتَجْعَلُ فِيهَا مَنْ يُفْسِدُ فِيهَا وَيَسْفِكُ الدِّمَاءَ وَنَحْنُ نُسَبِّحُ بِحَمْدِكَ وَنُقَدِّسُ لَكَ ۖ قَالَ إِنِّي أَعْلَمُ مَا لَا تَعْلَمُونَ",
-        terjemahan: "Ingatlah ketika Tuhanmu berfirman kepada para malaikat: Aku hendak menjadikan wakil di bumi. Mereka berkata: Apakah Engkau hendak menjadikan orang yang merusak dan menumpahkan darah, padahal kami senantiasa bertasbih dan menyucikan nama-Mu? Tuhan berfirman: Sesungguhnya Aku mengetahui apa yang tidak kamu ketahui."
-    },
-    "A27": {
-        teksArab: "وَابْتَغِ فِيمَا آتَاكَ اللَّهُ الدَّارَ الْآخِرَةَ ۖ وَلَا تَنْسَ نَصِيبَكَ مِنَ الدُّنْيَا ۖ وَأَحْسِنْ كَمَا أَحْسَنَ اللَّهُ إِلَيْكَ ۖ وَلَا تَبْغِ الْفَسَادَ فِي الْأَرْضِ ۖ إِنَّ اللَّهَ لَا يُحِبُّ الْمُفْسِدِينَ",
-        terjemahan: "Dan carilah pada apa yang telah diberikan Allah kepadamu kebahagiaan akhirat, dan jangan melupakan bagianmu dari dunia. Berbuat baiklah sebagaimana Allah berbuat baik kepadamu. Dan jangan berbuat kerusakan di bumi. Sesungguhnya Allah tidak menyukai orang-orang yang berbuat kerusakan."
+    "Al-A'la": {
+        jumlahAyat: 19,
+        durasiNormalDetik: 50,
+        durasiMinimal: 35,
+        durasiMaksimal: 75,
+        hukum: [
+            {nama:"Mad Thabi'i & Mad Iwad", penjelasan:"Mad asli dan mad pengganti tanwin"},
+            {nama:"Izhar Halqi & Syafawi", penjelasan:"Nun/Mim mati dibaca jelas"},
+            {nama:"Ikhfa Haqiqi", penjelasan:"Nun mati disamarkan + dengung"},
+            {nama:"Idgham Bighunnah", penjelasan:"Nun mati dilebur + dengung"},
+            {nama:"Alif Lam Syamsiyah & Qamariyah", penjelasan:"Perhatikan huruf Lam"}
+        ]
     }
 };
 
-// 4. MASTER TAJWID — Hukum tajwid per ayat
-const MASTER_TAJWID_AYAT = {
-    "A01": [
-        {hukum:"Alif Lam Syamsiyah", letak:"Ayat 2: الْحَمْدُ", cara:"Huruf 'Lam' lebur ke huruf Ha, tidak dibaca"},
-        {hukum:"Ghunnah", letak:"Ayat 1 & 3: الرَّحْمَٰنِ", cara:"Huruf Nun bertasydid → mendengung 2–3 harakat"},
-        {hukum:"Alif Lam Qamariyah", letak:"Ayat 2: رَبِّ الْعَالَمِينَ", cara:"Huruf Lam dibaca jelas"},
-        {hukum:"Mad Thabi'i", letak:"Ayat mana saja ada alif/wau/ya panjang", cara:"Panjang 2 harakat"}
+// === TEKS ARAB SETIAP SURAT ===
+const teksSurat = {
+    "Al-Fatihah": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ الرَّحْمَٰنِ الرَّحِيمِ مَالِكِ يَوْمِ الدِّينِ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+    "Al-Ikhlas": "قُلْ هُوَ اللَّهُ أَحَدٌ اللَّهُ الصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
+    "Al-Falaq": "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِنْ شَرِّ مَا خَلَقَ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+    "An-Nas": "قُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلَٰهِ النَّاسِ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ",
+    "Al-Kausar": "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ فَصَلِّ لِرَبِّكَ وَانْحَرْ إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ",
+    "Al-'Alaq (Ayat 1–5)": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ خَلَقَ الْإِنْسَانَ مِنْ عَلَقٍ اقْرَأْ وَرَبُّكَ الْأَكْرَمُ الَّذِي عَلَّمَ بِالْقَلَمِ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ",
+    "Al-Hujurat (Ayat 13)": "يَا أَيُّهَا النَّاسُ إِنَّا خَلَقْنَاكُمْ مِنْ ذَكَرٍ وَأُنْثَىٰ وَجَعَلْنَاكُمْ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا إِنَّ أَكْرَمَكُمْ عِنْدَ اللَّهِ أَتْقَاكُمْ إِنَّ اللَّهَ عَلِيمٌ خَبِيرٌ",
+    "At-Tin": "وَالتِّينِ وَالزَّيْتُونِ وَطُورِ سِينِينَ وَهَٰذَا الْبَلَدِ الْأَمِينِ لَقَدْ خَلَقْنَا الْإِنْسَانَ فِي أَحْسَنِ تَقْوِيمٍ ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ",
+    "Al-Ma'un": "أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ فَوَيْلٌ لِلْمُصَلِّينَ الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ الَّذِينَ هُمْ يُرَاءُونَ وَيَمْنَعُونَ الْمَاعُونَ",
+    "Ali Imran (Ayat 64)": "قُلْ يَا أَهْلَ الْكِتَابِ تَعَالَوْا إِلَىٰ كَلِمَةٍ سَوَاءٍ بَيْنَنَا وَبَيْنَكُمْ أَلَّا نَعْبُدَ إِلَّا اللَّهَ وَلَا نُشْرِكَ بِهِ شَيْئًا وَلَا يَتَّخِذَ بَعْضُنَا بَعْضًا أَرْبَابًا مِنْ دُونِ اللَّهِ فَإِنْ تَوَلَّوْا فَقُولُوا اشْهَدُوا بِأَنَّا مُسْلِمُونَ",
+    "Al-Baqarah (Ayat 256)": "لَا إِكْرَاهَ فِي الدِّينِ قَدْ تَبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ فَمَنْ يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِنْ بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ لَا انْفِصَامَ لَهَا وَاللَّهُ سَمِيعٌ عَلِيمٌ",
+    "Ad-Duha": "وَالضُّحَىٰ وَاللَّيْلِ إِذَا سَجَىٰ مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ وَلَلْآخِرَةُ خَيْرٌ لَكَ مِنَ الْأُولَىٰ وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ وَوَجَدَكَ ضَالًّا فَهَدَىٰ وَوَجَدَكَ عَائِلًا فَأَغْنَىٰ فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ",
+    "Al-A'la": "سَبِّحِ اسْمَ رَبِّكَ الْأَعْلَى الَّذِي خَلَقَ فَسَوَّىٰ وَالَّذِي قَدَّرَ فَهَدَىٰ وَالَّذِي أَخْرَجَ الْمَرْعَىٰ فَجَعَلَهُ غُثَاءً أَحْوَىٰ سَنُقْرِئُكَ فَلَا تَنْسَىٰ إِلَّا مَا شَاءَ اللَّهُ إِنَّهُ يَعْلَمُ الْجَهْرَ وَمَا يَخْفَىٰ وَنُيَسِّرُكَ لِلْيُسْرَىٰ فَذَكِّرْ إِنْ نَفَعَتِ الذِّكْرَىٰ سَيَذَّكَّرُ مَنْ يَخْشَىٰ وَيَتَجَنَّبُهَا الْأَشْقَى الَّذِي يَصْلَى النَّارَ الْكُبْرَىٰ ثُمَّ لَا يَمُوتُ فِيهَا وَلَا يَحْيَىٰ قَدْ أَفْلَحَ مَنْ تَزَكَّىٰ وَذَكَرَ اسْمَ رَبِّهِ فَصَلَّىٰ بَلْ تُؤْثِرُونَ الْحَيَاةَ الدُّنْيَا وَالْآخِرَةُ خَيْرٌ وَأَبْقَىٰ إِنَّ هَٰذَا لَفِي الصُّحُفِ الْأُولَىٰ صُحُفِ إِبْرَاهِيمَ وَمُوسَىٰ"
+};
+
+// === DAFTAR AYAT SETIAP SURAT ===
+const ayatSurat = {
+    "Al-Fatihah": [
+        "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "الرَّحْمَٰنِ الرَّحِيمِ", "مَالِكِ يَوْمِ الدِّينِ", "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"
     ],
-    "A02": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 1: أَحَدٌ", cara:"Panjang 2 harakat"},
-        {hukum:"Qalqalah Sugra", letak:"Ayat 3: لَمْ يَلِدْ", cara:"Huruf Dal dibaca memantul ringan"},
-        {hukum:"Ikhfa Haqiqi", letak:"Ayat 4: لَمْ يَكُنْ", cara:"Nun mati bertemu Kaf → samar & mendengung"}
+    "Al-Ikhlas": [
+        "قُلْ هُوَ اللَّهُ أَحَدٌ", "اللَّهُ الصَّمَدُ", "لَمْ يَلِدْ وَلَمْ يُولَدْ", "وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ"
     ],
-    "A03": [
-        {hukum:"Mad Jaiz Munfashil", letak:"Ayat 1: النَّاسِ", cara:"Mad terpisah dari huruf berikutnya → 4–5 harakat"},
-        {hukum:"Ghunnah", letak:"Ayat 4: الْخَنَّاسِ", cara:"Nun bertasydid → mendengung"}
+    "Al-Falaq": [
+        "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", "مِنْ شَرِّ مَا خَلَقَ", "وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ", "وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", "وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ"
     ],
-    "A04": [
-        {hukum:"Qalqalah Kubra", letak:"Ayat 2: خَلَقَ", cara:"Huruf Qaf di akhir kalimat → memantul kuat"},
-        {hukum:"Ikhfa", letak:"Ayat 5: حَاسِدٍ إِذَا", cara:"Tanwin bertemu Hamzah → samar mendengung"}
+    "An-Nas": [
+        "قُلْ أَعُوذُ بِرَبِّ النَّاسِ", "مَلِكِ النَّاسِ", "إِلَٰهِ النَّاسِ", "مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", "مِنَ الْجِنَّةِ وَالنَّاسِ"
     ],
-    "A05": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 2: لَفِي خُسْرٍ", cara:"Panjang 2 harakat"},
-        {hukum:"Idgham Bighunnah", letak:"Ayat 3: آمَنُوا وَعَمِلُوا", cara:"Nun mati bertemu Wau → lebur & mendengung"}
+    "Al-Kausar": [
+        "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ", "فَصَلِّ لِرَبِّكَ وَانْحَرْ", "إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ"
     ],
-    "A06": [
-        {hukum:"Mad Arid Lissukun", letak:"Ayat 1: وَالْفَتْحُ", cara:"Mad sebelum huruf mati di akhir ayat → 4–6 harakat"},
-        {hukum:"Ghunnah", letak:"Ayat 3: تَوَّابًا", cara:"Huruf Wau bertasydid disertai mad"}
+    "Al-'Alaq (Ayat 1–5)": [
+        "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "خَلَقَ الْإِنْسَانَ مِنْ عَلَقٍ", "اقْرَأْ وَرَبُّكَ الْأَكْرَمُ", "الَّذِي عَلَّمَ بِالْقَلَمِ", "عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ"
     ],
-    "A07": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 1: الْكَوْثَرَ", cara:"Panjang 2 harakat"},
-        {hukum:"Qalqalah", letak:"Ayat 3: الْأَبْتَرُ", cara:"Huruf Ba dibaca memantul"}
+    "Al-Hujurat (Ayat 13)": [
+        "يَا أَيُّهَا النَّاسُ إِنَّا خَلَقْنَاكُمْ مِنْ ذَكَرٍ وَأُنْثَىٰ وَجَعَلْنَاكُمْ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا إِنَّ أَكْرَمَكُمْ عِنْدَ اللَّهِ أَتْقَاكُمْ إِنَّ اللَّهَ عَلِيمٌ خَبِيرٌ"
     ],
-    "A10": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 1: رَبِّكَ", cara:"Panjang 2 harakat"},
-        {hukum:"Alif Lam Syamsiyah", letak:"Ayat 4: بِالْقَلَمِ", cara:"Lam lebur ke Qaf"},
-        {hukum:"Qalqalah Sugra", letak:"Ayat 2: خَلَقَ", cara:"Huruf Qaf memantul ringan"}
+    "At-Tin": [
+        "وَالتِّينِ وَالزَّيْتُونِ", "وَطُورِ سِينِينَ", "وَهَٰذَا الْبَلَدِ الْأَمِينِ", "لَقَدْ خَلَقْنَا الْإِنْسَانَ فِي أَحْسَنِ تَقْوِيمٍ", "ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ", "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ", "فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ", "أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ"
     ],
-    "A12": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 4: أَحْسَنِ", cara:"Panjang 2 harakat"},
-        {hukum:"Alif Lam Syamsiyah", letak:"Ayat 1: وَالتِّينِ", cara:"Lam lebur ke Ta"},
-        {hukum:"Mad Arid Lissukun", letak:"Ayat 8: الْحَاكِمِينَ", cara:"Mad sebelum huruf mati akhir ayat → 4–6 harakat"}
+    "Al-Ma'un": [
+        "أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ", "فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ", "وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ", "فَوَيْلٌ لِلْمُصَلِّينَ", "الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ", "الَّذِينَ هُمْ يُرَاءُونَ", "وَيَمْنَعُونَ الْمَاعُونَ"
     ],
-    "A13": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 3: الْمِسْكِينِ", cara:"Panjang 2 harakat"},
-        {hukum:"Idgham Bighunnah", letak:"Ayat 4: فَوَيْلٌ لِلْمُصَلِّينَ", cara:"Tanwin bertemu Lam → lebur"}
+    "Ali Imran (Ayat 64)": [
+        "قُلْ يَا أَهْلَ الْكِتَابِ تَعَالَوْا إِلَىٰ كَلِمَةٍ سَوَاءٍ بَيْنَنَا وَبَيْنَكُمْ أَلَّا نَعْبُدَ إِلَّا اللَّهَ وَلَا نُشْرِكَ بِهِ شَيْئًا وَلَا يَتَّخِذَ بَعْضُنَا بَعْضًا أَرْبَابًا مِنْ دُونِ اللَّهِ فَإِنْ تَوَلَّوْا فَقُولُوا اشْهَدُوا بِأَنَّا مُسْلِمُونَ"
     ],
-    "A15": [
-        {hukum:"Mad Lazim Mutsaqqal Harfi", letak:"Ayat: لَا انْفِصَامَ لَهَا", cara:"Mad wajib → 6 harakat"},
-        {hukum:"Mad Thabi'i", letak:"Ayat: سَمِيعٌ عَلِيمٌ", cara:"Panjang 2 harakat"}
+    "Al-Baqarah (Ayat 256)": [
+        "لَا إِكْرَاهَ فِي الدِّينِ قَدْ تَبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ فَمَنْ يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِنْ بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ لَا انْفِصَامَ لَهَا وَاللَّهُ سَمِيعٌ عَلِيمٌ"
     ],
-    "A16": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 1: وَالضُّحَىٰ", cara:"Panjang 2 harakat"},
-        {hukum:"Mad Arid Lissukun", letak:"Ayat 11: فَحَدِّثْ", cara:"Mad sebelum huruf mati → 4–6 harakat"}
+    "Ad-Duha": [
+        "وَالضُّحَىٰ", "وَاللَّيْلِ إِذَا سَجَىٰ", "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ", "وَلَلْآخِرَةُ خَيْرٌ لَكَ مِنَ الْأُولَىٰ", "وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ", "أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ", "وَوَجَدَكَ ضَالًّا فَهَدَىٰ", "وَوَجَدَكَ عَائِلًا فَأَغْنَىٰ", "فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ", "وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ", "وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ"
     ],
-    "A17": [
-        {hukum:"Mad Thabi'i", letak:"Ayat 1: الْأَعْلَى", cara:"Panjang 2 harakat"},
-        {hukum:"Qalqalah Sugra", letak:"Ayat 2: فَسَوَّىٰ", cara:"Huruf Qaf dibaca memantul ringan"}
-    ],
-    "A18": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: آمَنُوا", cara:"Panjang 2 harakat"},
-        {hukum:"Idgham Bighunnah", letak:"Ayat: أَطِيعُوا اللَّهَ", cara:"Wau mati bertemu Lam → dibaca jelas"}
-    ],
-    "A19": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: عَلَيْكَ الْكِتَابَ", cara:"Panjang 2 harakat"},
-        {hukum:"Ikhfa", letak:"Ayat: أَنْزَلْنَا", cara:"Nun mati bertemu Zai → samar mendengung"}
-    ],
-    "A20": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: الْبَرِّ وَالْبَحْرِ", cara:"Panjang 2 harakat"},
-        {hukum:"Idgham Bighunnah", letak:"Ayat: الْبَرِّ وَالْبَحْرِ", cara:"Ra kasrah bertemu Wau → lebur"}
-    ],
-    "A21": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: خَلَقَكُمْ", cara:"Panjang 2 harakat"},
-        {hukum:"Ghunnah", letak:"Ayat: ثُمَّ مِنْ", cara:"Mim bertasydid → mendengung"}
-    ],
-    "A22": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: ذِكْرِ الرَّحْمَٰنِ", cara:"Panjang 2 harakat"},
-        {hukum:"Ikhfa", letak:"Ayat: يُعْشِ عَنْ", cara:"Syin mati bertemu 'Ain → samar"}
-    ],
-    "A23": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: وَسَطًا", cara:"Panjang 2 harakat"},
-        {hukum:"Idgham Bighunnah", letak:"Ayat: مَنْ يَتَّبِعُ", cara:"Nun mati bertemu Ya → lebur & mendengung"}
-    ],
-    "A24": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: آمَنُوا", cara:"Panjang 2 harakat"},
-        {hukum:"Ikhfa", letak:"Ayat: نَجْوَاكُمْ صَدَقَةً", cara:"Mim mati bertemu Shad → dibaca jelas (Izhar Syafawi)"}
-    ],
-    "A25": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: أَعْبُدَ", cara:"Panjang 2 harakat"},
-        {hukum:"Mad Arid Lissukun", letak:"Ayat: عَظِيمٍ", cara:"Mad sebelum huruf mati akhir ayat → 4–6 harakat"}
-    ],
-    "A26": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: لِلْمَلَائِكَةِ", cara:"Panjang 2 harakat"},
-        {hukum:"Izhar Qamariyah", letak:"Ayat: الْأَرْضِ", cara:"Lam dibaca jelas karena huruf Qaf"}
-    ],
-    "A27": [
-        {hukum:"Mad Thabi'i", letak:"Ayat: آتَاكَ", cara:"Panjang 2 harakat"},
-        {hukum:"Idgham Bighunnah", letak:"Ayat: نَصِيبَكَ مِنَ", cara:"Ba mati bertemu Mim → lebur & mendengung"}
+    "Al-A'la": [
+        "سَبِّحِ اسْمَ رَبِّكَ الْأَعْلَى", "الَّذِي خَلَقَ فَسَوَّىٰ", "وَالَّذِي قَدَّرَ فَهَدَىٰ", "وَالَّذِي أَخْرَجَ الْمَرْعَىٰ", "فَجَعَلَهُ غُثَاءً أَحْوَىٰ", "سَنُقْرِئُكَ فَلَا تَنْسَىٰ", "إِلَّا مَا شَاءَ اللَّهُ إِنَّهُ يَعْلَمُ الْجَهْرَ وَمَا يَخْفَىٰ", "وَنُيَسِّرُكَ لِلْيُسْرَىٰ", "فَذَكِّرْ إِنْ نَفَعَتِ الذِّكْرَىٰ", "سَيَذَّكَّرُ مَنْ يَخْشَىٰ", "وَيَتَجَنَّبُهَا الْأَشْقَى", "الَّذِي يَصْلَى النَّارَ الْكُبْرَىٰ", "ثُمَّ لَا يَمُوتُ فِيهَا وَلَا يَحْيَىٰ", "قَدْ أَفْلَحَ مَنْ تَزَكَّىٰ", "وَذَكَرَ اسْمَ رَبِّهِ فَصَلَّىٰ", "بَلْ تُؤْثِرُونَ الْحَيَاةَ الدُّنْيَا", "وَالْآخِرَةُ خَيْرٌ وَأَبْقَىٰ", "إِنَّ هَٰذَا لَفِي الصُّحُفِ الْأُولَىٰ", "صُحُفِ إِبْرَاهِيمَ وَمُوسَىٰ"
     ]
 };
 
-// ==================================================
-// 🎯 VARIABEL GLOBAL & ELEMEN HALAMAN
-// ==================================================
-let mediaRekaman = null;
-let aliranKamera = null;
-let blobRekaman = null;
-let urlRekaman = null;
-let sedangMerekam = false;
-let hasilAnalisisSementara = null;
-let daftarHasil = JSON.parse(localStorage.getItem('tartiva_hasil') || '[]');
-let idSurahTerpilih = null;
-
-const el = {
-    halUtama: document.getElementById('halaman-utama'),
-    halBaca: document.getElementById('halaman-baca'),
-    halRekap: document.getElementById('halaman-rekap'),
-    namaSiswa: document.getElementById('namaSiswa'),
-    pilihKelas: document.getElementById('pilihKelas'),
-    pilihSurah: document.getElementById('pilihSurah'),
-    btnMulai: document.getElementById('btnMulai'),
-    btnLihatRekap: document.getElementById('btnLihatRekap'),
-    infoSiswaKelas: document.getElementById('infoSiswaKelas'),
-    teksArabAyat: document.getElementById('teksArabAyat'),
-    teksTerjemahAyat: document.getElementById('teksTerjemahAyat'),
-    targetBacaan: document.getElementById('targetBacaan'),
-    tautanVideo: document.getElementById('tautanVideo'),
-    videoContoh: document.getElementById('videoContoh'),
-    btnMulaiRekam: document.getElementById('btnMulaiRekam'),
-    btnStopRekam: document.getElementById('btnStopRekam'),
-    statusRekam: document.getElementById('statusRekam'),
-    kotakKamera: document.getElementById('kotakKamera'),
-    tampilanKamera: document.getElementById('tampilanKamera'),
-    kartuPreview: document.getElementById('kartu-preview'),
-    videoHasilRekaman: document.getElementById('videoHasilRekaman'),
-    btnRekamUlang: document.getElementById('btnRekamUlang'),
-    btnLanjutAnalisis: document.getElementById('btnLanjutAnalisis'),
-    kartuHasil: document.getElementById('kartu-hasil'),
-    barProgres: document.getElementById('barProgres'),
-    nilaiTajwid: document.getElementById('nilaiTajwid'),
-    nilaiMakhraj: document.getElementById('nilaiMakhraj'),
-    nilaiLancar: document.getElementById('nilaiLancar'),
-    daftarTajwid: document.getElementById('daftarTajwid'),
-    catatanKesalahan: document.getElementById('catatanKesalahan'),
-    kotakRekomendasi: document.getElementById('kotakRekomendasi'),
-    btnKembaliAwal: document.getElementById('btnKembaliAwal'),
-    rekapPilihKelas: document.getElementById('rekapPilihKelas'),
-    tabelRekap: document.getElementById('tabelRekap'),
-    btnKembaliDariRekap: document.getElementById('btnKembaliDariRekap')
-};
-
-// ==================================================
-// 🔗 FUNGSI UTAMA — ISI DAFTAR SURAH SESUAI KELAS
-// ==================================================
-el.pilihKelas.addEventListener('change', () => {
-    const kelas = el.pilihKelas.value;
-    el.pilihSurah.innerHTML = `<option value="">-- Pilih Surah/Ayat --</option>`;
-    if(!kelas) { el.pilihSurah.disabled = true; el.btnMulai.disabled = true; return; }
-    
-    Object.entries(MASTER_SURAH).forEach(([k, v]) => {
-        if(v.kelas === kelas) {
-            el.pilihSurah.innerHTML += `<option value="${k}">${v.nama} (${v.target})</option>`;
-        }
-    });
-    el.pilihSurah.disabled = false;
-    cekBisaMulai();
+document.addEventListener('DOMContentLoaded', function(){
+    document.getElementById('btnMulai').addEventListener('click', lanjutKeHalaman2);
+    document.getElementById('btnTampil').addEventListener('click', tampilkanBacaan);
+    document.getElementById('btnRekam').addEventListener('click', mulaiRekam);
+    document.getElementById('btnStop').addEventListener('click', hentiRekam);
+    document.getElementById('btnNilai').addEventListener('click', analisisDanTampilkanHasil);
+    document.getElementById('btnUlang').addEventListener('click', function(){location.reload();});
 });
 
-el.pilihSurah.addEventListener('change', cekBisaMulai);
-el.namaSiswa.addEventListener('input', cekBisaMulai);
-function cekBisaMulai(){
-    el.btnMulai.disabled = !(el.namaSiswa.value.trim() && el.pilihSurah.value);
+function lanjutKeHalaman2(){
+    namaSiswa = document.getElementById('nama').value.trim();
+    kelasSiswa = document.getElementById('kelas').value.trim();
+    if(!namaSiswa || !kelasSiswa){alert("⚠️ Isi Nama dan Kelas terlebih dahulu!"); return;}
+    document.getElementById('hal1').classList.remove('active');
+    document.getElementById('hal2').classList.add('active');
+    document.getElementById('infoSiswa').innerHTML = "Siswa: " + namaSiswa + " | Kelas: " + kelasSiswa;
 }
 
-// ==================================================
-// ▶ MULAI — TAMPILKAN AYAT, TAUTAN VIDEO & DATA
-// ==================================================
-el.btnMulai.addEventListener('click', () => {
-    idSurahTerpilih = el.pilihSurah.value;
-    const dataSurah = MASTER_SURAH[idSurahTerpilih];
-    const dataAyat = MASTER_AYAT[idSurahTerpilih];
+function tampilkanBacaan(){
+    pilihSurat = document.getElementById('surat').value;
+    if(!pilihSurat){alert("⚠️ Pilih surat terlebih dahulu!"); return;}
+    let teks = teksSurat[pilihSurat];
+    let daftarAyatHTML = ayatSurat[pilihSurat].map((ayat, indeks) =>
+        "<span class='ayat-item'>" + escapeHTML(ayat) + " <span class='nomor-ayat'>" + (indeks + 1) + "</span></span>"
+    ).join("");
+    document.getElementById('teksAyat').innerHTML = "<strong>Surat " + pilihSurat + "</strong><br><br>" + daftarAyatHTML;
+    
+    let infoSurat = dataSurat[pilihSurat];
+    let daftarHukumHTML = "";
+    infoSurat.hukum.forEach(h => {
+        daftarHukumHTML += `<div class='info-hukum'><strong>✅ ${h.nama}:</strong> ${h.penjelasan}</div>`;
+    });
+    document.getElementById('daftarHukum').innerHTML = daftarHukumHTML;
+    document.getElementById('kotakSurat').style.display = "block";
+}
 
-    // Info siswa & kelas
-    el.infoSiswaKelas.textContent = `${el.namaSiswa.value.trim()} — ${dataSurah.nama} | ${dataSurah.target}`;
-    el.targetBacaan.textContent = dataSurah.target;
-
-    // Tampilkan tautan video contoh yang bisa diklik
-    el.tautanVideo.innerHTML = `
-        👉 <a href="${dataSurah.videoUrl}" target="_blank" class="link-contoh" style="color:#1565c0; font-weight:bold;">
-            ▶ Klik di sini untuk membuka video bacaan ${dataSurah.nama}
-        </a>
-        <br><small>(Akan terbuka di tab baru, silakan pelajari dulu sebelum merekam)</small>
-    `;
-
-    // Tampilkan teks ayat & terjemahan
-    if(dataAyat) {
-        el.teksArabAyat.textContent = dataAyat.teksArab;
-        el.teksTerjemahAyat.textContent = dataAyat.terjemahan;
-    } else {
-        el.teksArabAyat.textContent = `📖 ${dataSurah.nama}`;
-        el.teksTerjemahAyat.textContent = `Teks ayat sedang dalam penyempurnaan. Silakan pelajari dari video contoh terlebih dahulu.`;
-    }
-
-    // Sembunyikan bagian rekaman & hasil sebelumnya
-    el.kartuPreview.classList.add('sembunyi');
-    el.kartuHasil.classList.add('sembunyi');
-    el.statusRekam.classList.add('sembunyi');
-    el.kotakKamera.classList.add('sembunyi');
-    el.btnMulaiRekam.classList.remove('sembunyi');
-    el.btnStopRekam.classList.add('sembunyi');
-    sedangMerekam = false;
-
-    // Tampilkan halaman baca
-    el.halUtama.classList.add('sembunyi');
-    el.halBaca.classList.remove('sembunyi');
-    el.halRekap.classList.add('sembunyi');
-});
-
-// ==================================================
-// 🎤 MULAI REKAM — KAMERA & MIKROFON BERFUNGSI
-// ==================================================
-el.btnMulaiRekam.addEventListener('click', async () => {
+async function mulaiRekam(){
     try {
-        aliranKamera = await navigator.mediaDevices.getUserMedia({
-            video: { width: {ideal: 640}, height: {ideal: 480}, facingMode: "user" },
+        aliranMedia = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" }, 
             audio: true
         });
-
-        // Tampilkan kamera secara langsung
-        el.tampilanKamera.srcObject = aliranKamera;
-        el.kotakKamera.classList.remove('sembunyi');
-
-        // Mulai rekam
-        mediaRekaman = new MediaRecorder(aliranKamera, {mimeType: 'video/webm;codecs=vp9,opus'});
-        blobRekaman = [];
-        mediaRekaman.ondataavailable = e => { if(e.data.size>0) blobRekaman.push(e.data); };
-        mediaRekaman.onstop = simpanDanTampilkanPreview;
-        mediaRekaman.start(100);
-        sedangMerekam = true;
-
-        el.btnMulaiRekam.classList.add('sembunyi');
-        el.btnStopRekam.classList.remove('sembunyi');
-        el.statusRekam.classList.remove('sembunyi');
-    } catch(e) {
-        alert("❌ Tidak dapat mengakses kamera/mikrofon.\n\n✅ Pastikan:\n1. Gunakan browser Chrome atau Edge versi terbaru\n2. Izinkan akses Kamera & Mikrofon saat diminta\n3. Jika di HP, buka lewat Chrome, bukan dari file manager\n\nDetail: " + e.message);
-        console.error(e);
-    }
-});
-
-// ⏹ STOP REKAM
-el.btnStopRekam.addEventListener('click', () => {
-    if(mediaRekaman && sedangMerekam) {
-        mediaRekaman.stop();
-        aliranKamera.getTracks().forEach(track => track.stop());
-        sedangMerekam = false;
-    }
-    el.btnStopRekam.classList.add('sembunyi');
-    el.statusRekam.classList.add('sembunyi');
-    el.kotakKamera.classList.add('sembunyi');
-});
-
-// 💾 SIMPAN & TAMPILKAN PREVIEW HASIL REKAMAN
-function simpanDanTampilkanPreview(){
-    blobRekaman = new Blob(blobRekaman, {type: 'video/webm'});
-    urlRekaman = URL.createObjectURL(blobRekaman);
-    el.videoHasilRekaman.src = urlRekaman;
-    el.kartuPreview.classList.remove('sembunyi');
-    window.scrollTo({top: el.kartuPreview.offsetTop, behavior:'smooth'});
-}
-
-// 🔄 REKAM ULANG
-el.btnRekamUlang.addEventListener('click', () => {
-    if(urlRekaman) URL.revokeObjectURL(urlRekaman);
-    blobRekaman = null; urlRekaman = null;
-    el.kartuPreview.classList.add('sembunyi');
-    el.kartuHasil.classList.add('sembunyi');
-    el.btnMulaiRekam.classList.remove('sembunyi');
-});
-
-// ✅ LANJUT ANALISIS
-el.btnLanjutAnalisis.addEventListener('click', () => {
-    el.kartuPreview.classList.add('sembunyi');
-    tampilkanHasilAnalisis();
-});
-
-// ==================================================
-// 📊 HASIL ANALISIS LENGKAP
-// ==================================================
-function tampilkanHasilAnalisis(){
-    const dataSurah = MASTER_SURAH[idSurahTerpilih];
-    const daftarTajwid = MASTER_TAJWID_AYAT[idSurahTerpilih] || [];
-
-    // SIMULASI PENILAIAN (bisa diganti AI sungguhan nanti)
-    const skorTajwid = Math.floor(75 + Math.random()*18);
-    const skorMakhraj = Math.floor(78 + Math.random()*16);
-    const skorLancar = Math.floor(72 + Math.random()*20);
-    const skorRata = Math.round((skorTajwid + skorMakhraj + skorLancar) / 3);
-
-    // Tampilkan skor
-    el.nilaiTajwid.textContent = skorTajwid;
-    el.nilaiMakhraj.textContent = skorMakhraj;
-    el.nilaiLancar.textContent = skorLancar;
-    el.barProgres.style.width = skorRata + '%';
-
-    // Tampilkan daftar tajwid
-    if(daftarTajwid.length > 0) {
-        el.daftarTajwid.innerHTML = daftarTajwid.map(t => `
-            <div class="item-tajwid">
-                <strong>✅ ${t.hukum}</strong><br>
-                <small>📍 Letak: ${t.letak}<br>💡 Cara baca: ${t.cara}</small>
-            </div>
-        `).join('');
-    } else {
-        el.daftarTajwid.innerHTML = `<div class="item-tajwid">📌 Daftar hukum tajwid sedang ditambahkan untuk ayat ini.</div>`;
-    }
-
-    // Catatan kesalahan & saran
-    const catatan = skorRata >= 85
-        ? `<div class="status benar">✅ Bacaan sudah sangat baik! Tajwid jelas, makhraj tepat, lancar dan bertartil. Pertahankan!</div>`
-        : skorRata >= 75
-        ? `<div class="status peringatan">⚠️ Sudah cukup baik. Perhatikan: panjang pendek bacaan, huruf tebal/tipis, dan huruf yang harus mendengung. Dengarkan contoh lalu ulangi beberapa kali.</div>`
-        : `<div class="status salah">⚠️ Perlu latihan lebih teliti. Pelajari dulu hukum tajwid di atas, dengarkan contoh berkali-kali, baca perlahan bersama guru/orang tua, baru coba utuh.</div>`;
-    el.catatanKesalahan.innerHTML = catatan;
-
-    // Rekomendasi
-    el.kotakRekomendasi.innerHTML = skorRata >= 85
-        ? `<strong>💡 Rekomendasi:</strong> Luar biasa! Pertahankan kemampuanmu. Lanjut ke materi berikutnya dan terus perbanyak hafalan serta pemahaman tajwid.`
-        : skorRata >= 75
-        ? `<strong>💡 Rekomendasi:</strong> Dengarkan video contoh 3–5 kali terlebih dahulu. Perhatikan huruf bertasydid & panjang pendek bacaannya. Latih ayat demi ayat, jangan terburu-buru. Rekam ulang setelah merasa lebih baik.`
-        : `<strong>💡 Rekomendasi:</strong> Jangan terburu-buru! Pelajari arti & cara membaca setiap hukum tajwid di atas. Baca perlahan bersama guru/orang tua, perbaiki makhraj hurufnya satu per satu. Setelah lancar baru baca secara utuh.`;
-
-    // Simpan ke riwayat
-    hasilAnalisisSementara = {
-        nama: el.namaSiswa.value.trim(),
-        idSurah: idSurahTerpilih,
-        surah: dataSurah.nama,
-        kelas: dataSurah.kelas,
-        skorTajwid: skorTajwid,
-        skorMakhraj: skorMakhraj,
-        skorKelancaran: skorLancar,
-        skorRata: skorRata,
-        tanggal: new Date().toLocaleString('id-ID')
-    };
-    daftarHasil.push(hasilAnalisisSementara);
-    localStorage.setItem('tartiva_hasil', JSON.stringify(daftarHasil));
-
-    // Tampilkan kartu hasil
-    el.kartuHasil.classList.remove('sembunyi');
-    window.scrollTo({top: el.kartuHasil.offsetTop, behavior:'smooth'});
-}
-
-// ==================================================
-// 🏠 KEMBALI KE HALAMAN AWAL
-// ==================================================
-el.btnKembaliAwal.addEventListener('click', () => {
-    // Bersihkan rekaman dari memori
-    if(urlRekaman) URL.revokeObjectURL(urlRekaman);
-    if(aliranKamera) aliranKamera.getTracks().forEach(t => t.stop());
-    blobRekaman = null; urlRekaman = null; mediaRekaman = null; aliranKamera = null;
-
-    // Reset tampilan
-    el.halUtama.classList.remove('sembunyi');
-    el.halBaca.classList.add('sembunyi');
-    el.halRekap.classList.add('sembunyi');
-    el.pilihKelas.value = '';
-    el.pilihSurah.innerHTML = `<option value="">-- Pilih Dulu Kelasnya --</option>`;
-    el.pilihSurah.disabled = true;
-    el.pilihSurah.value = '';
-    el.btnMulai.disabled = true;
-    el.kartuPreview.classList.add('sembunyi');
-    el.kartuHasil.classList.add('sembunyi');
-    el.kotakKamera.classList.add('sembunyi');
-    el.btnMulaiRekam.classList.remove('sembunyi');
-    el.btnStopRekam.classList.add('sembunyi');
-});
-
-// ==================================================
-// 📊 LIHAT REKAP PER KELAS
-// ==================================================
-el.btnLihatRekap.addEventListener('click', () => {
-    el.halUtama.classList.add('sembunyi');
-    el.halBaca.classList.add('sembunyi');
-    el.halRekap.classList.remove('sembunyi');
-    tampilkanRekapKelas();
-});
-
-el.rekapPilihKelas.addEventListener('change', tampilkanRekapKelas);
-
-function tampilkanRekapKelas(){
-    const kelasDipilih = el.rekapPilihKelas.value;
-    const dataKelas = MASTER_KELAS[kelasDipilih];
-    const surahDiKelas = Object.entries(MASTER_SURAH).filter(([k,v]) => v.kelas === kelasDipilih);
-    const hasilKelas = daftarHasil.filter(h => h.kelas === kelasDipilih);
-
-    let html = `<h4 style="margin:10px 0;">📋 Rekap: Kelas ${dataKelas.kelas} ${dataKelas.jenjang} — Fase ${dataKelas.fase}</h4>`;
-
-    if(hasilKelas.length === 0){
-        html += `<div class="status peringatan">Belum ada hasil bacaan untuk kelas ini. Setelah siswa selesai membaca & dianalisis, hasilnya akan muncul di sini.</div>`;
-    } else {
-        const rataTajwid = Math.round(hasilKelas.reduce((s,h) => s + h.skorTajwid, 0) / hasilKelas.length);
-        const rataMakhraj = Math.round(hasilKelas.reduce((s,h) => s + h.skorMakhraj, 0) / hasilKelas.length);
-        const rataLancar = Math.round(hasilKelas.reduce((s,h) => s + h.skorKelancaran, 0) / hasilKelas.length);
-
-        html += `
-        <div class="grid-skor" style="margin:14px 0;">
-            <div class="kotak-skor hijau"><div class="angka-skor">${rataTajwid}</div><div class="label-skor">Rata-rata Tajwid</div></div>
-            <div class="kotak-skor biru"><div class="angka-skor">${rataMakhraj}</div><div class="label-skor">Rata-rata Makhraj</div></div>
-            <div class="kotak-skor oren"><div class="angka-skor">${rataLancar}</div><div class="label-skor">Rata-rata Kelancaran</div></div>
-        </div>`;
-
-        html += `
-        <table class="rekap-tabel">
-            <thead>
-                <tr><th>No</th><th>Nama Siswa</th><th>Materi/Surah</th><th>Tajwid</th><th>Makhraj</th><th>Kelancaran</th><th>Rata-rata</th><th>Tanggal</th></tr>
-            </thead>
-            <tbody>`;
-        hasilKelas.forEach((h,i) => {
-            html += `
-            <tr>
-                <td>${i+1}</td>
-                <td>${h.nama}</td>
-                <td>${h.surah}</td>
-                <td>${h.skorTajwid}</td>
-                <td>${h.skorMakhraj}</td>
-                <td>${h.skorKelancaran}</td>
-                <td><strong>${h.skorRata}</strong></td>
-                <td><small>${h.tanggal}</small></td>
-            </tr>`;
+        
+        document.getElementById('video').srcObject = aliranMedia;
+        perekam = new MediaRecorder(aliranMedia, { mimeType: 'video/webm' });
+        let tipeAudio = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : 'audio/webm';
+        let aliranAudio = new MediaStream(aliranMedia.getAudioTracks());
+        perekamAudio = new MediaRecorder(aliranAudio, { mimeType: tipeAudio });
+        
+        let bagianData = [];
+        let bagianAudio = [];
+        let audioSelesai = new Promise(resolve => {
+            perekamAudio.onstop = () => resolve(new Blob(bagianAudio, { type: tipeAudio }));
         });
-        html += `</tbody></table>`;
+        waktuMulai = performance.now();
+        
+        perekam.ondataavailable = e => {
+            if(e.data.size > 0) bagianData.push(e.data);
+        };
+        perekamAudio.ondataavailable = e => {
+            if(e.data.size > 0) bagianAudio.push(e.data);
+        };
+        
+        perekam.onstop = async () => {
+            waktuSelesai = performance.now();
+            rekamanBlob = new Blob(bagianData, { type: 'video/webm' });
+            audioRekamanBlob = await audioSelesai;
+            let durasiDetik = Math.round((waktuSelesai - waktuMulai) / 1000);
+            
+            document.getElementById('status').style.display = "block";
+            document.getElementById('status').innerHTML = "✅ Bacaan terekam! Durasi: <strong>" + durasiDetik + " detik</strong>. Review rekaman Anda sebelum dianalisis.";
+            if(urlReviewRekaman) URL.revokeObjectURL(urlReviewRekaman);
+            urlReviewRekaman = URL.createObjectURL(rekamanBlob);
+            document.getElementById('reviewVideo').src = urlReviewRekaman;
+            document.getElementById('reviewRekaman').style.display = "block";
+            document.getElementById('btnNilai').style.display = "block";
+        };
+        
+        perekam.start(100);
+        perekamAudio.start(100);
+        mulaiPengenalanSuara();
+        document.getElementById('btnRekam').style.display = "none";
+        document.getElementById('btnStop').style.display = "block";
+        document.getElementById('status').style.display = "block";
+        document.getElementById('status').textContent = "🔴 Sedang merekam... Baca pelan-pelan dengan tartil!";
+        
+    } catch(err) {
+        alert("❌ Tidak bisa akses kamera/mikrofon!\n\n⚠️ Buka lewat HTTPS atau alamat berakhiran /dev\nPesan: " + err.message);
     }
-
-    html += `<div style="margin-top:16px;"><strong>📚 Daftar Materi Kelas Ini (${surahDiKelas.length} materi):</strong><ul style="margin:8px 0 0 20px;">`;
-    surahDiKelas.forEach(([k,v]) => {
-        const sudahDikerjakan = hasilKelas.some(h => h.idSurah === k);
-        html += `<li>${sudahDikerjakan?'✅':'⬜'} ${v.nama} — ${v.target}</li>`;
-    });
-    html += `</ul></div>`;
-
-    el.tabelRekap.innerHTML = html;
 }
 
-el.btnKembaliDariRekap.addEventListener('click', () => {
-    el.halUtama.classList.remove('sembunyi');
-    el.halRekap.classList.add('sembunyi');
-});
+function hentiRekam(){
+    if(perekam && perekam.state === "recording") perekam.stop();
+    if(perekamAudio && perekamAudio.state === "recording") perekamAudio.stop();
+    if(pengenalSuara) pengenalSuara.stop();
+    if(aliranMedia) aliranMedia.getTracks().forEach(t => t.stop());
+    document.getElementById('video').srcObject = null;
+    document.getElementById('btnStop').style.display = "none";
+}
 
+async function analisisDanTampilkanHasil(){
+    if(!audioRekamanBlob){
+        alert("⚠️ Hasil audio belum tersedia. Silakan rekam ulang.");
+        return;
+    }
+    let tombolAnalisis = document.getElementById('btnNilai');
+    tombolAnalisis.disabled = true;
+    tombolAnalisis.textContent = "⏳ AI sedang menganalisis...";
+    document.getElementById('status').innerHTML = "🔍 Menganalisis kejelasan suara, ritme, panjang Mad, dan dengung...";
+    await transkripsiSelesai;
+    analisisData = await analisisRekamanSuara(audioRekamanBlob);
+    analisisData.durasiDetik = Math.round((waktuSelesai - waktuMulai) / 1000);
+    analisisData.transkripsi = teksTranskripsi;
+       analisisData.kecocokanTeks = hitungKecocokanTeks(teksSurat[pilihSurat], teksTranskripsi);
+    tampilkanHasil();
+}
+
+function mulaiPengenalanSuara(){
+    let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    teksTranskripsi = "";
+    if(!SpeechRecognition){
+        transkripsiSelesai = Promise.resolve();
+        return;
+    }
+    pengenalSuara = new SpeechRecognition();
+    pengenalSuara.lang = "ar-SA";
+    pengenalSuara.continuous = true;
+    pengenalSuara.interimResults = true;
+    let selesaikanTranskripsi;
+    transkripsiSelesai = new Promise(resolve => {
+        selesaikanTranskripsi = resolve;
+        pengenalSuara.onend = resolve;
+    });
+    pengenalSuara.onresult = event => {
+        let hasilFinal = "";
+        for(let i = 0; i < event.results.length; i++) {
+            if(event.results[i].isFinal) hasilFinal += event.results[i][0].transcript + " ";
+        }
+        teksTranskripsi = hasilFinal.trim();
+    };
+    pengenalSuara.onerror = event => {
+        if(event.error !== "no-speech" && event.error !== "aborted") {
+            console.warn("Speech recognition:", event.error);
+        }
+    };
+    try {
+        pengenalSuara.start();
+    } catch(error) {
+        selesaikanTranskripsi();
+        console.warn("Speech recognition tidak dapat dimulai:", error);
+    }
+}
+
+function normalisasiTeksArab(teks){
+    return (teks || "")
+        .normalize("NFD")
+        .replace(/[\u064B-\u065F\u0670]/g, "")
+        .replace(/[إأآٱ]/g, "ا")
+        .replace(/ى/g, "ي")
+        .replace(/ة/g, "ه")
+        .replace(/[^\u0600-\u06FF\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function hitungKecocokanTeks(teksAcuan, hasilTranskripsi){
+    let acuan = normalisasiTeksArab(teksAcuan);
+    let hasil = normalisasiTeksArab(hasilTranskripsi);
+    if(!hasil) return null;
+    let baris = Array.from({length: hasil.length + 1}, (_, indeks) => indeks);
+    for(let i = 1; i <= acuan.length; i++) {
+        let barisBerikutnya = [i];
+        for(let j = 1; j <= hasil.length; j++) {
+            let biaya = acuan[i - 1] === hasil[j - 1] ? 0 : 1;
+            barisBerikutnya[j] = Math.min(
+                barisBerikutnya[j - 1] + 1,
+                baris[j] + 1,
+                baris[j - 1] + biaya
+            );
+        }
+        baris = barisBerikutnya;
+    }
+    return Math.max(0, Math.round((1 - baris[hasil.length] / Math.max(acuan.length, hasil.length)) * 100));
+}
+
+function escapeHTML(teks){
+    return String(teks || "").replace(/[&<>"']/g, karakter => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    }[karakter]));
+}
+
+async function analisisRekamanSuara(blobRekaman) {
+    try {
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let bufferAudio = await ekstrakAudioDariBlob(blobRekaman, audioCtx);
+        if(!bufferAudio) {
+            return { 
+                berhasil: false, 
+                pesan: "Audio rekaman tidak dapat dibaca", 
+                kejelasan: 70, 
+                ritme: 70, 
+                mad: 70, 
+                dengung: 70, 
+                skorSuara: 70, 
+                rataJeda: "-", 
+                jumlahJeda: 0, 
+                persenPanjang: 0 
+            };
+        }
+        
+        let saluran = bufferAudio.getChannelData(0);
+        let sampelPerDetik = bufferAudio.sampleRate;
+        let durasi = bufferAudio.duration;
+        
+        let totalEnergi = 0;
+        let puncak = 0;
+        let bingkai = 2048;
+        let jumlahBingkai = 0;
+        let variasiEnergi = [];
+        
+        for(let i = 0; i < saluran.length; i += bingkai) {
+            let e = 0;
+            for(let j = 0; j < bingkai && i+j < saluran.length; j++) {
+                e += Math.abs(saluran[i+j]);
+            }
+            let ukuranBingkai = Math.min(bingkai, saluran.length - i);
+            let rataE = ukuranBingkai > 0 ? e / ukuranBingkai : 0;
+            totalEnergi += rataE;
+            variasiEnergi.push(rataE);
+            if(rataE > puncak) puncak = rataE;
+            jumlahBingkai++;
+        }
+        
+        let rataEnergi = totalEnergi / jumlahBingkai;
+        let standarDeviasi = hitungStandarDeviasi(variasiEnergi);
+        let energiUrut = [...variasiEnergi].sort((a, b) => a - b);
+        let lantaiKebisingan = energiUrut[Math.floor(energiUrut.length * 0.15)] || 0;
+        let ambangBatasHening = Math.max(puncak * 0.12, lantaiKebisingan * 1.8);
+        let bingkaiDetik = bingkai / sampelPerDetik;
+        let bingkaiAktif = variasiEnergi.filter(energi => energi >= ambangBatasHening).length;
+        let rasioSuaraAktif = jumlahBingkai > 0 ? bingkaiAktif / jumlahBingkai : 0;
+        let rasioSinyal = lantaiKebisingan > 0 ? rataEnergi / lantaiKebisingan : rataEnergi * 100;
+        
+        let skorKejelasan = Math.round(Math.max(0, Math.min(100,
+            35 + Math.min(35, rasioSinyal * 8) +
+            Math.min(20, rataEnergi * 1000) +
+            (puncak > 0.98 ? -15 : 10) -
+            (rasioSuaraAktif < 0.08 ? 20 : 0)
+        )));
+        
+        let daftarJeda = [];
+        let heningSekarang = 0;
+        
+        for(let i = 0; i < variasiEnergi.length; i++) {
+            if(variasiEnergi[i] < ambangBatasHening) {
+                heningSekarang += bingkaiDetik;
+            } else {
+                if(heningSekarang > 0.2) daftarJeda.push(heningSekarang);
+                heningSekarang = 0;
+            }
+        }
+        if(heningSekarang > 0.2) daftarJeda.push(heningSekarang);
+        
+        let rataJeda = daftarJeda.length > 0 ? daftarJeda.reduce((a,b)=>a+b,0)/daftarJeda.length : 0;
+        let jumlahJeda = daftarJeda.length;
+        
+        let skorJeda = jumlahJeda === 0 ? 35 : Math.max(0, 100 - Math.abs(rataJeda - 0.75) * 45);
+        let skorKepadatan = Math.max(0, 100 - Math.abs(rasioSuaraAktif - 0.65) * 150);
+        let skorRitme = Math.round(Math.min(100, skorJeda * 0.6 + skorKepadatan * 0.4));
+        
+        let bagianSuaraPanjang = 0;
+        let suaraBerjalan = 0;
+        for(let i = 0; i < variasiEnergi.length; i++) {
+            if(variasiEnergi[i] >= ambangBatasHening) {
+                suaraBerjalan += bingkaiDetik;
+            } else {
+                if(suaraBerjalan >= 0.4) bagianSuaraPanjang += suaraBerjalan;
+                suaraBerjalan = 0;
+            }
+        }
+        if(suaraBerjalan >= 0.4) bagianSuaraPanjang += suaraBerjalan;
+        
+        let persenPanjang = durasi > 0 ? bagianSuaraPanjang / durasi : 0;
+        let skorMad = Math.round(Math.max(0, 100 - Math.abs(persenPanjang - 0.48) * 150));
+        
+        let variasiRelatif = rataEnergi > 0 ? standarDeviasi / rataEnergi : 1;
+        let skorStabilitas = Math.max(0, 100 - Math.abs(variasiRelatif - 0.55) * 80);
+        let skorDengung = Math.round(Math.min(100, skorStabilitas * 0.7 + Math.min(100, rasioSinyal * 5) * 0.3));
+        
+        let skorTotalSuara = Math.round(
+            skorKejelasan * 0.30 + 
+            skorRitme * 0.30 + 
+            skorMad * 0.25 + 
+            skorDengung * 0.15
+        );
+        
+        return {
+            berhasil: true,
+            kejelasan: skorKejelasan,
+            ritme: skorRitme,
+            mad: skorMad,
+            dengung: skorDengung,
+            skorSuara: skorTotalSuara,
+            rataJeda: rataJeda.toFixed(2),
+            jumlahJeda: jumlahJeda,
+            persenPanjang: Math.round(persenPanjang * 100),
+            durasiAudio: durasi,
+            sumberAnalisis: "Audio asli dari hasil rekaman"
+        };
+        
+    } catch(e) {
+        console.log("Analisis sederhana aktif:", e);
+        return { 
+            berhasil: false, 
+            pesan: "Analisis terbatas: audio tidak dapat diproses", 
+            kejelasan: 72, 
+            ritme: 72, 
+            mad: 72, 
+            dengung: 72, 
+            skorSuara: 72, 
+            rataJeda: "-", 
+            jumlahJeda: 0, 
+            persenPanjang: 0 
+        };
+    }
+}
+
+async function ekstrakAudioDariBlob(blob, konteksAudio) {
+    try {
+        if(blob.type.indexOf('audio') !== -1) {
+            return await konteksAudio.decodeAudioData(await blob.arrayBuffer());
+        }
+        
+        let urlSementara = URL.createObjectURL(blob);
+        let audio = new Audio(urlSementara);
+        
+        await new Promise((resolve, reject) => {
+            audio.preload = 'auto';
+            audio.onloadedmetadata = resolve;
+            audio.onerror = reject;
+        });
+        
+        URL.revokeObjectURL(urlSementara);
+        return null;
+        
+    } catch {
+        return null;
+    }
+}
+
+function hitungStandarDeviasi(arr) {
+    if(arr.length === 0) return 0;
+    let rata = arr.reduce((a,b)=>a+b,0)/arr.length;
+    let varians = arr.reduce((sum,x)=>sum+Math.pow(x-rata,2),0)/arr.length;
+    return Math.sqrt(varians);
+}
+
+function tampilkanHasil(){
+    document.getElementById('hal2').classList.remove('active');
+    document.getElementById('hal3').classList.add('active');
+    
+    let infoSurat = dataSurat[pilihSurat];
+    let durasiDetik = analisisData.durasiDetik;
+    let durasiNormal = infoSurat.durasiNormalDetik;
+    let selisih = Math.abs(durasiDetik - durasiNormal);
+    
+    let skorDurasi = 0;
+    let statusDurasi = "";
+    
+    if(durasiDetik < infoSurat.durasiMinimal) {
+        skorDurasi = 50;
+        statusDurasi = "<span class='salah'>⚠️ Bacaan TERLALU PENDEK (" + durasiDetik + " dtk). Standar minimal: " + infoSurat.durasiMinimal + " dtk.</span>";
+    } else if(durasiDetik > infoSurat.durasiMaksimal) {
+        skorDurasi = 65;
+        statusDurasi = "<span class='peringatan'>⚠️ Bacaan TERLALU LAMBAT (" + durasiDetik + " dtk). Standar maksimal: " + infoSurat.durasiMaksimal + " dtk.</span>";
+    } else if(selisih <= 5) {
+        skorDurasi = 95;
+        statusDurasi = "<span class='benar'>✅ Bacaan SESUAI durasi (" + durasiDetik + " dtk). Sangat baik!</span>";
+    } else {
+        skorDurasi = 80;
+        statusDurasi = "<span class='peringatan'>⚠️ Cukup baik (" + durasiDetik + " dtk). Sedikit berbeda dari standar (" + durasiNormal + " dtk).</span>";
+    }
+    
+    let skorSuara = analisisData.skorSuara || 72;
+    let infoSuaraHTML = "";
+    
+    if(analisisData.berhasil) {
+        infoSuaraHTML = `
+        <strong>🎤 Analisis Kualitas Suara:</strong><br>
+        ${analisisData.kecocokanTeks === null ? '<em>Speech recognition tidak menghasilkan transkripsi yang cukup jelas.</em><br>' : '<strong>🗣️ Kecocokan Bacaan: ' + analisisData.kecocokanTeks + '/100</strong><br><small>Transkripsi: ' + escapeHTML(analisisData.transkripsi) + '</small><br><br>'}
+        <span class="indikator ${analisisData.kejelasan>=80?'baik':analisisData.kejelasan>=65?'cukup':'lemah'}"></span>
+        Kejelasan Lafal: <strong>${analisisData.kejelasan}/100</strong> — ${analisisData.kejelasan>=85?'Sangat jelas!':analisisData.kejelasan>=70?'Cukup jelas':'Kurang jelas, pertegas huruf'}<br>
+        
+        <span class="indikator ${analisisData.ritme>=80?'baik':analisisData.ritme>=65?'cukup':'lemah'}"></span>
+        Ritme & Jeda: <strong>${analisisData.ritme}/100</strong> — ${analisisData.ritme>=85?'Jeda sangat tepat!':analisisData.ritme>=70?'Jeda cukup baik':'Perhatikan jeda antar ayat'}<br>
+        
+        <span class="indikator ${analisisData.mad>=80?'baik':analisisData.mad>=65?'cukup':'lemah'}"></span>
+        Panjang Mad: <strong>${analisisData.mad}/100</strong> — ${analisisData.mad>=85?'Panjang pendek sangat baik!':analisisData.mad>=70?'Cukup baik':'Panjang Mad perlu diperhatikan'}<br>
+        
+        <span class="indikator ${analisisData.dengung>=80?'baik':analisisData.dengung>=65?'cukup':'lemah'}"></span>
+        Dengung/Ghunnah: <strong>${analisisData.dengung}/100</strong> — ${analisisData.dengung>=85?'Dengung sangat baik!':analisisData.dengung>=70?'Cukup baik':'Latih dengung Nun/Mim bertasydid lebih teliti'}<br>
+        
+        <small>📌 Rata jeda: ${analisisData.rataJeda} detik | Bagian panjang: ${analisisData.persenPanjang}%</small>
+        `;
+    } else {
+        infoSuaraHTML = `<em>⚠️ ${analisisData.pesan || 'Analisis suara tidak tersedia'}.</em>`;
+    }
+    
+    let batasKecocokanSurat = 70;
+    let bacaanSesuaiSurat = analisisData.berhasil &&
+        analisisData.kecocokanTeks !== null &&
+        analisisData.kecocokanTeks >= batasKecocokanSurat;
+    if(!bacaanSesuaiSurat) {
+        let detailValidasi = analisisData.kecocokanTeks === null
+            ? "Speech recognition belum mendapatkan transkripsi Arab yang cukup jelas."
+            : "Kecocokan bacaan hanya " + analisisData.kecocokanTeks + "/100, sedangkan batas minimal adalah " + batasKecocokanSurat + "/100.";
+        document.getElementById('infoSuara').style.display = "none";
+        document.getElementById('dataCetak').innerHTML =
+            "<div style='background:#ffebee; padding:12px; border-radius:6px; margin-bottom:10px;'>" +
+            "<h3 style='margin:0;'>Hasil Membaca Surat " + pilihSurat + "</h3>" +
+            "<p>Nama: <strong>" + escapeHTML(namaSiswa) + "</strong> | Kelas: <strong>" + escapeHTML(kelasSiswa) + "</strong></p>" +
+            "</div>";
+        document.getElementById('infoDurasi').innerHTML = "<strong>⏱️ Durasi Bacaan: " + durasiDetik + " detik</strong><br>" + statusDurasi;
+        document.getElementById('infoSuara').innerHTML = infoSuaraHTML;
+        document.getElementById('kotakHasil').innerHTML =
+            "<div class='nilai-besar salah'>Bacaan Tidak Sesuai</div><hr>" +
+            "<p><strong>⚠️ Mohon ulangi kembali.</strong></p><p>Surat yang dipilih: <strong>" + pilihSurat + "</strong><br>" + detailValidasi + "</p>";
+        document.getElementById('kotakRekom').innerHTML =
+            "<strong>📖 Petunjuk:</strong><br>Pastikan membaca surat " + pilihSurat + " yang ditampilkan, lalu rekam ulang dari awal sampai selesai.";
+        return;
+    }
+    document.getElementById('infoSuara').style.display = "block";
+    
+    let skorAkhir = analisisData.kecocokanTeks === null
+        ? Math.round(skorDurasi * 0.40 + skorSuara * 0.60)
+        : Math.round(skorDurasi * 0.30 + skorSuara * 0.45 + analisisData.kecocokanTeks * 0.25);
+    
+    let analisisHukum = "<h4>📋 Analisis Penerapan Hukum Tajwid:</h4>";
+    let butuhLatihan = [];
+    let sudahBaik = [];
+    
+    infoSurat.hukum.forEach(h => {
+        let skorHukum = 0;
+        let sumberSkor = "kejelasan suara";
+        let catatanHukum = "Artikulasi suara terekam cukup jelas";
+        let skorTranskripsi = analisisData.kecocokanTeks === null ? 0 : analisisData.kecocokanTeks;
+        if(h.nama.indexOf("Mad") !== -1) {
+            skorHukum = Math.round(analisisData.mad * 0.65 + analisisData.ritme * 0.35);
+            sumberSkor = "panjang suara dan ritme";
+            catatanHukum = "Durasi segmen suara dan pola jeda dianalisis dari rekaman";
+        } else if(h.nama.indexOf("Ghunnah") !== -1) {
+            skorHukum = Math.round(analisisData.dengung * 0.70 + analisisData.kejelasan * 0.30);
+            sumberSkor = "kestabilan suara dan kejelasan";
+            catatanHukum = "Kestabilan energi suara digunakan sebagai estimasi dengung";
+        } else if(h.nama.indexOf("Qalqalah") !== -1) {
+            skorHukum = Math.round(analisisData.kejelasan * 0.55 + analisisData.ritme * 0.45);
+            sumberSkor = "kejelasan dan perubahan ritme";
+            catatanHukum = "Kejelasan serta perubahan energi digunakan sebagai estimasi pantulan";
+        } else {
+            skorHukum = Math.round(analisisData.kejelasan * 0.70 + skorTranskripsi * 0.30);
+            sumberSkor = analisisData.kecocokanTeks === null
+                ? "kejelasan suara"
+                : "kejelasan suara dan kecocokan transkripsi";
+            catatanHukum = analisisData.kecocokanTeks === null
+                ? "Kecocokan kata tidak tersedia; memakai sinyal audio"
+                : "Kecocokan transkripsi dengan surat ikut diperhitungkan";
+        }
+        if(analisisData.berhasil && skorHukum >= 75) {
+            analisisHukum += `<div class='info-hukum'><span class='benar'>✅ ${h.nama} — ${skorHukum}/100</span><br><small>${catatanHukum} (${sumberSkor})</small></div>`;
+            sudahBaik.push(h.nama);
+        } else {
+            analisisHukum += `<div class='info-hukum'><span class='peringatan'>⚠️ ${h.nama} — ${skorHukum}/100</span><br><small>${h.penjelasan}<br>${catatanHukum} (${sumberSkor})</small></div>`;
+            butuhLatihan.push(h.nama);
+        }
+    });
+    
+    let rekomendasi = "<strong>📖 Rekomendasi Latihan:</strong><br><br>";
+    if(skorAkhir >= 90) {
+        rekomendasi += "✅ <strong>Sangat Baik!</strong> Bacaan sudah tartil, jelas, dan sesuai tajwid. Pertahankan!<br>";
+        rekomendasi += "Lanjut ke surat berikutnya dan perbanyak hafalan.";
+    } else if(skorAkhir >= 75) {
+        rekomendasi += "⚠️ <strong>Cukup Baik.</strong> Perhatikan bagian berikut:<br>";
+        butuhLatihan.forEach(namaHukum => {
+            let hukum = infoSurat.hukum.find(item => item.nama === namaHukum);
+            rekomendasi += "&nbsp;&nbsp;🔹 <strong>" + namaHukum + "</strong>: " + hukum.penjelasan + "<br>";
+        });
+        rekomendasi += "<br>📌 Bacalah lebih pelan lagi, perhatikan panjang Mad dan dengungan Nun/Mim mati.";
+    } else {
+        rekomendasi += "❌ <strong>Perlu Perbaikan.</strong> Perhatikan hal-hal berikut:<br>";
+        butuhLatihan.forEach(namaHukum => {
+            let hukum = infoSurat.hukum.find(item => item.nama === namaHukum);
+            rekomendasi += "&nbsp;&nbsp;🔴 <strong>" + namaHukum + "</strong>: " + hukum.penjelasan + "<br>";
+        });
+        rekomendasi += "<br>📌 <strong>Saran:</strong> Pelajari hukum-hukum di atas satu per satu. Bacalah dengan SANGAT PELAN, perhatikan setiap huruf, panjang Mad, dan dengungan. Minta guru membimbing secara langsung.";
+    }
+    
+    document.getElementById('dataCetak').innerHTML = 
+        "<div style='background:#f9fbe7; padding:12px; border-radius:6px; margin-bottom:10px;'>" +
+        "<h3 style='margin:0;'>Hasil Membaca Surat " + pilihSurat + "</h3>" +
+        "<p>Nama: <strong>" + namaSiswa + "</strong> | Kelas: <strong>" + kelasSiswa + "</strong> | Tanggal: " + new Date().toLocaleDateString('id-ID') + "</p>" +
+        "</div>";
+    
+    document.getElementById('infoDurasi').innerHTML = "<strong>⏱️ Durasi Bacaan: " + durasiDetik + " detik</strong> | Standar: " + infoSurat.durasiMinimal + "–" + infoSurat.durasiMaksimal + " dtk<br>" + statusDurasi;
+    document.getElementById('infoSuara').innerHTML = infoSuaraHTML;
+    document.getElementById('kotakHasil').innerHTML = "<div class='nilai-besar'>" + skorAkhir + "/100</div><hr>" + analisisHukum;
+    document.getElementById('kotakRekom').innerHTML = rekomendasi;
+}
 </script>
 </body>
 </html>
