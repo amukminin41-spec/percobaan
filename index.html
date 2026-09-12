@@ -958,7 +958,7 @@ function lanjutKeHalaman2(){
     document.getElementById('hal1').classList.remove('active');
     document.getElementById('hal2').classList.add('active');
     setLangkahAktif(2);
-    document.getElementById('infoSiswa').innerHTML = "Siswa: " + namaSiswa + " | Kelas: " + kelasSiswa;
+    document.getElementById('infoSiswa').innerHTML = "Siswa: " + escapeHTML(namaSiswa) + " | Kelas: " + escapeHTML(kelasSiswa);
 }
 
 function tandaiMadDanPanjang(ayat, surat){
@@ -1028,62 +1028,107 @@ function setModeRekam(aktif){
 
 async function mulaiRekam(){
     try {
+        if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+            throw new Error("Browser tidak mendukung akses kamera/mikrofon. Gunakan Chrome/Edge/Firefox terbaru melalui HTTPS.");
+        }
+
         aliranMedia = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user" }, 
-            audio: true
+            video: { facingMode: "user" },
+            audio: { echoCancellation:true, noiseSuppression:true, autoGainControl:true }
         });
-        
+
         document.getElementById('video').srcObject = aliranMedia;
         document.getElementById('cameraPlaceholder').style.display = 'none';
-        perekam = new MediaRecorder(aliranMedia, { mimeType: 'video/webm' });
-        let tipeAudio = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-            ? 'audio/webm;codecs=opus'
-            : 'audio/webm';
-        let aliranAudio = new MediaStream(aliranMedia.getAudioTracks());
-        perekamAudio = new MediaRecorder(aliranAudio, { mimeType: tipeAudio });
-        
+
+        // Pilih format yang benar-benar didukung browser.
+        const kandidatVideo = [
+            'video/webm;codecs=vp9,opus',
+            'video/webm;codecs=vp8,opus',
+            'video/webm',
+            'video/mp4'
+        ];
+        const tipeVideo = kandidatVideo.find(t => MediaRecorder.isTypeSupported(t)) || '';
+        perekam = tipeVideo
+            ? new MediaRecorder(aliranMedia, { mimeType: tipeVideo })
+            : new MediaRecorder(aliranMedia);
+
+        const kandidatAudio = [
+            'audio/webm;codecs=opus',
+            'audio/webm',
+            'audio/mp4',
+            'audio/ogg;codecs=opus'
+        ];
+        const tipeAudio = kandidatAudio.find(t => MediaRecorder.isTypeSupported(t)) || '';
+        const aliranAudio = new MediaStream(aliranMedia.getAudioTracks());
+        perekamAudio = tipeAudio
+            ? new MediaRecorder(aliranAudio, { mimeType: tipeAudio })
+            : new MediaRecorder(aliranAudio);
+
         let bagianData = [];
         let bagianAudio = [];
         let audioSelesai = new Promise(resolve => {
-            perekamAudio.onstop = () => resolve(new Blob(bagianAudio, { type: tipeAudio }));
+            perekamAudio.onstop = () => {
+                const jenisAudio = tipeAudio || perekamAudio.mimeType || 'audio/webm';
+                resolve(new Blob(bagianAudio, { type: jenisAudio }));
+            };
         });
+
         waktuMulai = performance.now();
-        
+
         perekam.ondataavailable = e => {
-            if(e.data.size > 0) bagianData.push(e.data);
+            if(e.data && e.data.size > 0) bagianData.push(e.data);
         };
         perekamAudio.ondataavailable = e => {
-            if(e.data.size > 0) bagianAudio.push(e.data);
+            if(e.data && e.data.size > 0) bagianAudio.push(e.data);
         };
-        
+
         perekam.onstop = async () => {
             waktuSelesai = performance.now();
-            rekamanBlob = new Blob(bagianData, { type: 'video/webm' });
+            const jenisVideo = tipeVideo || perekam.mimeType || 'video/webm';
+            rekamanBlob = new Blob(bagianData, { type: jenisVideo });
             audioRekamanBlob = await audioSelesai;
-            let durasiDetik = Math.round((waktuSelesai - waktuMulai) / 1000);
+
+            const durasiDetik = Math.max(0, Math.round((waktuSelesai - waktuMulai) / 1000));
             setModeRekam(false);
             document.getElementById('timerBadge').textContent = formatWaktu(durasiDetik);
-            
+
             document.getElementById('status').style.display = "block";
-            document.getElementById('status').innerHTML = "✅ Bacaan terekam! Durasi: <strong>" + durasiDetik + " detik</strong>. Review rekaman Anda sebelum dianalisis.";
+            document.getElementById('status').innerHTML =
+                "✅ Bacaan terekam! Durasi: <strong>" + durasiDetik +
+                " detik</strong>. Review rekaman Anda sebelum dianalisis.";
+
             if(urlReviewRekaman) URL.revokeObjectURL(urlReviewRekaman);
             urlReviewRekaman = URL.createObjectURL(rekamanBlob);
-            document.getElementById('reviewVideo').src = urlReviewRekaman;
+            const reviewVideo = document.getElementById('reviewVideo');
+            reviewVideo.src = urlReviewRekaman;
+            reviewVideo.load();
+
             document.getElementById('reviewRekaman').style.display = "block";
             document.getElementById('btnNilai').style.display = "block";
+            document.getElementById('btnRekam').style.display = "block";
         };
-        
+
         perekam.start(100);
         perekamAudio.start(100);
         mulaiPengenalanSuara();
+
         document.getElementById('btnRekam').style.display = "none";
         document.getElementById('btnStop').style.display = "block";
         document.getElementById('status').style.display = "block";
         setModeRekam(true);
-        document.getElementById('status').textContent = "🔴 Sedang merekam... Baca pelan-pelan dengan tartil!";
-        
+        document.getElementById('status').textContent =
+            "🔴 Sedang merekam... Baca pelan-pelan dengan tartil!";
+
     } catch(err) {
-        alert("❌ Tidak bisa akses kamera/mikrofon!\n\n⚠️ Buka lewat HTTPS atau alamat berakhiran /dev\nPesan: " + err.message);
+        console.error("TARTIVA: gagal memulai rekaman", err);
+        if(aliranMedia) aliranMedia.getTracks().forEach(t => t.stop());
+        aliranMedia = null;
+        setModeRekam(false);
+        document.getElementById('btnRekam').style.display = "block";
+        document.getElementById('btnStop').style.display = "none";
+        document.getElementById('cameraPlaceholder').style.display = "grid";
+
+        alert("❌ Tidak bisa akses kamera/mikrofon!\n\nPastikan izin kamera dan mikrofon diberikan, lalu buka aplikasi melalui HTTPS (atau localhost).\n\nPesan: " + (err.message || err.name || "Tidak diketahui"));
     }
 }
 
@@ -1103,16 +1148,36 @@ async function analisisDanTampilkanHasil(){
         alert("⚠️ Hasil audio belum tersedia. Silakan rekam ulang.");
         return;
     }
-    let tombolAnalisis = document.getElementById('btnNilai');
+
+    const tombolAnalisis = document.getElementById('btnNilai');
     tombolAnalisis.disabled = true;
-    tombolAnalisis.textContent = "⏳ AI sedang menganalisis...";
+    tombolAnalisis.textContent = "⏳ Sedang menganalisis...";
+    document.getElementById('status').style.display = "block";
     document.getElementById('status').innerHTML = "🔍 Menganalisis kejelasan suara, ritme, panjang Mad, dan dengung...";
-    await transkripsiSelesai;
-    analisisData = await analisisRekamanSuara(audioRekamanBlob);
-    analisisData.durasiDetik = Math.round((waktuSelesai - waktuMulai) / 1000);
-    analisisData.transkripsi = teksTranskripsi;
-       analisisData.kecocokanTeks = hitungKecocokanTeks(teksSurat[pilihSurat], teksTranskripsi);
-    tampilkanHasil();
+
+    try{
+        // Jangan biarkan proses menunggu Speech Recognition tanpa batas.
+        await Promise.race([
+            transkripsiSelesai,
+            new Promise(resolve => setTimeout(resolve, 5000))
+        ]);
+
+        analisisData = await analisisRekamanSuara(audioRekamanBlob);
+        analisisData.durasiDetik = Math.max(0, Math.round((waktuSelesai - waktuMulai) / 1000));
+        analisisData.transkripsi = teksTranskripsi || "";
+        analisisData.kecocokanTeks = teksTranskripsi
+            ? hitungKecocokanTeks(teksSurat[pilihSurat], teksTranskripsi)
+            : null;
+
+        tampilkanHasil();
+    } catch(error){
+        console.error("TARTIVA: analisis gagal", error);
+        document.getElementById('status').innerHTML =
+            "❌ Analisis gagal. Silakan coba rekam ulang. " + escapeHTML(error.message || "");
+    } finally {
+        tombolAnalisis.disabled = false;
+        tombolAnalisis.textContent = "🤖 Analisis Cerdas";
+    }
 }
 
 function mulaiPengenalanSuara(){
@@ -1327,23 +1392,19 @@ async function analisisRekamanSuara(blobRekaman) {
 
 async function ekstrakAudioDariBlob(blob, konteksAudio) {
     try {
-        if(blob.type.indexOf('audio') !== -1) {
-            return await konteksAudio.decodeAudioData(await blob.arrayBuffer());
+        if(!blob || !blob.size) return null;
+
+        const data = await blob.arrayBuffer();
+        try {
+            // Mendukung audio/webm, audio/mp4, audio/ogg, dan format
+            // lain yang dapat didekode oleh browser.
+            return await konteksAudio.decodeAudioData(data.slice(0));
+        } catch(errorDecode) {
+            console.warn("TARTIVA: decodeAudioData gagal:", errorDecode);
+            return null;
         }
-        
-        let urlSementara = URL.createObjectURL(blob);
-        let audio = new Audio(urlSementara);
-        
-        await new Promise((resolve, reject) => {
-            audio.preload = 'auto';
-            audio.onloadedmetadata = resolve;
-            audio.onerror = reject;
-        });
-        
-        URL.revokeObjectURL(urlSementara);
-        return null;
-        
-    } catch {
+    } catch(error) {
+        console.warn("TARTIVA: audio tidak dapat dibaca:", error);
         return null;
     }
 }
@@ -1388,7 +1449,7 @@ function tampilkanHasil(){
     if(analisisData.berhasil) {
         infoSuaraHTML = `
         <strong>🎤 Analisis Kualitas Suara:</strong><br>
-        ${analisisData.kecocokanTeks === null ? '<em>Speech recognition tidak menghasilkan transkripsi yang cukup jelas.</em><br>' : '<strong>🗣️ Kecocokan Bacaan: ' + analisisData.kecocokanTeks + '/100</strong><br><small>Transkripsi: ' + escapeHTML(analisisData.transkripsi) + '</small><br><br>'}
+        ${analisisData.kecocokanTeks === null ? '<em>Speech recognition tidak menghasilkan transkripsi yang cukup jelas.</em><br>' : '<strong>🗣️ Kecocokan Transkripsi (indikator tambahan): ' + analisisData.kecocokanTeks + '/100</strong><br><small>Transkripsi otomatis: ' + escapeHTML(analisisData.transkripsi) + '</small><br><em style="font-size:12px">ℹ️ Indikator ini tidak menentukan benar/salah bacaan.</em><br><br>'}
         <span class="indikator ${analisisData.kejelasan>=80?'baik':analisisData.kejelasan>=65?'cukup':'lemah'}"></span>
         Kejelasan Lafal: <strong>${analisisData.kejelasan}/100</strong> — ${analisisData.kejelasan>=85?'Sangat jelas!':analisisData.kejelasan>=70?'Cukup jelas':'Kurang jelas, pertegas huruf'}<br>
         
@@ -1407,35 +1468,34 @@ function tampilkanHasil(){
         infoSuaraHTML = `<em>⚠️ ${analisisData.pesan || 'Analisis suara tidak tersedia'}.</em>`;
     }
     
-    let batasKecocokanSurat = 70;
-    let bacaanSesuaiSurat = analisisData.berhasil &&
-        analisisData.kecocokanTeks !== null &&
-        analisisData.kecocokanTeks >= batasKecocokanSurat;
+    // PENTING: Speech Recognition Arab tidak cukup akurat untuk dijadikan penentu
+    // benar/salah bacaan Al-Qur\'an. Hasil transkripsi dapat berbeda meskipun
+    // bacaan siswa benar. Karena itu transkripsi hanya ditampilkan sebagai
+    // informasi tambahan dan TIDAK BOLEH membuat bacaan dinyatakan salah.
+    const bacaanSesuaiSurat = analisisData.berhasil;
     if(!bacaanSesuaiSurat) {
         skorAkhirGlobal = 0;
-        let detailValidasi = analisisData.kecocokanTeks === null
-            ? "Speech recognition belum mendapatkan transkripsi Arab yang cukup jelas."
-            : "Kecocokan bacaan hanya " + analisisData.kecocokanTeks + "/100, sedangkan batas minimal adalah " + batasKecocokanSurat + "/100.";
-        document.getElementById('infoSuara').style.display = "none";
+        document.getElementById('infoSuara').style.display = "block";
         document.getElementById('dataCetak').innerHTML =
             "<div style='background:#ffebee; padding:12px; border-radius:6px; margin-bottom:10px;'>" +
-            "<h3 style='margin:0;'>Hasil Membaca Surat " + pilihSurat + "</h3>" +
+            "<h3 style='margin:0;'>Hasil Membaca Surat " + escapeHTML(pilihSurat) + "</h3>" +
             "<p>Nama: <strong>" + escapeHTML(namaSiswa) + "</strong> | Kelas: <strong>" + escapeHTML(kelasSiswa) + "</strong></p>" +
             "</div>";
         document.getElementById('infoDurasi').innerHTML = "<strong>⏱️ Durasi Bacaan: " + durasiDetik + " detik</strong><br>" + statusDurasi;
         document.getElementById('infoSuara').innerHTML = infoSuaraHTML;
         document.getElementById('kotakHasil').innerHTML =
-            "<div class='nilai-besar salah'>Bacaan Tidak Sesuai</div><hr>" +
-            "<p><strong>⚠️ Mohon ulangi kembali.</strong></p><p>Surat yang dipilih: <strong>" + pilihSurat + "</strong><br>" + detailValidasi + "</p>";
+            "<div class='nilai-besar salah'>Audio Tidak Dapat Dianalisis</div><hr>" +
+            "<p><strong>⚠️ Silakan ulangi rekaman.</strong></p><p>" + escapeHTML(analisisData.pesan || "Data audio tidak dapat diproses.") + "</p>";
         document.getElementById('kotakRekom').innerHTML =
-            "<strong>📖 Petunjuk:</strong><br>Pastikan membaca surat " + pilihSurat + " yang ditampilkan, lalu rekam ulang dari awal sampai selesai.";
+            "<strong>📖 Petunjuk:</strong><br>Pastikan mikrofon aktif dan rekam bacaan dengan suara yang cukup jelas, lalu coba lagi.";
         return;
     }
     document.getElementById('infoSuara').style.display = "block";
     
-    let skorAkhir = analisisData.kecocokanTeks === null
-        ? Math.round(skorDurasi * 0.40 + skorSuara * 0.60)
-        : Math.round(skorDurasi * 0.30 + skorSuara * 0.45 + analisisData.kecocokanTeks * 0.25);
+    // Nilai akhir hanya memakai kualitas audio + durasi.
+    // Skor transkripsi TIDAK ikut mengurangi nilai karena Speech Recognition
+    // dapat salah mengenali bacaan Al-Qur\'an yang sebenarnya sudah benar.
+    let skorAkhir = Math.round(skorDurasi * 0.40 + skorSuara * 0.60);
     skorAkhirGlobal = skorAkhir;
     
     let analisisHukum = "<h4>📋 Analisis Penerapan Hukum Tajwid:</h4>";
@@ -1460,13 +1520,11 @@ function tampilkanHasil(){
             sumberSkor = "kejelasan dan perubahan ritme";
             catatanHukum = "Kejelasan serta perubahan energi digunakan sebagai estimasi pantulan";
         } else {
-            skorHukum = Math.round(analisisData.kejelasan * 0.70 + skorTranskripsi * 0.30);
-            sumberSkor = analisisData.kecocokanTeks === null
-                ? "kejelasan suara"
-                : "kejelasan suara dan kecocokan transkripsi";
-            catatanHukum = analisisData.kecocokanTeks === null
-                ? "Kecocokan kata tidak tersedia; memakai sinyal audio"
-                : "Kecocokan transkripsi dengan surat ikut diperhitungkan";
+            // Hukum tajwid lain dinilai dari karakteristik audio, bukan
+            // dari hasil Speech Recognition yang dapat keliru pada bahasa Arab.
+            skorHukum = Math.round(analisisData.kejelasan);
+            sumberSkor = "kejelasan suara";
+            catatanHukum = "Penilaian berbasis karakteristik audio rekaman; transkripsi tidak dijadikan penentu";
         }
         if(analisisData.berhasil && skorHukum >= 75) {
             analisisHukum += `<div class='info-hukum'><span class='benar'>✅ ${h.nama} — ${skorHukum}/100</span><br><small>${catatanHukum} (${sumberSkor})</small></div>`;
@@ -1500,7 +1558,7 @@ function tampilkanHasil(){
     document.getElementById('dataCetak').innerHTML = 
         "<div style='background:#f9fbe7; padding:12px; border-radius:6px; margin-bottom:10px;'>" +
         "<h3 style='margin:0;'>Hasil Membaca Surat " + pilihSurat + "</h3>" +
-        "<p>Nama: <strong>" + namaSiswa + "</strong> | Kelas: <strong>" + kelasSiswa + "</strong> | Tanggal: " + new Date().toLocaleDateString('id-ID') + "</p>" +
+        "<p>Nama: <strong>" + escapeHTML(namaSiswa) + "</strong> | Kelas: <strong>" + escapeHTML(kelasSiswa) + "</strong> | Tanggal: " + new Date().toLocaleDateString('id-ID') + "</p>" +
         "</div>";
     
     document.getElementById('infoDurasi').innerHTML = "<strong>⏱️ Durasi Bacaan: " + durasiDetik + " detik</strong> | Standar: " + infoSurat.durasiMinimal + "–" + infoSurat.durasiMaksimal + " dtk<br>" + statusDurasi;
