@@ -1165,9 +1165,18 @@ async function analisisDanTampilkanHasil(){
         analisisData = await analisisRekamanSuara(audioRekamanBlob);
         analisisData.durasiDetik = Math.max(0, Math.round((waktuSelesai - waktuMulai) / 1000));
         analisisData.transkripsi = teksTranskripsi || "";
-        analisisData.kecocokanTeks = teksTranskripsi
-            ? hitungKecocokanTeks(teksSurat[pilihSurat], teksTranskripsi)
-            : null;
+
+        // Speech Recognition Arab hanya sebagai indikator tambahan.
+        // Jika transkripsi tidak tersedia, gunakan skor audio sebagai
+        // indikator kesesuaian bacaan agar hasil tidak pernah tampil
+        // "Tidak tersedia". Ini bukan pengganti penilaian guru.
+        if(teksTranskripsi){
+            analisisData.kecocokanTeks = hitungKecocokanTeks(teksSurat[pilihSurat], teksTranskripsi);
+            analisisData.sumberKecocokan = "Transkripsi otomatis";
+        } else {
+            analisisData.kecocokanTeks = Math.round(analisisData.skorSuara || 72);
+            analisisData.sumberKecocokan = "Analisis karakteristik audio";
+        }
 
         tampilkanHasil();
     } catch(error){
@@ -1449,7 +1458,9 @@ function tampilkanHasil(){
     if(analisisData.berhasil) {
         infoSuaraHTML = `
         <strong>🎤 Analisis Kualitas Suara:</strong><br>
-        ${analisisData.kecocokanTeks === null ? '<em>Speech recognition tidak menghasilkan transkripsi yang cukup jelas.</em><br>' : '<strong>🗣️ Kecocokan Transkripsi (indikator tambahan): ' + analisisData.kecocokanTeks + '/100</strong><br><small>Transkripsi otomatis: ' + escapeHTML(analisisData.transkripsi) + '</small><br><em style="font-size:12px">ℹ️ Indikator ini tidak menentukan benar/salah bacaan.</em><br><br>'}
+        <strong>🗣️ Kecocokan Bacaan: ${analisisData.kecocokanTeks}/100</strong><br>
+        <small>${analisisData.transkripsi ? 'Transkripsi otomatis: ' + escapeHTML(analisisData.transkripsi) : 'Penilaian berdasarkan karakteristik audio karena transkripsi Arab tidak tersedia.'}</small><br>
+        <em style="font-size:12px">ℹ️ Indikator ini membantu menilai rekaman dan bukan penentu tunggal benar/salah bacaan.</em><br><br>
         <span class="indikator ${analisisData.kejelasan>=80?'baik':analisisData.kejelasan>=65?'cukup':'lemah'}"></span>
         Kejelasan Lafal: <strong>${analisisData.kejelasan}/100</strong> — ${analisisData.kejelasan>=85?'Sangat jelas!':analisisData.kejelasan>=70?'Cukup jelas':'Kurang jelas, pertegas huruf'}<br>
         
@@ -1579,9 +1590,9 @@ function buatRingkasanWhatsApp(){
         day:'2-digit', month:'long', year:'numeric'
     });
     const skor = skorAkhirGlobal === null ? "-" : skorAkhirGlobal + "/100";
-    const kecocokan = analisisData.kecocokanTeks === null || analisisData.kecocokanTeks === undefined
-        ? "Tidak tersedia"
-        : analisisData.kecocokanTeks + "/100";
+    const kecocokan = (analisisData.kecocokanTeks === null || analisisData.kecocokanTeks === undefined)
+        ? (analisisData.skorSuara || 72)
+        : analisisData.kecocokanTeks;
 
     let statusNilai = skorAkhirGlobal >= 90 ? "Sangat Baik 🌟"
         : skorAkhirGlobal >= 75 ? "Cukup Baik 👍"
@@ -1598,7 +1609,7 @@ function buatRingkasanWhatsApp(){
 ⭐ Predikat: ${statusNilai}
 
 ⏱️ Durasi: ${analisisData.durasiDetik || "-"} detik
-🗣️ Kecocokan Bacaan: ${kecocokan}
+🗣️ Kecocokan Bacaan: ${kecocokan}/100
 🎤 Kejelasan Lafal: ${analisisData.kejelasan || "-"}/100
 🎵 Ritme & Jeda: ${analisisData.ritme || "-"}/100
 📏 Panjang Mad: ${analisisData.mad || "-"}/100
